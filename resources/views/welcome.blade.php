@@ -45,12 +45,7 @@
             </div>
         </div>
     </div>
-
-    <!-- Scroll cue -->
-    <div class="absolute bottom-7 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-1.5 animate-bounce opacity-35" aria-hidden="true">
-        <span class="text-cream text-[9px] tracking-[0.22em] uppercase">Scroll</span>
-        <i class="fa-solid fa-chevron-down text-amber text-xs"></i>
-    </div>
+    
 </section>
 
 
