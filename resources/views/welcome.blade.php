@@ -2,8 +2,7 @@
 @section('content')
 
 <!-- ================================================================
-     HERO — Texto a la izquierda, imagen cubriendo parte derecha
-     (inspirado en la composición split de la imagen 1)
+     HERO
      ================================================================ -->
 <section id="inicio" class="relative min-h-screen flex items-center overflow-hidden grain" aria-label="Portada">
 
@@ -50,7 +49,7 @@
 
 
 <!-- ================================================================
-     FEATURES — 4 bloques con íconos FA (ref. imagen 1, fila de iconos)
+     FEATURES
      ================================================================ -->
 <section class="bg-surface border-y border-border py-14 px-6" aria-label="Ventajas">
     <div class="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8">
@@ -73,7 +72,6 @@
 
 <!-- ================================================================
      SOBRE NOSOTROS + FORMULARIO DE RESERVA
-     (ref. imagen 1: sección de 2 columnas — texto/foto + form)
      ================================================================ -->
 <section id="nosotros" class="bg-dark py-24 px-6 relative grain overflow-hidden" aria-label="Sobre nosotros">
 
@@ -172,7 +170,6 @@
 
 <!-- ================================================================
      MENÚ / CARTA — Lista punteada por categorías
-     (ref. imagen 1: sección inferior con ítems y precios)
      ================================================================ -->
 <section id="carta" class="bg-ink py-24 px-6" aria-label="Carta del menú">
     <div class="max-w-7xl mx-auto">
@@ -239,7 +236,6 @@
 
 <!-- ================================================================
      PRODUCTOS DESTACADOS — Cards con foto
-     (ref. imagen 2: featured drinks en cards)
      ================================================================ -->
 <section id="galeria" class="bg-surface py-24 px-6" aria-label="Especialidades">
     <div class="max-w-7xl mx-auto">
@@ -298,7 +294,7 @@
 
 
 <!-- ================================================================
-     BANNER PROMOCIONAL — 2 columnas (ref. imagen 2: promo banners)
+     BANNER PROMOCIONAL
      ================================================================ -->
 <section class="grid grid-cols-1 md:grid-cols-2" aria-label="Promociones">
 
