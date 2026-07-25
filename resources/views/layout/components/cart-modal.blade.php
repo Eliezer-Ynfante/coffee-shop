@@ -1,7 +1,7 @@
 <!-- ================================================================
      CARRITO MODAL
      ================================================================ -->
-<div id="cart-modal" class="hidden fixed inset-0 z-40 flex items-end md:items-center justify-center" aria-hidden="true">
+<div id="cart-modal" class="flex fixed inset-0 z-40 items-end md:items-center justify-center" aria-hidden="true">
     <!-- Overlay -->
     <div id="cart-overlay" class="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
 

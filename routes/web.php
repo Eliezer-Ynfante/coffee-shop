@@ -30,3 +30,7 @@ Route::get('/login', function () {
     return view('auth.login');
 });
 
+Route::get('/carrito', function () {
+    return view('carrito');
+});
+
