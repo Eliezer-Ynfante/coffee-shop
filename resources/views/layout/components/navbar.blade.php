@@ -29,6 +29,9 @@
                 <i class="fa-regular fa-circle-user mr-1.5" aria-hidden="true"></i>Login
             </a>
             <a href="/reserva" class="btn-amber py-2 px-5 text-xs">Reservar mesa</a>
+            <a href="/carrito" class="btn-ghost py-2 px-5 text-xs">
+                <i class="fa-solid fa-cart-shopping"></i>
+            </a>
         </div>
 
         <!-- Hamburger -->
@@ -47,7 +50,9 @@
         <a href="/contacto" class="block nav-link py-1.5">Contacto</a>
         <div class="flex gap-3 pt-2">
             <a href="/login" class="btn-ghost flex-1 text-center text-xs">Login</a>
-            <a href="/admin" class="btn-amber flex-1 text-center text-xs">Admin</a>
+            <a href="/carrito" class="btn-ghost flex-1 text-center text-xs">
+                <i class="fa-solid fa-cart-shopping"></i>
+            </a>
         </div>
     </div>
 </nav>
