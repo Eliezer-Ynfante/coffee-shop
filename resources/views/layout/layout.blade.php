@@ -24,14 +24,12 @@
 
 <body>
     @include('layout.components.navbar')
-    @include('layout.components.cart-modal')
     
     @yield('content')
     
     @include('layout.components.footer')
 
     <script src="{{ asset('js/scripts.js') }}"></script>
-    <script src="{{ asset('js/cart.js') }}"></script>
 </body>
 
 </html>

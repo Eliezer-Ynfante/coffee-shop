@@ -16,10 +16,10 @@
 
         <!-- Links desktop -->
         <div class="hidden md:flex items-center gap-7">
-            <a href="/nosotros" class="nav-link">Sobre Nosotros</a>
             <a href="/carta"    class="nav-link">Menú</a>
             <a href="/reserva"  class="nav-link">Reserva</a>
             <a href="/galeria"  class="nav-link">Galería</a>
+            <a href="/nosotros" class="nav-link">Sobre Nosotros</a>
             <a href="/contacto" class="nav-link">Contacto</a>
         </div>
 
@@ -29,9 +29,6 @@
                 <i class="fa-regular fa-circle-user mr-1.5" aria-hidden="true"></i>Login
             </a>
             <a href="/reserva" class="btn-amber py-2 px-5 text-xs">Reservar mesa</a>
-            <a href="/carrito" class="btn-ghost py-2 px-5 text-xs">
-                <i class="fa-solid fa-cart-shopping"></i>
-            </a>
         </div>
 
         <!-- Hamburger -->
@@ -43,16 +40,13 @@
 
     <!-- Menú mobile -->
     <div id="mob-menu" class="hidden md:hidden bg-ink/97 border-t border-border px-6 py-5 space-y-3">
-        <a href="/nosotros" class="block nav-link py-1.5">Sobre Nosotros</a>
         <a href="/carta"    class="block nav-link py-1.5">Menú</a>
         <a href="/reserva"  class="block nav-link py-1.5">Reserva</a>
         <a href="/galeria"  class="block nav-link py-1.5">Galería</a>
+        <a href="/nosotros" class="block nav-link py-1.5">Sobre Nosotros</a>
         <a href="/contacto" class="block nav-link py-1.5">Contacto</a>
         <div class="flex gap-3 pt-2">
             <a href="/login" class="btn-ghost flex-1 text-center text-xs">Login</a>
-            <a href="/carrito" class="btn-ghost flex-1 text-center text-xs">
-                <i class="fa-solid fa-cart-shopping"></i>
-            </a>
         </div>
     </div>
 </nav>

@@ -279,12 +279,9 @@
                             {{$prod['precio']}}
                         </span>
                         <button
-                            class="add-to-cart-btn text-xs font-medium text-cream border border-border px-3 py-1.5 rounded hover:bg-amber hover:border-amber hover:text-white transition-all duration-200"
+                            type="button"
+                            class="text-xs font-medium text-cream border border-border px-3 py-1.5 rounded hover:bg-amber hover:border-amber hover:text-white transition-all duration-200"
                             aria-label="Pedir {{$prod['nombre']}}"
-                            data-product-id="{{ $i }}"
-                            data-product-name="{{ $prod['nombre'] }}"
-                            data-product-price="{{ $prod['precio'] }}"
-                            data-product-image="{{ $prod['imagen'] }}"
                         >
                             <i class="fa-solid fa-plus mr-1" aria-hidden="true"></i>Pedir
                         </button>
@@ -381,33 +378,5 @@
         </div>
     </div>
 </section>
-
-<!-- Script para manejo del carrito en productos -->
-<script>
-    /**
-     * Manejador de botones "Pedir" en productos
-     * Agrega productos al carrito y abre el modal
-     */
-    document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            // Obtener datos del producto
-            const productData = {
-                id: parseInt(this.dataset.productId),
-                nombre: this.dataset.productName,
-                precio: parseFloat(this.dataset.productPrice.replace('S/. ', '')),
-                imagen: this.dataset.productImage,
-                quantity: 1
-            };
-
-            // Agregar al carrito
-            if (typeof window.cart !== 'undefined') {
-                window.cart.addProduct(productData);
-                window.cart.openModal();
-            } else {
-                alert('El carrito no está disponible. Por favor recarga la página.');
-            }
-        });
-    });
-</script>
 
 @endsection
