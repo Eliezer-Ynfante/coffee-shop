@@ -101,17 +101,17 @@
                 <div class="absolute inset-0 bg-linear-to-t from-ink/80 to-transparent"></div>
                 <div class="absolute bottom-4 left-0 right-0 flex justify-around px-4">
                     <div class="text-center">
-                        <div class="font-display text-3xl font-bold text-amber">12+</div>
+                        <div class="text-amber font-bold text-2xl shrink-0">12+</div>
                         <div class="text-cream/55 text-[10px] uppercase tracking-widest">Orígenes</div>
                     </div>
                     <div class="w-px bg-cream/15 self-stretch"></div>
                     <div class="text-center">
-                        <div class="font-display text-3xl font-bold text-amber">5★</div>
+                        <div class="text-amber font-bold text-2xl shrink-0">5★</div>
                         <div class="text-cream/55 text-[10px] uppercase tracking-widest">Calidad</div>
                     </div>
                     <div class="w-px bg-cream/15 self-stretch"></div>
                     <div class="text-center">
-                        <div class="font-display text-3xl font-bold text-amber">8+</div>
+                        <div class="text-amber font-bold text-2xl shrink-0">8+</div>
                         <div class="text-cream/55 text-[10px] uppercase tracking-widest">Años</div>
                     </div>
                 </div>
@@ -275,7 +275,7 @@
                         {{$prod['descripcion']}}
                     </p>
                     <div class="flex items-center justify-between border-t border-border pt-4">
-                        <span class="font-display text-2xl font-bold text-amber">
+                        <span class="text-amber font-bold text-2xl shrink-0">
                             {{$prod['precio']}}
                         </span>
                         <button
@@ -304,7 +304,7 @@
         <div class="absolute inset-0 bg-ink/70"></div>
         <div class="relative z-10">
             <p class="amber-tag mb-2 reveal">Oferta especial</p>
-            <h3 class="font-display text-3xl font-bold text-cream mb-3 reveal" style="transition-delay:.1s">
+            <h3 class="text-amber shrink-0 text-3xl font-bold text-cream mb-3 reveal" style="transition-delay:.1s">
                 2 Cold Brew<br>por el precio de 1
             </h3>
             <a href="#carta" class="btn-amber text-xs py-2.5 reveal" style="transition-delay:.2s">
@@ -324,8 +324,8 @@
             </h3>
             <p class="text-white/75 text-sm mb-3 reveal" style="transition-delay:.15s">Combo perfecto para empezar el día</p>
             <div class="flex items-baseline gap-2 reveal" style="transition-delay:.2s">
-                <span class="font-display text-4xl font-bold text-white">S/ 18</span>
-                <span class="text-white/55 line-through text-lg">S/ 23</span>
+                <span class="text-amber font-bold text-2xl shrink-0 text-white">S/ 18</span>
+                <span class="text-white/55 line-through text-amber font-bold text-lg shrink-0">S/ 23</span>
             </div>
         </div>
     </div>

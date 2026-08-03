@@ -14,7 +14,7 @@ return [
 
     /* --- Imágenes principales --- */
     'hero_img'  => 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=1400&q=85',
-    'about_img' => 'https://images.unsplash.com/photo-1442512595331-e89e73853f31?w=800&q=80',
+    'about_img' => 'https://img.freepik.com/fotos-premium/marco-granos-cafe-espacio-copia-fondo-negro_677155-108.jpg',
 
     /* --- Horario y contacto --- */
     'horario'   => 'Lun – Vie: 7 am – 8 pm · Sáb – Dom: 8 am – 6 pm',

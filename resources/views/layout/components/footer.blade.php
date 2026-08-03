@@ -50,8 +50,6 @@
                     <li><a href="/carta"    class="hover:text-amber transition">Menú</a></li>
                     <li><a href="/galeria"  class="hover:text-amber transition">Galería</a></li>
                     <li><a href="/reserva"  class="hover:text-amber transition">Reservas</a></li>
-                    <li><a href="/login" class="hover:text-amber transition">Login</a></li>
-                    <li><a href="/admin" class="hover:text-amber transition">Administración</a></li>
                 </ul>
             </div>
 
