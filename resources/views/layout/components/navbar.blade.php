@@ -28,6 +28,18 @@
             <a href="/login" class="nav-link">
                 <i class="fa-regular fa-circle-user mr-1.5" aria-hidden="true"></i>Login
             </a>
+
+            <!-- Botón carrito desktop -->
+            <button
+                type="button"
+                class="cart-trigger"
+                data-cart-open
+                aria-label="Abrir carrito de compras"
+            >
+                <i class="fa-solid fa-cart-shopping" aria-hidden="true"></i>
+                <span class="cart-badge" aria-label="Productos en el carrito"></span>
+            </button>
+
             <a href="/reserva" class="btn-amber py-2 px-5 text-xs">Reservar mesa</a>
         </div>
 
@@ -45,8 +57,19 @@
         <a href="/galeria"  class="block nav-link py-1.5">Galería</a>
         <a href="/nosotros" class="block nav-link py-1.5">Sobre Nosotros</a>
         <a href="/contacto" class="block nav-link py-1.5">Contacto</a>
-        <div class="flex gap-3 pt-2">
+        <div class="flex items-center gap-3 pt-2">
             <a href="/login" class="btn-ghost flex-1 text-center text-xs">Login</a>
+
+            <!-- Botón carrito mobile -->
+            <button
+                type="button"
+                class="cart-trigger"
+                data-cart-open
+                aria-label="Abrir carrito de compras"
+            >
+                <i class="fa-solid fa-cart-shopping" aria-hidden="true"></i>
+                <span class="cart-badge" aria-label="Productos en el carrito"></span>
+            </button>
         </div>
     </div>
 </nav>
