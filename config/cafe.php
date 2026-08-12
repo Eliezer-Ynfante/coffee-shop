@@ -79,7 +79,7 @@ return [
             'badge'       => 'Favorito',
         ],
         [
-            'nombre'      => 'Cold Brew 24h',
+            'nombre'      => 'Cold Brew',
             'descripcion' => 'Extracción en frío durante 24 horas. Suave, bajo en acidez y muy refrescante.',
             'precio'      => 'S/ 16',
             'imagen'      => 'https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=600&q=80',
