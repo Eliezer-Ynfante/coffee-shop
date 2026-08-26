@@ -249,4 +249,113 @@ body {
 .cat-item-card:hover .cat-item-img { transform: scale(1.07); }
 
 
+/* ══════════════════════════════════════════════════════════
+   GALERÍA — Estilos para filtros, tarjetas y modal Lightbox
+   ══════════════════════════════════════════════════════════ */
+.galeria-hero { min-height: 55vh; }
+.galeria-hero-bg {
+    background-size: cover;
+    background-position: center 40%;
+    background-attachment: fixed;
+}
 
+/* Botones de filtro por categoría */
+.filter-btn {
+    font-size: .82rem;
+    font-weight: 500;
+    letter-spacing: .04em;
+    padding: .5rem 1.25rem;
+    border-radius: 9999px;
+    border: 1px solid rgba(200, 120, 58, .25);
+    background: rgba(22, 15, 8, .6);
+    color: rgba(240, 230, 208, .7);
+    transition: all .25s ease;
+    cursor: pointer;
+    white-space: nowrap;
+}
+.filter-btn:hover {
+    border-color: var(--amber);
+    color: var(--cream);
+    background: rgba(200, 120, 58, .12);
+    transform: translateY(-1px);
+}
+.filter-btn.active {
+    background: var(--amber);
+    border-color: var(--amber);
+    color: #fff;
+    box-shadow: 0 4px 18px rgba(200, 120, 58, .35);
+}
+
+/* Tarjeta de la galería */
+.galeria-card {
+    position: relative;
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: transform .4s cubic-bezier(.22,.68,0,1.2), box-shadow .4s, border-color .3s;
+}
+.galeria-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 24px 50px rgba(0, 0, 0, .6);
+    border-color: rgba(200, 120, 58, .4);
+}
+.galeria-card-img {
+    transition: transform .6s cubic-bezier(.22,.68,0,1.2);
+}
+.galeria-card:hover .galeria-card-img {
+    transform: scale(1.08);
+}
+.galeria-card-overlay {
+    background: linear-gradient(180deg, rgba(10, 7, 4, 0) 40%, rgba(10, 7, 4, .92) 100%);
+    transition: opacity .3s ease;
+}
+
+/* Modal Lightbox */
+.lightbox-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 7, 4, .92);
+    backdrop-filter: blur(12px);
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .3s ease;
+    padding: 1.5rem;
+}
+.lightbox-modal.active {
+    opacity: 1;
+    pointer-events: all;
+}
+.lightbox-content {
+    transform: scale(.94);
+    transition: transform .3s cubic-bezier(.22,.68,0,1.2);
+    max-width: 900px;
+    width: 100%;
+}
+.lightbox-modal.active .lightbox-content {
+    transform: scale(1);
+}
+.lightbox-nav-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 1px solid rgba(200, 120, 58, .3);
+    background: rgba(17, 13, 8, .75);
+    color: var(--cream);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all .25s ease;
+}
+.lightbox-nav-btn:hover {
+    background: var(--amber);
+    border-color: var(--amber);
+    color: #fff;
+    transform: scale(1.08);
+}

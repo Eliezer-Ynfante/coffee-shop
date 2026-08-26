@@ -68,3 +68,139 @@ if (typeof IntersectionObserver !== 'undefined') {
     document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 }
 
+/* ════════════════════════════════════════════════════════════
+   GALERIA MODULE — Filtros y Lightbox Modal
+   ════════════════════════════════════════════════════════════ */
+const GaleriaModule = (() => {
+    let currentIndex = 0;
+    let visibleCards = [];
+
+    function init() {
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const cards = Array.from(document.querySelectorAll('.galeria-card'));
+        const modal = document.getElementById('lightbox-modal');
+
+        if (!cards.length && !filterBtns.length) return;
+
+        visibleCards = cards;
+
+        /* ── Filtrado por categoría ───────────────────────────── */
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const target = btn.dataset.filter;
+
+                filterBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                visibleCards = [];
+
+                cards.forEach(card => {
+                    const category = card.dataset.category;
+                    const match = target === 'todos' || category === target;
+
+                    if (match) {
+                        card.style.display = 'block';
+                        setTimeout(() => {
+                            card.style.opacity = '1';
+                            card.style.transform = 'scale(1)';
+                        }, 20);
+                        visibleCards.push(card);
+                    } else {
+                        card.style.opacity = '0';
+                        card.style.transform = 'scale(0.95)';
+                        setTimeout(() => {
+                            card.style.display = 'none';
+                        }, 250);
+                    }
+                });
+            });
+        });
+
+        /* ── Lightbox Modal ───────────────────────────────────── */
+        if (!modal) return;
+
+        const imgEl     = document.getElementById('lightbox-img');
+        const titleEl   = document.getElementById('lightbox-title');
+        const descEl    = document.getElementById('lightbox-desc');
+        const badgeEl   = document.getElementById('lightbox-badge');
+        const counterEl = document.getElementById('lightbox-counter');
+        const closeBtn  = document.getElementById('lightbox-close');
+        const prevBtn   = document.getElementById('lightbox-prev');
+        const nextBtn   = document.getElementById('lightbox-next');
+
+        function updateLightbox(index) {
+            if (!visibleCards.length) return;
+            if (index < 0) index = visibleCards.length - 1;
+            if (index >= visibleCards.length) index = 0;
+
+            currentIndex = index;
+            const currentCard = visibleCards[currentIndex];
+
+            const img   = currentCard.dataset.img || '';
+            const title = currentCard.dataset.title || '';
+            const desc  = currentCard.dataset.desc || '';
+            const badge = currentCard.dataset.badge || '';
+
+            if (imgEl)   imgEl.src = img;
+            if (titleEl) titleEl.textContent = title;
+            if (descEl)  descEl.textContent = desc;
+            if (badgeEl) {
+                badgeEl.textContent = badge;
+                badgeEl.style.display = badge ? 'inline-block' : 'none';
+            }
+            if (counterEl) {
+                counterEl.textContent = `${currentIndex + 1} / ${visibleCards.length}`;
+            }
+        }
+
+        function openLightbox(card) {
+            const idx = visibleCards.indexOf(card);
+            if (idx === -1) return;
+            updateLightbox(idx);
+            modal.classList.add('active');
+            modal.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLightbox() {
+            modal.classList.remove('active');
+            modal.setAttribute('aria-hidden', 'true');
+            document.body.style.overflow = '';
+        }
+
+        function prevImage() {
+            updateLightbox(currentIndex - 1);
+        }
+
+        function nextImage() {
+            updateLightbox(currentIndex + 1);
+        }
+
+        cards.forEach(card => {
+            card.addEventListener('click', () => openLightbox(card));
+        });
+
+        if (closeBtn) closeBtn.addEventListener('click', closeLightbox);
+        if (prevBtn)  prevBtn.addEventListener('click', e => { e.stopPropagation(); prevImage(); });
+        if (nextBtn)  nextBtn.addEventListener('click', e => { e.stopPropagation(); nextImage(); });
+
+        modal.addEventListener('click', e => {
+            if (e.target === modal) closeLightbox();
+        });
+
+        document.addEventListener('keydown', e => {
+            if (!modal.classList.contains('active')) return;
+            if (e.key === 'Escape') closeLightbox();
+            if (e.key === 'ArrowLeft') prevImage();
+            if (e.key === 'ArrowRight') nextImage();
+        });
+    }
+
+    return { init };
+})();
+
+document.addEventListener('DOMContentLoaded', () => {
+    GaleriaModule.init();
+});
+
+
