@@ -293,4 +293,104 @@ return [
             'icono'     => 'fa-solid fa-paw',
         ],
     ],
+
+    /* --- Configuración para Reservas y Maqueta 3D --- */
+    'zonas_reserva' => [
+        [
+            'id'          => 'barra',
+            'nombre'      => 'Barra de Especialidad',
+            'badge'       => 'Experiencia Sensorial',
+            'descripcion' => 'Frente a los baristas, ideal para catar filtrados y presenciar el ritual del café.',
+            'icono'       => 'fa-solid fa-mug-hot',
+            'capacidad'   => '1 a 4 personas',
+            'imagen'      => 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=700&q=80',
+        ],
+        [
+            'id'          => 'salon',
+            'nombre'      => 'Salón Principal',
+            'badge'       => 'Cálido & Confortable',
+            'descripcion' => 'Sillones cómodos, iluminación tenue y música jazz suave para una estancia relajante.',
+            'icono'       => 'fa-solid fa-couch',
+            'capacidad'   => '2 a 6 personas',
+            'imagen'      => 'https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=700&q=80',
+        ],
+        [
+            'id'          => 'terraza',
+            'nombre'      => 'Terraza Jardín',
+            'badge'       => 'Pet Friendly',
+            'descripcion' => 'Espacio al aire libre rodeado de plantas naturales. Bienvenida para tus mascotas.',
+            'icono'       => 'fa-solid fa-seedling',
+            'capacidad'   => '2 a 8 personas',
+            'imagen'      => 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=700&q=80',
+        ],
+        [
+            'id'          => 'coworking',
+            'nombre'      => 'Rincón Coworking',
+            'badge'       => 'Productividad',
+            'descripcion' => 'Mesas amplias, tomas de corriente accesibles y Wi-Fi de fibra óptica.',
+            'icono'       => 'fa-solid fa-laptop',
+            'capacidad'   => '1 a 4 personas',
+            'imagen'      => 'https://images.unsplash.com/photo-1521017432531-fbd92d768814?w=700&q=80',
+        ],
+    ],
+
+    'mesas_3d' => [
+        // Zona Barra
+        ['id' => 'B1', 'zona' => 'barra', 'nombre' => 'Taburete Barra B1', 'capacidad' => 1, 'estado' => 'disponible', 'x' => 8,  'y' => 20, 'icono' => 'fa-solid fa-chair'],
+        ['id' => 'B2', 'zona' => 'barra', 'nombre' => 'Taburete Barra B2', 'capacidad' => 1, 'estado' => 'disponible', 'x' => 18, 'y' => 20, 'icono' => 'fa-solid fa-chair'],
+        ['id' => 'B3', 'zona' => 'barra', 'nombre' => 'Taburete Barra B3', 'capacidad' => 1, 'estado' => 'disponible', 'x' => 28, 'y' => 20, 'icono' => 'fa-solid fa-chair'],
+        ['id' => 'B4', 'zona' => 'barra', 'nombre' => 'Taburete Barra B4', 'capacidad' => 1, 'estado' => 'ocupada',    'x' => 38, 'y' => 20, 'icono' => 'fa-solid fa-chair'],
+        // Zona Salón
+        ['id' => 'S1', 'zona' => 'salon', 'nombre' => 'Mesa Central S1',   'capacidad' => 4, 'estado' => 'disponible', 'x' => 8,  'y' => 46, 'icono' => 'fa-solid fa-utensils'],
+        ['id' => 'S2', 'zona' => 'salon', 'nombre' => 'Mesa Central S2',   'capacidad' => 4, 'estado' => 'disponible', 'x' => 22, 'y' => 46, 'icono' => 'fa-solid fa-utensils'],
+        ['id' => 'S3', 'zona' => 'salon', 'nombre' => 'Mesa Ventanal S3',  'capacidad' => 2, 'estado' => 'disponible', 'x' => 8,  'y' => 68, 'icono' => 'fa-solid fa-wine-glass'],
+        ['id' => 'S5', 'zona' => 'salon', 'nombre' => 'Mesa Bistro S5',    'capacidad' => 2, 'estado' => 'disponible', 'x' => 22, 'y' => 68, 'icono' => 'fa-solid fa-mug-hot'],
+        ['id' => 'S4', 'zona' => 'salon', 'nombre' => 'Sofá Chesterfield S4', 'capacidad' => 6, 'estado' => 'disponible', 'x' => 36, 'y' => 52, 'icono' => 'fa-solid fa-couch'],
+        // Zona Terraza
+        ['id' => 'T1', 'zona' => 'terraza', 'nombre' => 'Mesa Jardín T1',   'capacidad' => 4, 'estado' => 'disponible', 'x' => 60, 'y' => 16, 'icono' => 'fa-solid fa-sun'],
+        ['id' => 'T2', 'zona' => 'terraza', 'nombre' => 'Mesa Jardín T2',   'capacidad' => 4, 'estado' => 'disponible', 'x' => 78, 'y' => 16, 'icono' => 'fa-solid fa-tree'],
+        ['id' => 'T3', 'zona' => 'terraza', 'nombre' => 'Mesa Lounge T3',   'capacidad' => 4, 'estado' => 'disponible', 'x' => 60, 'y' => 38, 'icono' => 'fa-solid fa-umbrella'],
+        ['id' => 'T4', 'zona' => 'terraza', 'nombre' => 'Mesa Lounge T4',   'capacidad' => 4, 'estado' => 'disponible', 'x' => 78, 'y' => 38, 'icono' => 'fa-solid fa-chair'],
+        ['id' => 'T5', 'zona' => 'terraza', 'nombre' => 'Mesa Terraza T5',  'capacidad' => 6, 'estado' => 'ocupada',    'x' => 68, 'y' => 56, 'icono' => 'fa-solid fa-mug-hot'],
+
+
+        // Zona Coworking
+        ['id' => 'C1', 'zona' => 'coworking', 'nombre' => 'Estación Focus C1', 'capacidad' => 1, 'estado' => 'disponible', 'x' => 60, 'y' => 74, 'icono' => 'fa-solid fa-laptop'],
+        ['id' => 'C2', 'zona' => 'coworking', 'nombre' => 'Estación Focus C2', 'capacidad' => 1, 'estado' => 'disponible', 'x' => 70, 'y' => 74, 'icono' => 'fa-solid fa-laptop'],
+        ['id' => 'C3', 'zona' => 'coworking', 'nombre' => 'Estación Focus C3', 'capacidad' => 1, 'estado' => 'disponible', 'x' => 80, 'y' => 74, 'icono' => 'fa-solid fa-laptop'],
+        ['id' => 'C4', 'zona' => 'coworking', 'nombre' => 'Estación Focus C4', 'capacidad' => 1, 'estado' => 'ocupada',    'x' => 90, 'y' => 74, 'icono' => 'fa-solid fa-plug'],
+    ],
+
+
+
+
+    'turnos_horarios' => [
+        '08:00 AM', '09:30 AM', '11:00 AM', '12:30 PM', '02:00 PM', '03:30 PM', '05:00 PM', '06:30 PM', '07:30 PM'
+    ],
+
+    'ocasiones_reserva' => [
+        ['id' => 'casual',      'nombre' => 'Reunión casual / Café entre amigos'],
+        ['id' => 'trabajo',     'nombre' => 'Trabajo / Reunión de negocios'],
+        ['id' => 'cumpleanos',  'nombre' => 'Celebración o cumpleaños'],
+        ['id' => 'cita',        'nombre' => 'Cita especial'],
+        ['id' => 'degustacion', 'nombre' => 'Degustación sensorial de métodos de café'],
+    ],
+
+    'politicas_reserva' => [
+        [
+            'icono'  => 'fa-regular fa-clock',
+            'titulo' => 'Tolerancia de 15 Minutos',
+            'desc'   => 'Guardamos tu mesa hasta 15 minutos después de la hora seleccionada para asegurar tu tranquilidad.',
+        ],
+        [
+            'icono'  => 'fa-solid fa-hand-holding-dollar',
+            'titulo' => 'Sin Pago Previo',
+            'desc'   => 'La reserva es 100% gratuita. Puedes modificar o cancelar avisándonos previamente.',
+        ],
+        [
+            'icono'  => 'fa-solid fa-users',
+            'titulo' => 'Mesas para +8 Personas',
+            'desc'   => 'Para grupos grandes o eventos privados, escríbenos directamente por WhatsApp para coordinar tu experiencia.',
+        ],
+    ],
 ];

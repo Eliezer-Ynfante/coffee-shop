@@ -17,7 +17,6 @@
         <!-- Links desktop -->
         <div class="hidden md:flex items-center gap-7">
             <a href="/carta"    class="nav-link">Carta</a>
-            <a href="/reserva"  class="nav-link">Reserva</a>
             <a href="/galeria"  class="nav-link">Galería</a>
             <a href="/nosotros" class="nav-link">Sobre Nosotros</a>
             <a href="/contacto" class="nav-link">Contacto</a>
@@ -42,7 +41,6 @@
     <!-- Menú mobile -->
     <div id="mob-menu" class="hidden md:hidden bg-ink/97 border-t border-border px-6 py-5 space-y-3">
         <a href="/carta"    class="block nav-link py-1.5">Carta</a>
-        <a href="/reserva"  class="block nav-link py-1.5">Reserva</a>
         <a href="/galeria"  class="block nav-link py-1.5">Galería</a>
         <a href="/nosotros" class="block nav-link py-1.5">Sobre Nosotros</a>
         <a href="/contacto" class="block nav-link py-1.5">Contacto</a>

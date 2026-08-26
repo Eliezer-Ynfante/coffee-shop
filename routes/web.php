@@ -16,7 +16,12 @@ Route::get('/carta', function () {
 
 Route::get('/reserva', function () {
     return view('reserva');
-});
+})->name('reserva');
+
+Route::post('/reserva', function () {
+    return back()->with('status', 'Reserva procesada.');
+})->name('reserva.post');
+
 
 Route::get('/galeria', function () {
     return view('galeria');
@@ -28,5 +33,11 @@ Route::get('/contacto', function () {
 
 Route::get('/login', function () {
     return view('auth.login');
-});
+})->name('login');
+
+Route::post('/login', function () {
+    // Procesamiento o redirección de login
+    return back()->with('status', 'Credenciales recibidas.');
+})->name('login.post');
+
 
