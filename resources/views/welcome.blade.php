@@ -278,13 +278,6 @@
                         <span class="text-amber font-bold text-2xl shrink-0">
                             {{$prod['precio']}}
                         </span>
-                        <button
-                            type="button"
-                            class="text-xs font-medium text-cream border border-border px-3 py-1.5 rounded hover:bg-amber hover:border-amber hover:text-white transition-all duration-200"
-                            aria-label="Pedir {{$prod['nombre']}}"
-                        >
-                            <i class="fa-solid fa-plus mr-1" aria-hidden="true"></i>Pedir
-                        </button>
                     </div>
                 </div>
             </article>

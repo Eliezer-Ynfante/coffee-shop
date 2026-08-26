@@ -21,11 +21,6 @@ return new class extends Migration
                   ->constrained()
                   ->nullOnDelete();
 
-            // Carrito del que proviene (solo e-commerce; null en POS)
-            $table->foreignId('cart_id')
-                  ->nullable()
-                  ->constrained()
-                  ->nullOnDelete();
 
             // Barista que atendió (solo POS; null en e-commerce)
             $table->foreignId('attendant_id')

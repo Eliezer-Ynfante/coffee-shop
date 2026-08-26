@@ -2,61 +2,6 @@
 
 @section('content')
 
-{{-- ================================================================
-     CART OFFCANVAS — Overlay + Sidebar lateral
-     ================================================================ --}}
-<div id="cart-overlay" class="cart-overlay" aria-hidden="true"></div>
-
-<aside
-    id="cart-sidebar"
-    class="cart-sidebar"
-    role="dialog"
-    aria-modal="true"
-    aria-label="Carrito de compras"
-    aria-hidden="true"
->
-
-    {{-- Encabezado del carrito --}}
-    <div class="cart-header">
-        <h2 class="font-display text-xl font-semibold text-cream">
-            <i class="fa-solid fa-cart-shopping text-amber mr-2" aria-hidden="true"></i>
-            Tu pedido
-        </h2>
-        <button
-            id="cart-close-btn"
-            type="button"
-            class="cart-close-btn"
-            aria-label="Cerrar carrito"
-        >
-            <i class="fa-solid fa-xmark" aria-hidden="true"></i>
-        </button>
-    </div>
-
-    {{-- Estado vacío --}}
-    <div id="cart-empty" class="cart-empty">
-        <i class="fa-solid fa-mug-hot text-4xl mb-4" style="color:rgba(200,120,58,.35)" aria-hidden="true"></i>
-        <p class="text-muted text-sm font-medium">Tu carrito está vacío</p>
-        <p class="text-xs mt-1" style="color:rgba(122,101,80,.6)">Agrega productos desde el menú</p>
-    </div>
-
-    {{-- Lista de productos --}}
-    <ul id="cart-items-list" class="cart-items-list hidden" aria-label="Productos en el carrito">
-        {{-- Generado dinámicamente por JavaScript --}}
-    </ul>
-
-    {{-- Pie del carrito --}}
-    <div id="cart-footer" class="cart-footer hidden">
-        <div class="cart-total-row">
-            <span class="text-cream/70 text-xs font-semibold uppercase tracking-[.15em]">Total</span>
-            <span id="cart-total" class="text-amber font-bold text-2xl">S/ 0.00</span>
-        </div>
-        <button type="button" class="btn-amber w-full text-center mt-4" id="btn-pagar">
-            <i class="fa-solid fa-credit-card mr-2" aria-hidden="true"></i>Pagar
-        </button>
-    </div>
-
-</aside>
-
 
 {{-- ================================================================
      HERO — Cabecera interior de la página Carta
@@ -150,15 +95,6 @@
                         <span class="text-amber font-bold text-2xl shrink-0">
                             {{ $prod['precio'] }}
                         </span>
-                        <button
-                            type="button"
-                            class="btn-pedir"
-                            data-nombre="{{ $prod['nombre'] }}"
-                            data-precio="{{ $prod['precio'] }}"
-                            aria-label="Agregar {{ $prod['nombre'] }} al carrito"
-                        >
-                            <i class="fa-solid fa-plus mr-1.5" aria-hidden="true"></i>Pedir
-                        </button>
                     </div>
                 </div>
 
@@ -205,38 +141,22 @@
                     </h3>
                 </div>
 
-                {{-- Ítems con línea punteada y botón Pedir --}}
-                <ul class="space-y-5">
+                {{-- Ítems con línea punteada --}}
+                <ul class="space-y-4">
                     @foreach ($cat['items'] as $item)
                     <li>
-
-                        {{-- Fila: nombre · · · precio + botón Pedir --}}
-                        <div class="flex items-end gap-2">
-                            <div class="flex items-end gap-1 flex-1 min-w-0">
-                                <span class="font-body font-medium text-cream text-sm uppercase tracking-wide shrink-0">
-                                    {{ $item['nombre'] }}
-                                </span>
-                                <span class="dots-line"></span>
-                                <span class="text-amber font-semibold text-sm shrink-0">
-                                    {{ $item['precio'] }}
-                                </span>
-                            </div>
-                            <button
-                                type="button"
-                                class="btn-pedir btn-pedir--sm"
-                                data-nombre="{{ $item['nombre'] }}"
-                                data-precio="{{ $item['precio'] }}"
-                                aria-label="Agregar {{ $item['nombre'] }} al carrito"
-                            >
-                                <i class="fa-solid fa-plus" aria-hidden="true"></i>Pedir
-                            </button>
+                        <div class="flex items-end gap-1">
+                            <span class="font-body font-medium text-cream text-sm uppercase tracking-wide shrink-0">
+                                {{ $item['nombre'] }}
+                            </span>
+                            <span class="dots-line"></span>
+                            <span class="text-amber font-semibold text-sm shrink-0">
+                                {{ $item['precio'] }}
+                            </span>
                         </div>
-
-                        {{-- Descripción --}}
                         <p class="text-muted text-xs mt-0.5 leading-relaxed">
                             {{ $item['descripcion'] }}
                         </p>
-
                     </li>
                     @endforeach
                 </ul>
