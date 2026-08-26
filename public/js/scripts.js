@@ -199,8 +199,49 @@ const GaleriaModule = (() => {
     return { init };
 })();
 
+/* ════════════════════════════════════════════════════════════
+   CONTACTO MODULE — Acordeón FAQ y Envío de Formulario
+   ════════════════════════════════════════════════════════════ */
+const ContactoModule = (() => {
+    function init() {
+        /* ── Acordeón de FAQs ─────────────────────────────────── */
+        const faqItems = document.querySelectorAll('.faq-item');
+        faqItems.forEach(item => {
+            const trigger = item.querySelector('.faq-trigger');
+            if (!trigger) return;
+
+            trigger.addEventListener('click', () => {
+                const isActive = item.classList.contains('active');
+
+                /* Cerrar otros acordeones abiertos si se desea comportamiento exclusivo */
+                faqItems.forEach(other => {
+                    if (other !== item) other.classList.remove('active');
+                });
+
+                item.classList.toggle('active', !isActive);
+            });
+        });
+
+        /* ── Feedback de Formulario de Contacto ──────────────── */
+        const contactForm = document.getElementById('contacto-form');
+        const formSuccess = document.getElementById('contacto-success');
+
+        if (contactForm && formSuccess) {
+            contactForm.addEventListener('submit', e => {
+                e.preventDefault();
+                contactForm.classList.add('hidden');
+                formSuccess.classList.remove('hidden');
+            });
+        }
+    }
+
+    return { init };
+})();
+
 document.addEventListener('DOMContentLoaded', () => {
     GaleriaModule.init();
+    ContactoModule.init();
 });
+
 
 

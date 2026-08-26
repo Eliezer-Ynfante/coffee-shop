@@ -359,3 +359,229 @@ body {
     color: #fff;
     transform: scale(1.08);
 }
+
+
+/* ══════════════════════════════════════════════════════════
+   SOBRE NOSOTROS — Estilos para hero, pilares, proceso y equipo
+   ══════════════════════════════════════════════════════════ */
+.nosotros-hero { min-height: 55vh; }
+.nosotros-hero-bg {
+    background-size: cover;
+    background-position: center 30%;
+    background-attachment: fixed;
+}
+
+/* Tarjeta de pilar/valor */
+.pilar-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 2rem 1.75rem;
+    transition: transform .35s cubic-bezier(.22,.68,0,1.2), box-shadow .35s, border-color .3s;
+}
+.pilar-card:hover {
+    transform: translateY(-7px);
+    border-color: rgba(200, 120, 58, .45);
+    box-shadow: 0 20px 45px rgba(0, 0, 0, .55);
+}
+.pilar-icon-box {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    border: 1px solid rgba(200, 120, 58, .35);
+    background: rgba(200, 120, 58, .08);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--amber);
+    font-size: 1.3rem;
+    margin-bottom: 1.25rem;
+    transition: all .3s ease;
+}
+.pilar-card:hover .pilar-icon-box {
+    background: var(--amber);
+    border-color: var(--amber);
+    color: #fff;
+    transform: scale(1.08);
+}
+
+/* Tarjeta del proceso del café */
+.process-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    transition: transform .35s cubic-bezier(.22,.68,0,1.2), box-shadow .35s, border-color .3s;
+}
+.process-card:hover {
+    transform: translateY(-6px);
+    border-color: rgba(200, 120, 58, .4);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, .55);
+}
+.process-card-img {
+    transition: transform .55s cubic-bezier(.22,.68,0,1.2);
+}
+.process-card:hover .process-card-img {
+    transform: scale(1.07);
+}
+
+/* Tarjeta de equipo */
+.team-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    transition: transform .4s cubic-bezier(.22,.68,0,1.2), box-shadow .4s, border-color .3s;
+}
+.team-card:hover {
+    transform: translateY(-8px);
+    border-color: rgba(200, 120, 58, .45);
+    box-shadow: 0 24px 50px rgba(0, 0, 0, .6);
+}
+.team-card-img {
+    transition: transform .6s cubic-bezier(.22,.68,0,1.2);
+}
+.team-card:hover .team-card-img {
+    transform: scale(1.08);
+}
+
+
+/* ══════════════════════════════════════════════════════════
+   CONTACTO — Estilos para hero, canales, formulario y FAQ
+   ══════════════════════════════════════════════════════════ */
+.contacto-hero { min-height: 55vh; }
+.contacto-hero-bg {
+    background-size: cover;
+    background-position: center 30%;
+    background-attachment: fixed;
+}
+
+/* Tarjetas de canales de información */
+.contact-info-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.5rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    transition: all .3s ease;
+}
+.contact-info-card:hover {
+    border-color: rgba(200, 120, 58, .4);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, .4);
+}
+
+.contact-icon-box {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 1px solid rgba(200, 120, 58, .35);
+    background: rgba(200, 120, 58, .08);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--amber);
+    font-size: 1.1rem;
+    flex-shrink: 0;
+    transition: all .3s ease;
+}
+.contact-info-card:hover .contact-icon-box {
+    background: var(--amber);
+    border-color: var(--amber);
+    color: #fff;
+    transform: scale(1.08);
+}
+
+/* Select y Textarea de formulario */
+.f-select {
+    width: 100%;
+    background: #1A120A;
+    border: none;
+    border-bottom: 1px solid rgba(200, 120, 58, .28);
+    color: var(--cream);
+    font-family: 'Outfit', sans-serif;
+    font-size: .875rem;
+    padding: .7rem .2rem;
+    outline: none;
+    cursor: pointer;
+    transition: border-color .3s;
+}
+.f-select:focus { border-color: var(--amber); }
+.f-select option {
+    background: #110D08;
+    color: var(--cream);
+}
+
+.f-textarea {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid rgba(200, 120, 58, .28);
+    color: var(--cream);
+    font-family: 'Outfit', sans-serif;
+    font-size: .875rem;
+    padding: .7rem .2rem;
+    outline: none;
+    resize: vertical;
+    min-height: 100px;
+    transition: border-color .3s;
+}
+.f-textarea:focus { border-color: var(--amber); }
+.f-textarea::placeholder { color: rgba(240, 230, 208, .3); }
+
+/* Acordeón de FAQs */
+.faq-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    transition: border-color .3s ease, background .3s ease;
+}
+.faq-item.active {
+    border-color: rgba(200, 120, 58, .45);
+    background: rgba(34, 22, 8, .5);
+}
+
+.faq-trigger {
+    width: 100%;
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    text-align: left;
+    background: transparent;
+    border: none;
+    color: var(--cream);
+    cursor: pointer;
+    font-family: 'Outfit', sans-serif;
+    transition: color .2s ease;
+}
+.faq-trigger:hover { color: var(--amber); }
+
+.faq-chevron {
+    color: var(--amber);
+    font-size: .85rem;
+    transition: transform .35s cubic-bezier(.22,.68,0,1.2);
+    flex-shrink: 0;
+    margin-left: 1rem;
+}
+.faq-item.active .faq-chevron {
+    transform: rotate(180deg);
+}
+
+.faq-answer {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height .35s ease, opacity .3s ease, padding .35s ease;
+    opacity: 0;
+    padding: 0 1.5rem;
+}
+.faq-item.active .faq-answer {
+    max-height: 250px;
+    opacity: 1;
+    padding: 0 1.5rem 1.5rem 1.5rem;
+}
+
+

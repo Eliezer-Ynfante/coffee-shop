@@ -170,4 +170,127 @@ return [
             'badge'       => 'Especial',
         ],
     ],
+
+    /* --- Datos extendidos para Sobre Nosotros --- */
+    'nosotros_stats' => [
+        ['valor' => '12+',  'etiqueta' => 'Orígenes de Altura',  'subtexto' => 'Cajamarca, Cusco, Junín y Piura'],
+        ['valor' => '86+',  'etiqueta' => 'Puntos SCA',          'subtexto' => 'Cafés de especialidad certificados'],
+        ['valor' => '100%', 'etiqueta' => 'Comercio Directo',    'subtexto' => 'Trato directo con pequeños caficultores'],
+        ['valor' => '+8',   'etiqueta' => 'Años Tostando',       'subtexto' => 'Pasión y maestría en cada batch'],
+    ],
+
+    'pilares' => [
+        [
+            'icono'  => 'fa-solid fa-mountain-sun',
+            'titulo' => 'Origen & Trazabilidad',
+            'desc'   => 'Trabajamos exclusivamente con micro-lotes de estricta altura (1,400 - 2,100 msnm), conociendo el nombre del productor, la variedad y el terruño.',
+        ],
+        [
+            'icono'  => 'fa-solid fa-fire-burner',
+            'titulo' => 'Tueste en Pequeños Lotes',
+            'desc'   => 'Tostamos artesanalmente en pequeños batches semanales para resaltar los azúcares naturales, notas frutales y acidez balanceada de cada grano.',
+        ],
+        [
+            'icono'  => 'fa-solid fa-hand-holding-heart',
+            'titulo' => 'Comercio Justo y Humano',
+            'desc'   => 'Creemos en una cadena de valor transparente, pagando precios justos y sostenibles que impulsan el desarrollo de las familias del campo.',
+        ],
+        [
+            'icono'  => 'fa-solid fa-mug-saucer',
+            'titulo' => 'El Ritual del Barismo',
+            'desc'   => 'Cada taza es preparada con técnica, temperatura y molienda calibrada al segundo, convirtiendo tu café diario en una experiencia memorable.',
+        ],
+    ],
+
+    'proceso_cafe' => [
+        [
+            'fase'   => '01',
+            'titulo' => 'Cosecha Manual en Altura',
+            'desc'   => 'Recolección selectiva manual de cerezas 100% maduras en las laderas andinas y de selva alta.',
+            'icono'  => 'fa-solid fa-seedling',
+            'imagen' => 'https://images.unsplash.com/photo-1524350876685-274059332603?w=700&q=80',
+        ],
+        [
+            'fase'   => '02',
+            'titulo' => 'Beneficiado & Secado Solar',
+            'desc'   => 'Procesos lavados, honeys y naturales secados lentamente en camas elevadas bajo sombra y sol andino.',
+            'icono'  => 'fa-solid fa-sun',
+            'imagen' => 'https://images.unsplash.com/photo-1610832958506-aa56368176cf?w=700&q=80',
+        ],
+        [
+            'fase'   => '03',
+            'titulo' => 'Tueste & Catación SCA',
+            'desc'   => 'Curvas de tueste a medida y rigurosa evaluación en mesa de catación para garantizar notas limpias.',
+            'icono'  => 'fa-solid fa-fire',
+            'imagen' => 'https://images.unsplash.com/photo-1518832553480-cd0e625ed3e6?w=700&q=80',
+        ],
+        [
+            'fase'   => '04',
+            'titulo' => 'Extracción Calibrada',
+            'desc'   => 'Espresso y métodos artesanales (V60, Chemex, Aeropress) ejecutados por baristas certificados.',
+            'icono'  => 'fa-solid fa-mug-hot',
+            'imagen' => 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=700&q=80',
+        ],
+    ],
+
+    'equipo' => [
+        [
+            'nombre'      => 'Mateo Vargas',
+            'rol'         => 'Head Roaster & Q-Grader',
+            'especialidad'=> 'Curvas de Tueste & Catación',
+            'imagen'      => 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&q=80',
+            'bio'         => 'Certificado por el Coffee Quality Institute. Obsesionado con balancear dulzor, cuerpo y acidez brillante en cada origen.',
+        ],
+        [
+            'nombre'      => 'Camila Rivas',
+            'rol'         => 'Head Barista & Trainer',
+            'especialidad'=> 'Métodos Filtrados & Arte Latte',
+            'imagen'      => 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=600&q=80',
+            'bio'         => 'Con más de 7 años detrás de la barra, lidera la formación técnica de nuestro equipo y el servicio al cliente.',
+        ],
+        [
+            'nombre'      => 'Sebastián Morales',
+            'rol'         => 'Chef Pastelero',
+            'especialidad'=> 'Bollería Francesa & Maridajes',
+            'imagen'      => 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&q=80',
+            'bio'         => 'Elabora diariamente repostería artesanal con mantequilla pura, diseñada para maridar a la perfección con nuestro espresso.',
+        ],
+    ],
+
+    /* --- Configuración para Contacto --- */
+    'motivos_contacto' => [
+        ['id' => 'consulta',     'nombre' => 'Consulta general o información'],
+        ['id' => 'eventos',      'nombre' => 'Eventos privados, talleres o cataciones'],
+        ['id' => 'corporativo',  'nombre' => 'Café corporativo o pedidos para empresas'],
+        ['id' => 'caficultores', 'nombre' => 'Alianzas con productores y caficultores'],
+        ['id' => 'sugerencia',   'nombre' => 'Comentarios y sugerencias'],
+    ],
+
+    'faqs' => [
+        [
+            'pregunta'  => '¿Cuentan con opciones de leche vegetal y café descafeinado?',
+            'respuesta' => 'Sí, disponemos de leche de avena, almendras y soya texturizadas profesionalmente para arte latte. También contamos con espresso y café filtrado descafeinado por el proceso natural Swiss Water (100% libre de químicos).',
+            'icono'     => 'fa-solid fa-seedling',
+        ],
+        [
+            'pregunta'  => '¿Tienen comodidades para trabajar o estudiar (Wi-Fi y enchufes)?',
+            'respuesta' => '¡Por supuesto! Contamos con conexión Wi-Fi de alta velocidad (fibra óptica), mesas amplias con tomas de corriente accesibles y un ambiente acústicamente agradable con música jazz y soul suave.',
+            'icono'     => 'fa-solid fa-wifi',
+        ],
+        [
+            'pregunta'  => '¿Se pueden realizar eventos privados, cataciones o talleres de café?',
+            'respuesta' => 'Organizamos cataciones guiadas por nuestro Q-Grader, talleres de barismo básico y eventos privados para grupos previa reserva. Puedes escribirnos mediante el formulario seleccionando "Eventos privados, talleres o cataciones".',
+            'icono'     => 'fa-solid fa-cake-candles',
+        ],
+        [
+            'pregunta'  => '¿Puedo comprar café en grano o pedir que lo muelan en el momento?',
+            'respuesta' => 'Todos nuestros cafés de origen están disponibles en bolsas herméticas de 250g y 1kg con válvula desgasificadora. Podemos molértelo al instante calibrado según tu cafetera (espresso, V60, prensa francesa, moka italiana, etc.).',
+            'icono'     => 'fa-solid fa-bag-shopping',
+        ],
+        [
+            'pregunta'  => '¿Son una cafetería Pet Friendly?',
+            'respuesta' => '¡Totalmente! Las mascotas educadas son bienvenidas tanto en nuestra terraza como en la zona designada del interior. Siempre disponemos de platitos con agua fresca para ellas.',
+            'icono'     => 'fa-solid fa-paw',
+        ],
+    ],
 ];
