@@ -5,41 +5,14 @@
 {{-- ================================================================
      HERO — Cabecera interior de la página Sobre Nosotros
      ================================================================ --}}
-<section
-    class="nosotros-hero relative flex items-center overflow-hidden grain"
-    aria-label="Cabecera sobre nosotros"
->
-    {{-- Fondo negro base --}}
-    <div class="absolute inset-0 bg-ink"></div>
-
-    {{-- Imagen de fondo --}}
-    <div
-        class="absolute inset-0 nosotros-hero-bg"
-        style="background-image:url('https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=1400&q=85'); opacity:.5"
-    ></div>
-
-    {{-- Gradientes de composición --}}
-    <div class="absolute inset-0 bg-linear-to-r from-ink via-ink/85 to-ink/35"></div>
-    <div class="absolute inset-0 bg-linear-to-t from-ink/70 via-transparent to-ink/50"></div>
-
-    <div class="relative z-10 max-w-7xl mx-auto px-6 lg:px-10 w-full pt-40 pb-28">
-        <p class="amber-tag mb-5 reveal">Nuestra Historia & Esencia</p>
-
-        <h1
-            class="font-display text-cream font-bold leading-tight mb-4 reveal max-w-3xl"
-            style="font-size:clamp(2.6rem,6.5vw,4.8rem); transition-delay:.1s"
-        >
-            Honramos la <em class="text-amber not-italic">raíz</em> y cuidamos cada <em class="text-amber not-italic">grano</em>
-        </h1>
-
-        <p
-            class="text-cream/55 text-sm md:text-base leading-relaxed max-w-xl reveal"
-            style="transition-delay:.2s"
-        >
-            Nacimos con el propósito de conectar el esfuerzo de los caficultores de altura del Perú con quienes buscan en cada taza una experiencia sensorial auténtica.
-        </p>
-    </div>
-</section>
+<x-hero-section
+    heroClass="nosotros-hero"
+    bgImage="https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=1400&q=85"
+    subtag="Nuestra Historia & Esencia"
+    title="Honramos la raíz y cuidamos cada "
+    highlight="grano"
+    description="Nacimos con el propósito de conectar el esfuerzo de los caficultores de altura del Perú con quienes buscan en cada taza una experiencia sensorial auténtica."
+/>
 
 
 {{-- ================================================================
@@ -329,10 +302,10 @@
         </p>
 
         <div class="flex flex-wrap justify-center gap-4 reveal" style="transition-delay:.28s">
-            <a href="/carta" class="btn-amber">
+            <a href="{{ route('carta') }}" class="btn-amber">
                 <i class="fa-solid fa-book-open-reader mr-2" aria-hidden="true"></i>Ver Nuestra Carta
             </a>
-            <a href="/reserva" class="btn-ghost">
+            <a href="{{ route('reserva') }}" class="btn-ghost">
                 <i class="fa-regular fa-calendar-check mr-2" aria-hidden="true"></i>Reservar una Mesa
             </a>
         </div>

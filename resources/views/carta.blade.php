@@ -3,48 +3,14 @@
 @section('content')
 
 
-{{-- ================================================================
-     HERO — Cabecera interior de la página Carta
-     ================================================================ --}}
-<section
-    class="carta-hero relative flex items-center overflow-hidden grain"
-    aria-label="Cabecera de la carta"
->
-
-    {{-- Fondo negro base --}}
-    <div class="absolute inset-0 bg-ink"></div>
-
-    {{-- Imagen de fondo (viene de config) --}}
-    <div
-        class="absolute inset-0 carta-hero-bg"
-        style="background-image:url('{{ config('cafe.hero_img') }}'); opacity:.55"
-    ></div>
-
-    {{-- Gradientes de composición --}}
-    <div class="absolute inset-0 bg-linear-to-r from-ink via-ink/85 to-ink/35"></div>
-    <div class="absolute inset-0 bg-linear-to-t from-ink/70 via-transparent to-ink/50"></div>
-
-    <div class="relative z-10 max-w-7xl mx-auto px-6 lg:px-10 w-full pt-40 pb-28">
-        <p class="amber-tag mb-5 reveal">{{ config('cafe.subtag') }}</p>
-
-        <h1
-            class="font-display text-cream font-bold leading-tight mb-4 reveal"
-            style="font-size:clamp(2.8rem,7vw,5.2rem); transition-delay:.1s"
-        >
-            Nuestra <em class="text-amber not-italic">Carta</em>
-        </h1>
-
-        <p
-            class="text-cream/55 text-sm md:text-base leading-relaxed max-w-sm reveal"
-            style="transition-delay:.2s"
-        >
-            Bebidas de especialidad, repostería artesanal y mucho más,
-            elaborados con los mejores granos de origen.
-        </p>
-    </div>
-
-</section>
-
+<x-hero-section
+    heroClass="carta-hero"
+    :bgImage="config('cafe.hero_img')"
+    :subtag="config('cafe.subtag')"
+    title="Nuestra "
+    highlight="Carta"
+    description="Bebidas de especialidad, repostería artesanal y mucho más, elaborados con los mejores granos de origen."
+/>
 
 {{-- ================================================================
      PRODUCTOS DESTACADOS — Cards con foto (desde config('cafe.productos'))
@@ -63,44 +29,12 @@
         {{-- Grid de cards --}}
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-7">
             @foreach (config('cafe.productos') as $i => $prod)
-            <article
-                class="menu-card bg-card border border-border rounded-lg overflow-hidden flex flex-col reveal"
-                style="transition-delay:{{ $i * .1 }}s"
-            >
-
-                {{-- Imagen con zoom en hover --}}
-                <div class="overflow-hidden relative h-60">
-                    <img
-                        src="{{ $prod['imagen'] }}"
-                        alt="{{ $prod['nombre'] }}"
-                        class="menu-card-img w-full h-full object-cover"
-                        loading="lazy"
-                    >
-                    <div class="absolute inset-0 bg-linear-to-t from-ink/55 to-transparent"></div>
-
-                    @if (!empty($prod['badge']))
-                    <span class="badge absolute top-3 right-3">{{ $prod['badge'] }}</span>
-                    @endif
-                </div>
-
-                {{-- Contenido de la card --}}
-                <div class="p-5 flex flex-col flex-1">
-                    <h3 class="font-display text-xl font-semibold text-cream mb-1">
-                        {{ $prod['nombre'] }}
-                    </h3>
-                    <p class="text-muted text-sm leading-relaxed flex-1 mb-4">
-                        {{ $prod['descripcion'] }}
-                    </p>
-                    <div class="flex items-center justify-between border-t border-border pt-4">
-                        <span class="text-amber font-bold text-2xl shrink-0">
-                            {{ $prod['precio'] }}
-                        </span>
-                    </div>
-                </div>
-
-            </article>
+            <x-product-card :producto="$prod" :index="$i" />
             @endforeach
         </div>
+
+    </div>
+</section>
 
     </div>
 </section>
@@ -169,125 +103,8 @@
 </section>
 
 
-{{-- ================================================================
-     BANNER PROMOCIONAL — Igual que en la vista Welcome
-     ================================================================ --}}
-<section class="grid grid-cols-1 md:grid-cols-2" aria-label="Promociones">
+<x-promo-banner />
 
-    {{-- Banner oscuro con imagen de fondo --}}
-    <div
-        class="relative h-64 flex items-center px-10 overflow-hidden"
-        style="background-image:url('https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=900&q=80'); background-size:cover; background-position:center;"
-    >
-        <div class="absolute inset-0 bg-ink/70"></div>
-        <div class="relative z-10">
-            <p class="amber-tag mb-2 reveal">Oferta especial</p>
-            <h3
-                class="text-3xl font-bold text-cream mb-3 reveal"
-                style="transition-delay:.1s"
-            >
-                2 Cold Brew<br>por el precio de 1
-            </h3>
-            <a
-                href="#carta"
-                class="btn-amber text-xs py-2.5 reveal"
-                style="transition-delay:.2s"
-            >
-                <i class="fa-solid fa-tag mr-1.5" aria-hidden="true"></i>Ver promoción
-            </a>
-        </div>
-    </div>
-
-    {{-- Banner amber sólido — Deal del día --}}
-    <div class="relative h-64 flex items-center px-10 overflow-hidden bg-amber">
-        <div class="absolute -right-10 -bottom-10 w-56 h-56 rounded-full bg-white/10 pointer-events-none" aria-hidden="true"></div>
-        <div class="absolute right-6 top-6 w-28 h-28 rounded-full bg-white/6 pointer-events-none" aria-hidden="true"></div>
-        <div class="relative z-10">
-            <p class="text-white/65 text-[10px] font-semibold uppercase tracking-[.18em] mb-1.5 reveal">Deal del día</p>
-            <h3
-                class="font-display text-3xl font-bold text-white mb-1.5 reveal"
-                style="transition-delay:.1s"
-            >
-                Latte + Croissant
-            </h3>
-            <p class="text-white/75 text-sm mb-3 reveal" style="transition-delay:.15s">
-                Combo perfecto para empezar el día
-            </p>
-            <div class="flex items-baseline gap-2 reveal" style="transition-delay:.2s">
-                <span class="font-bold text-2xl text-white shrink-0">S/ 18</span>
-                <span class="text-white/55 line-through font-bold text-lg shrink-0">S/ 23</span>
-            </div>
-        </div>
-    </div>
-
-</section>
-
-
-{{-- ================================================================
-     CTA FINAL — Información y contacto rápido
-     ================================================================ --}}
-<section class="bg-dark grain relative overflow-hidden py-20 px-6" aria-label="Contacto rápido">
-
-    <div class="absolute top-0 right-0 w-80 h-80 bg-amber/4 rounded-full blur-3xl pointer-events-none" aria-hidden="true"></div>
-    <div class="absolute bottom-0 left-0 w-60 h-60 bg-amber/4 rounded-full blur-2xl pointer-events-none" aria-hidden="true"></div>
-
-    <div class="max-w-3xl mx-auto text-center relative z-10">
-        <p class="amber-tag justify-center mb-5 reveal">Te esperamos</p>
-        <h2
-            class="font-display text-5xl md:text-6xl font-bold text-cream leading-tight mb-5 reveal"
-            style="transition-delay:.1s"
-        >
-            ¿Listo para vivir<br>la <em class="text-amber not-italic">experiencia</em>?
-        </h2>
-        <p
-            class="text-cream/45 text-sm md:text-base mb-10 leading-relaxed reveal"
-            style="transition-delay:.2s"
-        >
-            Visítanos, reserva tu mesa o pídenos por WhatsApp.<br>
-            El mejor café de tu semana está a un clic.
-        </p>
-
-        <div class="flex flex-col sm:flex-row justify-center gap-4 mb-12 reveal" style="transition-delay:.28s">
-            @if (!empty(config('cafe.redes')['whatsapp']))
-            <a
-                href="{{ htmlspecialchars(config('cafe.redes')['whatsapp']) }}"
-                target="_blank"
-                rel="noopener"
-                class="btn-amber"
-            >
-                <i class="fa-brands fa-whatsapp mr-2 text-base" aria-hidden="true"></i>Pedir por WhatsApp
-            </a>
-            @endif
-            <a href="/reserva" class="btn-ghost">
-                <i class="fa-regular fa-calendar-check mr-2" aria-hidden="true"></i>Reservar mesa
-            </a>
-        </div>
-
-        {{-- Info en 3 bloques --}}
-        <div
-            class="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-10 border-t border-border reveal"
-            style="transition-delay:.34s"
-        >
-            <div class="flex flex-col items-center gap-2">
-                <i class="fa-solid fa-location-dot text-amber text-lg" aria-hidden="true"></i>
-                <p class="text-cream/45 text-xs text-center leading-relaxed">{{ config('cafe.direccion') }}</p>
-            </div>
-            <div class="flex flex-col items-center gap-2">
-                <i class="fa-regular fa-clock text-amber text-lg" aria-hidden="true"></i>
-                <p class="text-cream/45 text-xs text-center leading-relaxed">{{ config('cafe.horario') }}</p>
-            </div>
-            <div class="flex flex-col items-center gap-2">
-                <i class="fa-regular fa-envelope text-amber text-lg" aria-hidden="true"></i>
-                <a
-                    href="mailto:{{ config('cafe.email') }}"
-                    class="text-cream/45 text-xs hover:text-amber transition"
-                >
-                    {{ config('cafe.email') }}
-                </a>
-            </div>
-        </div>
-    </div>
-
-</section>
+<x-cta-visitanos />
 
 @endsection

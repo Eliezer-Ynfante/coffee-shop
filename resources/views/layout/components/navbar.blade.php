@@ -5,7 +5,7 @@
     <div class="max-w-7xl mx-auto px-6 lg:px-10 flex items-center justify-between h-16">
 
         <!-- Logo -->
-        <a href="/" class="flex items-center gap-2.5 shrink-0" aria-label="Inicio">
+        <a href="{{ route('welcome') }}" class="flex items-center gap-2.5 shrink-0" aria-label="Inicio">
             <span class="w-9 h-9 rounded-full border border-amber/60 flex items-center justify-center shrink-0">
                 <i class="fa-solid fa-mug-hot text-amber text-sm" aria-hidden="true"></i>
             </span>
@@ -16,19 +16,19 @@
 
         <!-- Links desktop -->
         <div class="hidden md:flex items-center gap-7">
-            <a href="/carta"    class="nav-link">Carta</a>
-            <a href="/galeria"  class="nav-link">Galería</a>
-            <a href="/nosotros" class="nav-link">Sobre Nosotros</a>
-            <a href="/contacto" class="nav-link">Contacto</a>
+            <a href="{{ route('carta') }}"    class="nav-link {{ request()->routeIs('carta') ? 'text-amber' : '' }}">Carta</a>
+            <a href="{{ route('galeria') }}"  class="nav-link {{ request()->routeIs('galeria') ? 'text-amber' : '' }}">Galería</a>
+            <a href="{{ route('nosotros') }}" class="nav-link {{ request()->routeIs('nosotros') ? 'text-amber' : '' }}">Sobre Nosotros</a>
+            <a href="{{ route('contacto') }}" class="nav-link {{ request()->routeIs('contacto') ? 'text-amber' : '' }}">Contacto</a>
         </div>
 
         <!-- Acciones desktop -->
         <div class="hidden md:flex items-center gap-4">
-            <a href="/login" class="nav-link">
+            <a href="{{ route('login') }}" class="nav-link {{ request()->routeIs('login') ? 'text-amber' : '' }}">
                 <i class="fa-regular fa-circle-user mr-1.5" aria-hidden="true"></i>Login
             </a>
 
-            <a href="/reserva" class="btn-amber py-2 px-5 text-xs">Reservar mesa</a>
+            <a href="{{ route('reserva') }}" class="btn-amber py-2 px-5 text-xs">Reservar mesa</a>
         </div>
 
         <!-- Hamburger -->
@@ -40,12 +40,13 @@
 
     <!-- Menú mobile -->
     <div id="mob-menu" class="hidden md:hidden bg-ink/97 border-t border-border px-6 py-5 space-y-3">
-        <a href="/carta"    class="block nav-link py-1.5">Carta</a>
-        <a href="/galeria"  class="block nav-link py-1.5">Galería</a>
-        <a href="/nosotros" class="block nav-link py-1.5">Sobre Nosotros</a>
-        <a href="/contacto" class="block nav-link py-1.5">Contacto</a>
-        <div class="pt-2">
-            <a href="/login" class="btn-ghost block text-center text-xs">Login</a>
+        <a href="{{ route('carta') }}"    class="block nav-link py-1.5 {{ request()->routeIs('carta') ? 'text-amber' : '' }}">Carta</a>
+        <a href="{{ route('galeria') }}"  class="block nav-link py-1.5 {{ request()->routeIs('galeria') ? 'text-amber' : '' }}">Galería</a>
+        <a href="{{ route('nosotros') }}" class="block nav-link py-1.5 {{ request()->routeIs('nosotros') ? 'text-amber' : '' }}">Sobre Nosotros</a>
+        <a href="{{ route('contacto') }}" class="block nav-link py-1.5 {{ request()->routeIs('contacto') ? 'text-amber' : '' }}">Contacto</a>
+        <div class="pt-2 space-y-2">
+            <a href="{{ route('reserva') }}" class="btn-amber block text-center text-xs py-2">Reservar mesa</a>
+            <a href="{{ route('login') }}" class="btn-ghost block text-center text-xs">Login</a>
         </div>
     </div>
 </nav>

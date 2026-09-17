@@ -18,38 +18,19 @@
                 <p class="text-muted text-sm leading-relaxed max-w-xs mb-5">
                     Café de especialidad tostado con amor en Lima, directo del campo peruano a tu taza.
                 </p>
-                <div class="flex gap-2.5">
-                    @if (!empty(config('cafe.redes')['instagram']))
-                    <a href="{{ config('cafe.redes')['instagram'] }}" target="_blank" rel="noopener" class="soc" aria-label="Instagram">
-                        <i class="fa-brands fa-instagram" aria-hidden="true"></i>
-                    </a>
-                    @endif
-                    @if (!empty(config('cafe.redes')['facebook']))
-                    <a href="{{ config('cafe.redes')['facebook'] }}" target="_blank" rel="noopener" class="soc" aria-label="Facebook">
-                        <i class="fa-brands fa-facebook-f" aria-hidden="true"></i>
-                    </a>
-                    @endif
-                    @if (!empty(config('cafe.redes')['tiktok']))
-                    <a href="{{ config('cafe.redes')['tiktok'] }}" target="_blank" rel="noopener" class="soc" aria-label="TikTok">
-                        <i class="fa-brands fa-tiktok" aria-hidden="true"></i>
-                    </a>
-                    @endif
-                    @if (!empty(config('cafe.redes')['whatsapp']))
-                    <a href="{{ config('cafe.redes')['whatsapp'] }}" target="_blank" rel="noopener" class="soc" aria-label="WhatsApp">
-                        <i class="fa-brands fa-whatsapp" aria-hidden="true"></i>
-                    </a>
-                    @endif
-                </div>
+                <x-social-links />
             </div>
 
             <!-- Navegación -->
             <div>
                 <h4 class="text-cream text-[10px] font-semibold uppercase tracking-[.16em] mb-4">Navegación</h4>
                 <ul class="space-y-2 text-sm text-muted">
-                    <li><a href="/nosotros" class="hover:text-amber transition">Sobre Nosotros</a></li>
-                    <li><a href="/carta"    class="hover:text-amber transition">Menú</a></li>
-                    <li><a href="/galeria"  class="hover:text-amber transition">Galería</a></li>
-                    <li><a href="/reserva"  class="hover:text-amber transition">Reservas</a></li>
+                    <li><a href="{{ route('welcome') }}"  class="hover:text-amber transition">Inicio</a></li>
+                    <li><a href="{{ route('nosotros') }}" class="hover:text-amber transition">Sobre Nosotros</a></li>
+                    <li><a href="{{ route('carta') }}"    class="hover:text-amber transition">Menú</a></li>
+                    <li><a href="{{ route('galeria') }}"  class="hover:text-amber transition">Galería</a></li>
+                    <li><a href="{{ route('reserva') }}"  class="hover:text-amber transition">Reservas</a></li>
+                    <li><a href="{{ route('contacto') }}" class="hover:text-amber transition">Contacto</a></li>
                 </ul>
             </div>
 

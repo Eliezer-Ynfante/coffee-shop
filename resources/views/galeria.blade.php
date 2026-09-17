@@ -5,41 +5,14 @@
 {{-- ================================================================
      HERO — Cabecera interior de la página Galería
      ================================================================ --}}
-<section
-    class="galeria-hero relative flex items-center overflow-hidden grain"
-    aria-label="Cabecera de la galería"
->
-    {{-- Fondo negro base --}}
-    <div class="absolute inset-0 bg-ink"></div>
-
-    {{-- Imagen de fondo (hero tostaduría/café) --}}
-    <div
-        class="absolute inset-0 galeria-hero-bg"
-        style="background-image:url('https://images.unsplash.com/photo-1442512595331-e89e73853f31?w=1400&q=85'); opacity:.45"
-    ></div>
-
-    {{-- Gradientes de composición --}}
-    <div class="absolute inset-0 bg-linear-to-r from-ink via-ink/85 to-ink/35"></div>
-    <div class="absolute inset-0 bg-linear-to-t from-ink/70 via-transparent to-ink/50"></div>
-
-    <div class="relative z-10 max-w-7xl mx-auto px-6 lg:px-10 w-full pt-40 pb-28">
-        <p class="amber-tag mb-5 reveal">Momentos & Experiencia</p>
-
-        <h1
-            class="font-display text-cream font-bold leading-tight mb-4 reveal"
-            style="font-size:clamp(2.8rem,7vw,5.2rem); transition-delay:.1s"
-        >
-            Nuestra <em class="text-amber not-italic">Galería</em>
-        </h1>
-
-        <p
-            class="text-cream/55 text-sm md:text-base leading-relaxed max-w-lg reveal"
-            style="transition-delay:.2s"
-        >
-            Un recorrido visual por nuestros métodos de extracción, arte latte, espacios acogedores y la pasión que ponemos en cada grano de café.
-        </p>
-    </div>
-</section>
+<x-hero-section
+    heroClass="galeria-hero"
+    bgImage="https://images.unsplash.com/photo-1442512595331-e89e73853f31?w=1400&q=85"
+    subtag="Momentos & Experiencia"
+    title="Nuestra "
+    highlight="Galería"
+    description="Un recorrido visual por nuestros métodos de extracción, arte latte, espacios acogedores y la pasión que ponemos en cada grano de café."
+/>
 
 
 {{-- ================================================================
@@ -177,7 +150,7 @@
             </div>
 
             <a
-                href="/carta"
+                href="{{ route('carta') }}"
                 class="btn-amber text-xs py-2.5 px-5 shrink-0"
             >
                 <i class="fa-solid fa-book-open-reader mr-2" aria-hidden="true"></i>Ver en Carta
@@ -215,7 +188,7 @@
             </a>
             @endif
 
-            <a href="/reserva" class="btn-ghost">
+            <a href="{{ route('reserva') }}" class="btn-ghost">
                 <i class="fa-regular fa-calendar-check mr-2" aria-hidden="true"></i>Reservar una mesa
             </a>
         </div>

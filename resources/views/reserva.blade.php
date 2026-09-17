@@ -5,41 +5,14 @@
 {{-- ================================================================
      HERO — Cabecera interior de la página Reservas
      ================================================================ --}}
-<section
-    class="reserva-hero relative flex items-center overflow-hidden grain"
-    aria-label="Cabecera de reservas"
->
-    {{-- Fondo negro base --}}
-    <div class="absolute inset-0 bg-ink"></div>
-
-    {{-- Imagen de fondo ambiental --}}
-    <div
-        class="absolute inset-0 reserva-hero-bg"
-        style="background-image:url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1400&q=85'); opacity:.42"
-    ></div>
-
-    {{-- Gradientes en capas --}}
-    <div class="absolute inset-0 bg-linear-to-r from-ink via-ink/85 to-ink/35"></div>
-    <div class="absolute inset-0 bg-linear-to-t from-ink/70 via-transparent to-ink/50"></div>
-
-    <div class="relative z-10 max-w-7xl mx-auto px-6 lg:px-10 w-full pt-40 pb-28">
-        <p class="amber-tag mb-5 reveal">Tu Espacio Reservado</p>
-
-        <h1
-            class="font-display text-cream font-bold leading-tight mb-4 reveal max-w-3xl"
-            style="font-size:clamp(2.6rem,6.5vw,4.8rem); transition-delay:.1s"
-        >
-            Reserva tu <em class="text-amber not-italic">Experiencia</em>
-        </h1>
-
-        <p
-            class="text-cream/55 text-sm md:text-base leading-relaxed max-w-xl reveal"
-            style="transition-delay:.2s"
-        >
-            Explora nuestra maqueta 3D interactiva, elige tu mesa favorita y asegura tu lugar en nuestra cafetería de especialidad.
-        </p>
-    </div>
-</section>
+<x-hero-section
+    heroClass="reserva-hero"
+    bgImage="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1400&q=85"
+    subtag="Tu Espacio Reservado"
+    title="Reserva tu "
+    highlight="Experiencia"
+    description="Explora nuestra maqueta 3D interactiva, elige tu mesa favorita y asegura tu lugar en nuestra cafetería de especialidad."
+/>
 
 
 {{-- ================================================================
@@ -518,7 +491,8 @@
                 </div>
 
                 {{-- Formulario --}}
-                <form id="reserva-form" class="space-y-6">
+                <form id="reserva-form" action="{{ route('reserva.store') }}" method="POST" class="space-y-6">
+                    @csrf
                     {{-- Campos Ocultos sincronizados con la Maqueta 3D --}}
                     <input type="hidden" id="reserva-mesa-id" name="mesa_id" value="S1">
                     <input type="hidden" id="reserva-mesa-nombre" name="mesa_nombre" value="Mesa Central S1">
@@ -708,7 +682,7 @@
                         </div>
                         <div class="bg-surface/60 p-3 rounded-lg border border-border/60">
                             <span class="text-muted block mb-0.5">Hora</span>
-                            <span id="voucher-time" class="font-medium text-amber block text-sm font-semibold">05:00 PM</span>
+                            <span id="voucher-time" class="font-semibold text-amber block text-sm">05:00 PM</span>
                         </div>
                     </div>
 

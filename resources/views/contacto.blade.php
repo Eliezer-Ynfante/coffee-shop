@@ -5,41 +5,14 @@
 {{-- ================================================================
      HERO — Cabecera interior de la página Contacto
      ================================================================ --}}
-<section
-    class="contacto-hero relative flex items-center overflow-hidden grain"
-    aria-label="Cabecera de contacto"
->
-    {{-- Fondo negro base --}}
-    <div class="absolute inset-0 bg-ink"></div>
-
-    {{-- Imagen de fondo --}}
-    <div
-        class="absolute inset-0 contacto-hero-bg"
-        style="background-image:url('https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=1400&q=85'); opacity:.45"
-    ></div>
-
-    {{-- Gradientes de composición --}}
-    <div class="absolute inset-0 bg-linear-to-r from-ink via-ink/85 to-ink/35"></div>
-    <div class="absolute inset-0 bg-linear-to-t from-ink/70 via-transparent to-ink/50"></div>
-
-    <div class="relative z-10 max-w-7xl mx-auto px-6 lg:px-10 w-full pt-40 pb-28">
-        <p class="amber-tag mb-5 reveal">Estamos para Atenderte</p>
-
-        <h1
-            class="font-display text-cream font-bold leading-tight mb-4 reveal max-w-3xl"
-            style="font-size:clamp(2.6rem,6.5vw,4.8rem); transition-delay:.1s"
-        >
-            Ponte en <em class="text-amber not-italic">Contacto</em> con Nosotros
-        </h1>
-
-        <p
-            class="text-cream/55 text-sm md:text-base leading-relaxed max-w-xl reveal"
-            style="transition-delay:.2s"
-        >
-            Escríbenos para consultas, eventos privados, compras corporativas o simplemente para conversar sobre buen café.
-        </p>
-    </div>
-</section>
+<x-hero-section
+    heroClass="contacto-hero"
+    bgImage="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=1400&q=85"
+    subtag="Estamos para Atenderte"
+    title="Ponte en "
+    highlight="Contacto con Nosotros"
+    description="Escríbenos para consultas, eventos privados, compras corporativas o simplemente para conversar sobre buen café."
+/>
 
 
 {{-- ================================================================
@@ -128,28 +101,7 @@
             {{-- Redes Sociales --}}
             <div class="pt-4 border-t border-border">
                 <p class="text-xs font-semibold uppercase tracking-wider text-cream/60 mb-3">Síguenos en redes sociales</p>
-                <div class="flex gap-3">
-                    @if (!empty(config('cafe.redes')['instagram']))
-                    <a href="{{ config('cafe.redes')['instagram'] }}" target="_blank" rel="noopener" class="soc" aria-label="Instagram">
-                        <i class="fa-brands fa-instagram" aria-hidden="true"></i>
-                    </a>
-                    @endif
-                    @if (!empty(config('cafe.redes')['facebook']))
-                    <a href="{{ config('cafe.redes')['facebook'] }}" target="_blank" rel="noopener" class="soc" aria-label="Facebook">
-                        <i class="fa-brands fa-facebook-f" aria-hidden="true"></i>
-                    </a>
-                    @endif
-                    @if (!empty(config('cafe.redes')['tiktok']))
-                    <a href="{{ config('cafe.redes')['tiktok'] }}" target="_blank" rel="noopener" class="soc" aria-label="TikTok">
-                        <i class="fa-brands fa-tiktok" aria-hidden="true"></i>
-                    </a>
-                    @endif
-                    @if (!empty(config('cafe.redes')['whatsapp']))
-                    <a href="{{ config('cafe.redes')['whatsapp'] }}" target="_blank" rel="noopener" class="soc" aria-label="WhatsApp">
-                        <i class="fa-brands fa-whatsapp" aria-hidden="true"></i>
-                    </a>
-                    @endif
-                </div>
+                <x-social-links class="flex gap-3" />
             </div>
         </div>
 
@@ -166,7 +118,8 @@
                 </div>
 
                 {{-- Formulario --}}
-                <form id="contacto-form" class="space-y-6">
+                <form id="contacto-form" action="{{ route('contacto.store') }}" method="POST" class="space-y-6">
+                    @csrf
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                         {{-- Nombre completo --}}
                         <div>
@@ -402,10 +355,10 @@
         </p>
 
         <div class="flex flex-wrap justify-center gap-4 reveal" style="transition-delay:.28s">
-            <a href="/reserva" class="btn-amber">
+            <a href="{{ route('reserva') }}" class="btn-amber">
                 <i class="fa-regular fa-calendar-check mr-2" aria-hidden="true"></i>Reservar Mesa
             </a>
-            <a href="/carta" class="btn-ghost">
+            <a href="{{ route('carta') }}" class="btn-ghost">
                 <i class="fa-solid fa-book-open-reader mr-2" aria-hidden="true"></i>Ver Nuestra Carta
             </a>
         </div>

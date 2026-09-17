@@ -41,7 +41,7 @@
         </div>
 
         {{-- Formulario de Login --}}
-        <form action="/login" method="POST" class="space-y-6">
+        <form action="{{ route('login.post') }}" method="POST" class="space-y-6">
             @csrf
 
             {{-- Campo: Correo Electrónico --}}
@@ -102,7 +102,7 @@
                 </label>
 
                 <a
-                    href="/contacto"
+                    href="{{ route('contacto') }}"
                     class="text-amber hover:text-gold transition font-medium hover:underline"
                     title="Contáctanos si necesitas asistencia"
                 >
