@@ -1,43 +1,27 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ContactoController;
+use App\Http\Controllers\ReservaController;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// Vistas estáticas públicas
+Route::view('/', 'welcome')->name('welcome');
+Route::view('/nosotros', 'nosotros')->name('nosotros');
+Route::view('/carta', 'carta')->name('carta');
+Route::view('/galeria', 'galeria')->name('galeria');
 
-Route::get('/nosotros', function () {
-    return view('nosotros');
-});
+// Reservas
+Route::get('/reserva', [ReservaController::class, 'index'])->name('reserva');
+Route::post('/reserva', [ReservaController::class, 'store'])->name('reserva.store');
 
-Route::get('/carta', function () {
-    return view('carta');
-});
+// Contacto
+Route::get('/contacto', [ContactoController::class, 'index'])->name('contacto');
+Route::post('/contacto', [ContactoController::class, 'store'])->name('contacto.store');
 
-Route::get('/reserva', function () {
-    return view('reserva');
-})->name('reserva');
-
-Route::post('/reserva', function () {
-    return back()->with('status', 'Reserva procesada.');
-})->name('reserva.post');
-
-
-Route::get('/galeria', function () {
-    return view('galeria');
-});
-
-Route::get('/contacto', function () {
-    return view('contacto');
-});
-
-Route::get('/login', function () {
-    return view('auth.login');
-})->name('login');
-
+// Autenticación / Portal
+Route::view('/login', 'auth.login')->name('login');
 Route::post('/login', function () {
-    // Procesamiento o redirección de login
-    return back()->with('status', 'Credenciales recibidas.');
+    return back()->with('status', 'Portal en modo demostración.');
 })->name('login.post');
 
 
