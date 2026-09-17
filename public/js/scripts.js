@@ -229,8 +229,20 @@ const ContactoModule = (() => {
         if (contactForm && formSuccess) {
             contactForm.addEventListener('submit', e => {
                 e.preventDefault();
-                contactForm.classList.add('hidden');
-                formSuccess.classList.remove('hidden');
+                const formData = new FormData(contactForm);
+                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+                fetch(contactForm.action || '/contacto', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        ...(csrfToken ? { 'X-CSRF-TOKEN': csrfToken } : {})
+                    }
+                }).catch(() => {}).finally(() => {
+                    contactForm.classList.add('hidden');
+                    formSuccess.classList.remove('hidden');
+                });
             });
         }
     }
@@ -405,6 +417,18 @@ const ReservaModule = (() => {
         if (form && successCard && formCard) {
             form.addEventListener('submit', (e) => {
                 e.preventDefault();
+
+                // Envío asíncrono al endpoint backend de Laravel
+                const formData = new FormData(form);
+                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                fetch(form.action || '/reserva', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        ...(csrfToken ? { 'X-CSRF-TOKEN': csrfToken } : {})
+                    }
+                }).catch(() => {});
 
                 const nombre   = document.getElementById('reserva-nombre')?.value || 'Invitado';
                 const fecha    = document.getElementById('reserva-fecha')?.value || '';
