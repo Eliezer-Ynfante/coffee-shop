@@ -35,11 +35,14 @@
             </p>
 
             <div class="flex flex-wrap gap-3 reveal" style="transition-delay:.3s">
-                <a href="#carta"    class="btn-amber">
+                <a href="{{ route('carta') }}" class="btn-amber">
                     <i class="fa-solid fa-book-open-reader mr-2" aria-hidden="true"></i>Ver Menú
                 </a>
-                <a href="#nosotros" class="btn-ghost">
-                    <i class="fa-solid fa-circle-info mr-2" aria-hidden="true"></i>Más info
+                <a href="{{ route('reserva') }}" class="btn-amber bg-amber/80 hover:bg-amber">
+                    <i class="fa-regular fa-calendar-check mr-2" aria-hidden="true"></i>Reservar Mesa
+                </a>
+                <a href="{{ route('nosotros') }}" class="btn-ghost">
+                    <i class="fa-solid fa-circle-info mr-2" aria-hidden="true"></i>Sobre Nosotros
                 </a>
             </div>
         </div>
@@ -163,6 +166,11 @@
                 <button type="submit" class="btn-amber w-full text-center mt-1">
                     <i class="fa-solid fa-paper-plane mr-2" aria-hidden="true"></i>Enviar reserva
                 </button>
+                <div class="text-center mt-3 pt-3 border-t border-border/60">
+                    <a href="{{ route('reserva') }}" class="text-xs text-cream/70 hover:text-amber transition inline-flex items-center gap-1.5">
+                        <i class="fa-solid fa-cube text-amber"></i> ¿Deseas elegir tu mesa exacta en el plano 3D? <span class="text-amber underline">Ver maqueta 3D</span>
+                    </a>
+                </div>
             </form>
         </div>
     </div>
@@ -227,7 +235,7 @@
         </div>
 
         <div class="text-center mt-14 reveal">
-            <a href="#carta" class="btn-ghost">
+            <a href="{{ route('carta') }}" class="btn-ghost">
                 <i class="fa-solid fa-utensils mr-2" aria-hidden="true"></i>Ver carta completa
             </a>
         </div>
@@ -252,6 +260,12 @@
             @foreach (config('cafe.productos') as $i => $prod)
             <x-product-card :producto="$prod" :index="$i" />
             @endforeach
+        </div>
+
+        <div class="text-center mt-12 reveal">
+            <a href="{{ route('galeria') }}" class="btn-ghost">
+                <i class="fa-solid fa-images mr-2" aria-hidden="true"></i>Explorar Galería Completa
+            </a>
         </div>
     </div>
 </section>
