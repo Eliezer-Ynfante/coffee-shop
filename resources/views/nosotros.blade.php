@@ -7,7 +7,6 @@
      ================================================================ --}}
 <x-hero-section
     heroClass="nosotros-hero"
-    bgImage="https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=1400&q=85"
     subtag="Nuestra Historia & Esencia"
     title="Honramos la raíz y cuidamos cada "
     highlight="grano"

@@ -7,7 +7,6 @@
      ================================================================ --}}
 <x-hero-section
     heroClass="reserva-hero"
-    bgImage="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1400&q=85"
     subtag="Tu Espacio Reservado"
     title="Reserva tu "
     highlight="Experiencia"

@@ -7,7 +7,6 @@
      ================================================================ --}}
 <x-hero-section
     heroClass="galeria-hero"
-    bgImage="https://images.unsplash.com/photo-1442512595331-e89e73853f31?w=1400&q=85"
     subtag="Momentos & Experiencia"
     title="Nuestra "
     highlight="Galería"

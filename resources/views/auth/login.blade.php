@@ -36,7 +36,7 @@
                 Iniciar <em class="text-amber not-italic">Sesión</em>
             </h1>
             <p class="text-muted text-xs sm:text-sm mt-2 leading-relaxed max-w-xs mx-auto">
-                Ingresa tus credenciales para acceder al sistema de gestión de {{ config('cafe.nombre') ?? 'Raíz & Grano' }}.
+                Ingresa tus credenciales para acceder
             </p>
         </div>
 
@@ -124,10 +124,10 @@
         <div class="mt-8 pt-6 border-t border-border/80 text-center">
             <p class="text-[11px] text-muted flex items-center justify-center gap-1.5 leading-relaxed">
                 <i class="fa-solid fa-shield-halved text-amber text-xs" aria-hidden="true"></i>
-                <span>Acceso seguro protegido para usuarios y personal autorizado.</span>
+                <span>Acceso seguro</span>
             </p>
         </div>
     </div>
 </section>
 
-@endsection
+@endsection

@@ -5,7 +5,6 @@
 
 <x-hero-section
     heroClass="carta-hero"
-    :bgImage="config('cafe.hero_img')"
     :subtag="config('cafe.subtag')"
     title="Nuestra "
     highlight="Carta"

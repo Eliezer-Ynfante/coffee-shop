@@ -7,7 +7,6 @@
      ================================================================ --}}
 <x-hero-section
     heroClass="contacto-hero"
-    bgImage="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=1400&q=85"
     subtag="Estamos para Atenderte"
     title="Ponte en "
     highlight="Contacto con Nosotros"
