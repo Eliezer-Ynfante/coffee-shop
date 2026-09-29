@@ -6,14 +6,11 @@
     class="login-section grain"
     aria-label="Iniciar Sesión"
 >
-    {{-- Fondo negro base --}}
+    {{-- Fondo base --}}
     <div class="absolute inset-0 bg-ink"></div>
 
-    {{-- Imagen de fondo ambiental --}}
-    <div
-        class="absolute inset-0 login-bg"
-        style="background-image:url('https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=1400&q=85'); opacity:.32"
-    ></div>
+    {{-- Fondo sólido con degradado cálido del tema (sin imagen pesada externa) --}}
+    <div class="absolute inset-0" style="background: linear-gradient(135deg, #0A0704 0%, #1A120A 35%, #2E1F10 65%, rgba(200,120,58,0.18) 100%);"></div>
 
     {{-- Gradientes en capas --}}
     <div class="absolute inset-0 bg-linear-to-t from-ink via-ink/80 to-ink/60"></div>
@@ -36,9 +33,29 @@
                 Iniciar <em class="text-amber not-italic">Sesión</em>
             </h1>
             <p class="text-muted text-xs sm:text-sm mt-2 leading-relaxed max-w-xs mx-auto">
-                Ingresa tus credenciales para acceder
+                Ingresa tus credenciales para acceder al panel
             </p>
         </div>
+
+        {{-- Alertas de Estado o Errores --}}
+        @if (session('status'))
+        <div class="mb-6 p-3.5 rounded-lg bg-amber/15 border border-amber/40 text-cream text-xs flex items-center gap-2.5">
+            <i class="fa-solid fa-circle-info text-amber"></i>
+            <span>{{ session('status') }}</span>
+        </div>
+        @endif
+
+        @if (isset($errors) && $errors->any())
+        <div class="mb-6 p-3.5 rounded-lg bg-red-950/60 border border-red-500/40 text-red-200 text-xs space-y-1">
+            <div class="flex items-center gap-2 font-medium text-red-400 mb-1">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                <span>No fue posible iniciar sesión:</span>
+            </div>
+            @foreach ($errors->all() as $error)
+            <p class="pl-5 text-[11px]">• {{ $error }}</p>
+            @endforeach
+        </div>
+        @endif
 
         {{-- Formulario de Login --}}
         <form action="{{ route('login.post') }}" method="POST" class="space-y-6">
@@ -55,7 +72,8 @@
                         type="email"
                         name="email"
                         class="f-input"
-                        placeholder="ejemplo@raizygrano.pe"
+                        placeholder="test@example.com"
+                        value="{{ old('email') }}"
                         required
                         autofocus
                         autocomplete="email"
