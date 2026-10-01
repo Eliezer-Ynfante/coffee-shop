@@ -1,25 +1,3 @@
-tailwind.config = {
-    theme: {
-        extend: {
-            colors: {
-                ink:     '#0A0704',
-                dark:    '#110D08',
-                surface: '#1A120A',
-                card:    '#221608',
-                amber:   '#C8783A',
-                gold:    '#D4A017',
-                cream:   '#F0E6D0',
-                muted:   '#7A6550',
-                border:  '#2E1F10',
-            },
-            fontFamily: {
-                display: ['"Cormorant Garant"', 'Georgia', 'serif'],
-                body:    ['"Outfit"', 'sans-serif'],
-            },
-        }
-    }
-}
-
 /* ── Navbar al hacer scroll ──────────────────────────────── */
 const navbar = document.getElementById('navbar');
 if (navbar) {
