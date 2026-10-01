@@ -19,19 +19,19 @@
     <div class="relative z-10 max-w-7xl mx-auto px-6 lg:px-10 w-full pt-28 pb-20">
         <div class="max-w-130">
 
-            <p class="amber-tag mb-6 reveal">{{config('cafe.subtag')}}</p>
+            <p class="amber-tag mb-6 reveal">{{ setting('subtag') }}</p>
 
-            <h1 class="font-display leading-[1.05] mb-3 reveal" style="transition-delay:.1s">
+            <h1 class="font-display leading-[1.05] mb-3">
                 <span class="block text-cream/70 text-3xl md:text-4xl font-normal italic">
-                    {{config('cafe.slogan')}}
+                    {{ setting('slogan') }}
                 </span>
                 <span class="block text-cream text-[clamp(3.5rem,8vw,6rem)] font-bold uppercase tracking-tight">
-                    {{ strtoupper(config('cafe.titulo')) }}
+                    {{ strtoupper(setting('titulo')) }}
                 </span>
             </h1>
 
             <p class="text-cream/50 text-sm md:text-base leading-relaxed max-w-sm mb-10 reveal" style="transition-delay:.2s">
-                {{config('cafe.subtitulo')}}
+                {{ setting('subtitulo') }}
             </p>
 
             <div class="flex flex-wrap gap-3 reveal" style="transition-delay:.3s">
@@ -57,7 +57,7 @@
 <section class="bg-surface border-y border-border py-14 px-6" aria-label="Ventajas">
     <div class="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8">
         @foreach (config('cafe.features') as $i => $f)
-        <div class="feat-item pt-5 reveal" style="transition-delay:{{$i * .08 }}s">
+        <div class="feat-item pt-5 reveal" @style(['transition-delay: ' . ($i * 0.08) . 's'])>
             <div class="feat-icon">
                 <i class="{{$f['icono']}}" aria-hidden="true"></i>
             </div>
@@ -100,6 +100,7 @@
                     alt="Interior de {{config('cafe.nombre')}}"
                     class="w-full h-60 object-cover"
                     loading="lazy"
+                    decoding="async"
                 >
                 <div class="absolute inset-0 bg-linear-to-t from-ink/80 to-transparent"></div>
                 <div class="absolute bottom-4 left-0 right-0 flex justify-around px-4">
@@ -193,8 +194,8 @@
 
         <!-- Dos columnas de categorías -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-16">
-            @foreach (config('cafe.menu_categorias') as $ci => $cat)
-            <div class="reveal" style="transition-delay:{{$ci * .13 }}s">
+            @foreach ($menuCategorias ?? config('cafe.menu_categorias') as $ci => $cat)
+            <div class="reveal" @style(['transition-delay: ' . ($ci * 0.13) . 's'])>
 
                 <!-- Encabezado de categoría con imagen circular -->
                 <div class="flex items-center gap-4 mb-6 pb-4 border-b border-amber/20">
@@ -204,6 +205,7 @@
                             alt="{{$cat['nombre']}}"
                             class="w-full h-full object-cover"
                             loading="lazy"
+                            decoding="async"
                         >
                     </div>
                     <h3 class="font-display text-2xl font-semibold text-amber uppercase tracking-wide">
@@ -257,7 +259,7 @@
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-7">
-            @foreach (config('cafe.productos') as $i => $prod)
+            @foreach ($productosDestacados ?? config('cafe.productos') as $i => $prod)
             <x-product-card :producto="$prod" :index="$i" />
             @endforeach
         </div>

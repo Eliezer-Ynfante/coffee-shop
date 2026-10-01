@@ -22,7 +22,7 @@
 
         {{-- Filtros de categoría --}}
         <div class="flex flex-wrap items-center justify-center gap-3 mb-14 reveal">
-            @foreach (config('cafe.galeria_categorias') as $cat)
+            @foreach ($galeriaCategorias ?? config('cafe.galeria_categorias') as $cat)
             <button
                 type="button"
                 class="filter-btn {{ $cat['id'] === 'todos' ? 'active' : '' }}"
@@ -35,7 +35,7 @@
 
         {{-- Grid de fotografías --}}
         <div id="galeria-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7">
-            @foreach (config('cafe.galeria') as $i => $item)
+            @foreach ($galeria ?? config('cafe.galeria') as $i => $item)
             <article
                 class="galeria-card reveal flex flex-col"
                 data-category="{{ $item['categoria'] }}"
@@ -43,7 +43,7 @@
                 data-title="{{ $item['titulo'] }}"
                 data-desc="{{ $item['descripcion'] }}"
                 data-badge="{{ $item['badge'] }}"
-                style="transition-delay:{{ ($i % 3) * .12 }}s"
+                @style(['transition-delay: ' . (($i % 3) * 0.12) . 's'])
             >
                 {{-- Contenedor de imagen --}}
                 <div class="relative h-72 sm:h-80 overflow-hidden">
@@ -52,6 +52,7 @@
                         alt="{{ $item['titulo'] }}"
                         class="galeria-card-img w-full h-full object-cover"
                         loading="lazy"
+                        decoding="async"
                     >
 
                     {{-- Overlay con gradiente permanente y realce al hover --}}

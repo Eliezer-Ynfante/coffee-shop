@@ -137,7 +137,7 @@
                         <div class="w-full bg-surface rounded-full h-2 overflow-hidden border border-border">
                             <div
                                 class="bg-linear-to-r from-amber to-gold h-full transition-all duration-500"
-                                style="width: {{ $currentStep === 1 ? '25%' : ($currentStep === 2 ? '50%' : ($currentStep === 3 ? '75%' : '100%')) }}"
+                                @style(['width: ' . ($currentStep === 1 ? '25%' : ($currentStep === 2 ? '50%' : ($currentStep === 3 ? '75%' : '100%')))])
                             ></div>
                         </div>
                     </div>

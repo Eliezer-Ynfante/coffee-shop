@@ -18,7 +18,7 @@
     {{-- Imagen de fondo (solo cuando se proporciona explícitamente) --}}
     <div
         class="absolute inset-0"
-        style="background-image:url('{{ $bgImage }}'); background-size:cover; background-position:center; background-attachment:fixed; opacity:.45"
+        @style(["background-image: url('{$bgImage}'); background-size: cover; background-position: center; background-attachment: fixed; opacity: .45"])
     ></div>
     {{-- Gradientes de composición sobre imagen --}}
     <div class="absolute inset-0 bg-linear-to-r from-ink via-ink/85 to-ink/35"></div>
@@ -36,8 +36,8 @@
         @endif
 
         <h1
-            class="font-display text-cream font-bold leading-tight mb-4 reveal max-w-3xl"
-            style="font-size:clamp(2.6rem,6.5vw,4.8rem); transition-delay:.1s"
+            class="font-display text-cream font-bold leading-tight mb-4 max-w-3xl"
+            style="font-size:clamp(2.6rem,6.5vw,4.8rem)"
         >
             {{ $title }}
             @if ($highlight)

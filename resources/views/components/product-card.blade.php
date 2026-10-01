@@ -1,12 +1,13 @@
 @props(['producto', 'index' => 0])
 
-<article class="prod-card menu-card bg-card border border-border rounded-lg overflow-hidden flex flex-col reveal" style="transition-delay:{{ $index * .11 }}s">
+<article class="prod-card menu-card bg-card border border-border rounded-lg overflow-hidden flex flex-col reveal" @style(['transition-delay: ' . ($index * 0.11) . 's'])>
     <div class="overflow-hidden relative h-60">
         <img
             src="{{ $producto['imagen'] }}"
             alt="{{ $producto['nombre'] }}"
             class="prod-img menu-card-img w-full h-full object-cover"
             loading="lazy"
+            decoding="async"
         >
         <div class="absolute inset-0 bg-linear-to-t from-ink/55 to-transparent"></div>
 

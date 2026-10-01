@@ -56,8 +56,8 @@
 
         {{-- Dos columnas de categorías --}}
         <div class="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-16">
-            @foreach (config('cafe.menu_categorias') as $ci => $cat)
-            <div class="reveal" style="transition-delay:{{ $ci * .13 }}s">
+            @foreach ($menuCategorias ?? config('cafe.menu_categorias') as $ci => $cat)
+            <div class="reveal" @style(['transition-delay: ' . ($ci * 0.13) . 's'])>
 
                 {{-- Encabezado de categoría con imagen circular --}}
                 <div class="flex items-center gap-4 mb-6 pb-4 border-b border-amber/20">
@@ -67,6 +67,7 @@
                             alt="{{ $cat['nombre'] }}"
                             class="w-full h-full object-cover"
                             loading="lazy"
+                            decoding="async"
                         >
                     </div>
                     <h3 class="font-display text-2xl font-semibold text-amber uppercase tracking-wide">

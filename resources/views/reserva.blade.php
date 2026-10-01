@@ -110,7 +110,7 @@
                     data-zone-name="Barra de Especialidad"
                     data-capacity="1"
                     data-state="{{ $isOcc ? 'ocupada' : 'disponible' }}"
-                    style="left: {{ $leftPos }}%; top: 20%; width: 38px; height: 38px; border-radius: 50%;"
+                    @style(["left: {$leftPos}%; top: 20%; width: 38px; height: 38px; border-radius: 50%;"])
                 >
                     <i class="fa-solid fa-chair text-[11px] text-amber mb-0.5" aria-hidden="true"></i>
                     <span class="text-[8px] font-bold text-cream font-mono">{{ $tabId }}</span>
@@ -430,7 +430,7 @@
                     data-zone-name="Rincón Coworking"
                     data-capacity="1"
                     data-state="{{ $cw['occ'] ? 'ocupada' : 'disponible' }}"
-                    style="left: {{ $cw['left'] }}%; top: 74%; width: 46px; height: 44px; z-index: 40; pointer-events: auto;"
+                    @style(["left: {$cw['left']}%; top: 74%; width: 46px; height: 44px; z-index: 40; pointer-events: auto;"])
                 >
                     <i class="fa-solid fa-laptop text-[11px] text-amber mb-0.5" aria-hidden="true"></i>
                     <span class="text-[9px] font-bold text-cream font-mono">{{ $cw['id'] }}</span>
@@ -738,7 +738,7 @@
                         data-zone="{{ $z['id'] }}"
                     >
                         <div class="w-16 h-16 rounded-lg overflow-hidden shrink-0 relative">
-                            <img src="{{ $z['imagen'] }}" alt="{{ $z['nombre'] }}" class="w-full h-full object-cover">
+                            <img src="{{ $z['imagen'] }}" alt="{{ $z['nombre'] }}" class="w-full h-full object-cover" loading="lazy" decoding="async">
                             <div class="absolute inset-0 bg-ink/30"></div>
                         </div>
                         <div class="flex-1 min-w-0">

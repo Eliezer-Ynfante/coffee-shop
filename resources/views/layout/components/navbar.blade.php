@@ -10,7 +10,7 @@
                 <i class="fa-solid fa-mug-hot text-amber text-sm" aria-hidden="true"></i>
             </span>
             <span class="font-display text-lg font-semibold text-cream tracking-wide">
-                {{ config('cafe.nombre') ?? 'Raíz & Grano' }}
+                {{ setting('nombre', config('cafe.nombre', 'Raíz & Grano')) }}
             </span>
         </a>
 

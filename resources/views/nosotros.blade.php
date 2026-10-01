@@ -63,6 +63,7 @@
                         alt="Proceso de tueste y granos en {{ config('cafe.nombre') }}"
                         class="w-full h-full object-cover"
                         loading="lazy"
+                        decoding="async"
                     >
                     <div class="absolute inset-0 bg-linear-to-t from-ink/70 via-transparent to-transparent"></div>
                     <span class="badge absolute top-3 right-3">Comercio Directo</span>
@@ -105,7 +106,7 @@
             @foreach (config('cafe.pilares') as $i => $pilar)
             <div
                 class="pilar-card flex flex-col reveal"
-                style="transition-delay:{{ $i * .1 }}s"
+                @style(['transition-delay: ' . ($i * 0.1) . 's'])
             >
                 <div class="pilar-icon-box">
                     <i class="{{ $pilar['icono'] }}" aria-hidden="true"></i>
@@ -144,7 +145,7 @@
             @foreach (config('cafe.proceso_cafe') as $pi => $proc)
             <article
                 class="process-card flex flex-col reveal"
-                style="transition-delay:{{ $pi * .12 }}s"
+                @style(['transition-delay: ' . ($pi * 0.12) . 's'])
             >
                 {{-- Foto con número de fase --}}
                 <div class="relative h-48 overflow-hidden">
@@ -153,6 +154,7 @@
                         alt="{{ $proc['titulo'] }}"
                         class="process-card-img w-full h-full object-cover"
                         loading="lazy"
+                        decoding="async"
                     >
                     <div class="absolute inset-0 bg-linear-to-t from-card via-transparent to-transparent"></div>
                     <span class="absolute top-3 left-3 bg-amber text-white font-display text-xs font-bold px-2.5 py-1 rounded">
@@ -201,7 +203,7 @@
             @foreach (config('cafe.equipo') as $ti => $eq)
             <div
                 class="team-card flex flex-col reveal"
-                style="transition-delay:{{ $ti * .14 }}s"
+                @style(['transition-delay: ' . ($ti * 0.14) . 's'])
             >
                 {{-- Foto con badge de especialidad --}}
                 <div class="relative h-72 overflow-hidden">
@@ -210,6 +212,7 @@
                         alt="{{ $eq['nombre'] }} - {{ $eq['rol'] }}"
                         class="team-card-img w-full h-full object-cover"
                         loading="lazy"
+                        decoding="async"
                     >
                     <div class="absolute inset-0 bg-linear-to-t from-surface via-transparent to-transparent"></div>
                     <span class="badge absolute top-3 right-3">{{ $eq['especialidad'] }}</span>

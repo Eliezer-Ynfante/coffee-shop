@@ -1,6 +1,7 @@
 <section class="grid grid-cols-1 md:grid-cols-2" aria-label="Promociones">
     {{-- Banner oscuro con imagen de fondo --}}
-    <div class="relative h-64 flex items-center px-10 overflow-hidden" style="background-image:url('https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=900&q=80'); background-size:cover; background-position:center;">
+    <div class="relative h-64 flex items-center px-10 overflow-hidden">
+        <img src="https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=900&q=80&fm=webp" alt="" class="absolute inset-0 w-full h-full object-cover" loading="lazy" decoding="async">
         <div class="absolute inset-0 bg-ink/70"></div>
         <div class="relative z-10">
             <p class="amber-tag mb-2 reveal">Oferta especial</p>
