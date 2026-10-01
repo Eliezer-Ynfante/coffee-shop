@@ -12,7 +12,7 @@
                         <i class="fa-solid fa-mug-hot text-amber text-sm" aria-hidden="true"></i>
                     </span>
                     <span class="font-display text-lg font-semibold text-cream">
-                        {{ config('cafe.nombre') ?? 'Raíz & Grano' }}
+                        {{ setting('nombre', config('cafe.nombre', 'Raíz & Grano')) }}
                     </span>
                 </div>
                 <p class="text-muted text-sm leading-relaxed max-w-xs mb-5">
@@ -40,23 +40,23 @@
                 <ul class="space-y-3 text-sm text-muted">
                     <li class="flex items-start gap-2">
                         <i class="fa-solid fa-location-dot text-amber mt-0.5 shrink-0 text-xs" aria-hidden="true"></i>
-                        {{ config('cafe.direccion') ?? 'Dirección' }}
+                        {{ setting('direccion', config('cafe.direccion', 'Dirección')) }}
                     </li>
                     <li class="flex items-center gap-2">
                         <i class="fa-solid fa-phone text-amber shrink-0 text-xs" aria-hidden="true"></i>
-                        <a href="tel:{{ preg_replace('/\s+/', '', config('cafe.telefono') ?? '') }}" class="hover:text-amber transition">
-                            {{ config('cafe.telefono') ?? 'Teléfono' }}
+                        <a href="tel:{{ preg_replace('/\s+/', '', setting('telefono', config('cafe.telefono', ''))) }}" class="hover:text-amber transition">
+                            {{ setting('telefono', config('cafe.telefono', 'Teléfono')) }}
                         </a>
                     </li>
                     <li class="flex items-center gap-2">
                         <i class="fa-regular fa-envelope text-amber shrink-0 text-xs" aria-hidden="true"></i>
-                        <a href="mailto:{{ config('cafe.email') ?? '' }}" class="hover:text-amber transition break-all">
-                            {{ config('cafe.email') ?? 'Email' }}
+                        <a href="mailto:{{ setting('email', config('cafe.email', '')) }}" class="hover:text-amber transition break-all">
+                            {{ setting('email', config('cafe.email', 'Email')) }}
                         </a>
                     </li>
                     <li class="flex items-start gap-2">
                         <i class="fa-regular fa-clock text-amber mt-0.5 shrink-0 text-xs" aria-hidden="true"></i>
-                        <span class="leading-snug">{{ config('cafe.horario') ?? 'Horario' }}</span>
+                        <span class="leading-snug">{{ setting('horario', config('cafe.horario', 'Horario')) }}</span>
                     </li>
                 </ul>
             </div>
@@ -64,7 +64,7 @@
 
         <!-- Copyright -->
         <div class="pt-6 flex flex-col sm:flex-row items-center justify-between gap-2 text-muted text-xs">
-            <span>&copy; {{ date('Y') }} {{ config('cafe.nombre') ?? 'Cafetería' }}. Todos los derechos reservados.</span>
+            <span>&copy; {{ date('Y') }} {{ setting('nombre', config('cafe.nombre', 'Cafetería')) }}. Todos los derechos reservados.</span>
             <span class="flex items-center gap-1.5">
                 <i class="fa-solid fa-mug-hot text-amber text-[10px]" aria-hidden="true"></i>
                 Hecho con café en Lima, Perú
