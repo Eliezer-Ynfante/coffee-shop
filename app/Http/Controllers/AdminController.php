@@ -103,7 +103,7 @@ class AdminController extends Controller
         return redirect()->route('admin.products.index')->with('status', 'Producto creado exitosamente.');
     }
 
-    public function updateProduct(Request $request, $id)
+    public function updateProduct(Request $request, int $id)
     {
         $product = Product::findOrFail($id);
 
@@ -128,7 +128,7 @@ class AdminController extends Controller
         return redirect()->route('admin.products.index')->with('status', "Producto '{$product->name}' actualizado correctamente.");
     }
 
-    public function toggleProductStatus($id)
+    public function toggleProductStatus(int $id)
     {
         $product = Product::findOrFail($id);
         $product->is_active = !$product->is_active;
@@ -137,7 +137,7 @@ class AdminController extends Controller
         return back()->with('status', "Estado del producto '{$product->name}' actualizado.");
     }
 
-    public function destroyProduct($id)
+    public function destroyProduct(int $id)
     {
         $product = Product::findOrFail($id);
         $product->delete();
@@ -172,7 +172,7 @@ class AdminController extends Controller
         return redirect()->route('admin.categories.index')->with('status', 'Categoría creada con éxito.');
     }
 
-    public function updateCategory(Request $request, $id)
+    public function updateCategory(Request $request, int $id)
     {
         $category = Category::findOrFail($id);
 
@@ -190,7 +190,7 @@ class AdminController extends Controller
         return redirect()->route('admin.categories.index')->with('status', "Categoría '{$category->name}' actualizada.");
     }
 
-    public function destroyCategory($id)
+    public function destroyCategory(int $id)
     {
         $category = Category::withCount('products')->findOrFail($id);
 
@@ -231,7 +231,7 @@ class AdminController extends Controller
         return view('admin.reservations.index', compact('reservations', 'statusCounts'));
     }
 
-    public function updateReservationStatus(Request $request, $id)
+    public function updateReservationStatus(Request $request, int $id)
     {
         $reservation = Reservation::findOrFail($id);
 
@@ -244,7 +244,7 @@ class AdminController extends Controller
         return back()->with('status', "Reserva #{$reservation->id} de {$reservation->nombre} actualizada a estado: " . ucfirst($validated['status']) . ".");
     }
 
-    public function destroyReservation($id)
+    public function destroyReservation(int $id)
     {
         $reservation = Reservation::findOrFail($id);
         $reservation->delete();
@@ -281,7 +281,7 @@ class AdminController extends Controller
         return view('admin.orders.index', compact('orders', 'orderStats'));
     }
 
-    public function updateOrderStatus(Request $request, $id)
+    public function updateOrderStatus(Request $request, int $id)
     {
         $order = Order::findOrFail($id);
 
@@ -324,7 +324,7 @@ class AdminController extends Controller
         return view('admin.messages.index', compact('messages', 'unreadCount'));
     }
 
-    public function updateMessageStatus(Request $request, $id)
+    public function updateMessageStatus(Request $request, int $id)
     {
         $message = ContactMessage::findOrFail($id);
 
@@ -337,7 +337,7 @@ class AdminController extends Controller
         return back()->with('status', 'Estado del mensaje actualizado.');
     }
 
-    public function destroyMessage($id)
+    public function destroyMessage(int $id)
     {
         $message = ContactMessage::findOrFail($id);
         $message->delete();
@@ -369,7 +369,7 @@ class AdminController extends Controller
         return view('admin.users.index', compact('users'));
     }
 
-    public function updateUserRole(Request $request, $id)
+    public function updateUserRole(Request $request, int $id)
     {
         $user = User::findOrFail($id);
 
@@ -378,7 +378,7 @@ class AdminController extends Controller
         ]);
 
         // Evitar que el admin se quite su propio rol
-        if ($user->id === auth()->id() && $validated['role'] !== 'admin') {
+        if ($user->getAuthIdentifier() === $request->user()?->getAuthIdentifier() && $validated['role'] !== 'admin') {
             return back()->withErrors(['error' => 'No puedes remover tu propio rol de administrador.']);
         }
 
@@ -432,7 +432,7 @@ class AdminController extends Controller
         return redirect()->route('admin.gallery.index')->with('status', 'Foto agregada a la galería con éxito.');
     }
 
-    public function updateGallery(Request $request, $id)
+    public function updateGallery(Request $request, int $id)
     {
         $item = GalleryItem::findOrFail($id);
 
@@ -461,7 +461,7 @@ class AdminController extends Controller
         return redirect()->route('admin.gallery.index')->with('status', 'Foto actualizada correctamente.');
     }
 
-    public function destroyGallery($id)
+    public function destroyGallery(int $id)
     {
         $item = GalleryItem::findOrFail($id);
         $item->delete();
@@ -496,7 +496,7 @@ class AdminController extends Controller
         return view('admin.tables.index', compact('tables', 'stats'));
     }
 
-    public function updateTableStatus(Request $request, $id)
+    public function updateTableStatus(Request $request, int $id)
     {
         $table = CafeTable::findOrFail($id);
 
