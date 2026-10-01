@@ -21,6 +21,17 @@ class ContactoController extends Controller
             'mensaje'  => 'required|string|max:2000',
         ]);
 
+        \Illuminate\Support\Facades\DB::table('contact_messages')->insert([
+            'nombre'     => $validated['nombre'],
+            'email'      => $validated['email'],
+            'telefono'   => $validated['telefono'] ?? null,
+            'motivo'     => $validated['motivo'],
+            'mensaje'    => $validated['mensaje'],
+            'status'     => 'unread',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
         if ($request->ajax() || $request->wantsJson()) {
             return response()->json([
                 'success' => true,

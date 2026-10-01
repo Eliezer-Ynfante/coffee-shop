@@ -76,14 +76,6 @@ class AuthController extends Controller
      */
     public function dashboard()
     {
-        // Estadísticas básicas desde la base de datos
-        $stats = [
-            'total_users'      => DB::table('users')->count(),
-            'total_products'   => DB::table('products')->count(),
-            'total_categories' => DB::table('categories')->count(),
-            'total_orders'     => DB::table('orders')->count(),
-        ];
-
-        return view('dashboard', compact('stats'));
+        return redirect()->route('admin.dashboard');
     }
 }

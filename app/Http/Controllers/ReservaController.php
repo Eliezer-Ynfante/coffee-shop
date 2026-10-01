@@ -8,7 +8,26 @@ class ReservaController extends Controller
 {
     public function index()
     {
-        return view('reserva');
+        $dbMesas = \App\Models\CafeTable::where('is_active', true)->get();
+
+        if ($dbMesas->isNotEmpty()) {
+            $mesas3d = $dbMesas->map(function ($m) {
+                return [
+                    'id'        => $m->code,
+                    'zona'      => $m->zone,
+                    'nombre'    => $m->name,
+                    'capacidad' => $m->capacity,
+                    'estado'    => $m->status,
+                    'x'         => $m->coord_x,
+                    'y'         => $m->coord_y,
+                    'icono'     => $m->icon,
+                ];
+            })->toArray();
+        } else {
+            $mesas3d = config('cafe.mesas_3d', []);
+        }
+
+        return view('reserva', compact('mesas3d'));
     }
 
     public function store(Request $request)
@@ -27,11 +46,27 @@ class ReservaController extends Controller
             'nota'        => 'nullable|string|max:1000',
         ]);
 
+        $reservaId = \Illuminate\Support\Facades\DB::table('reservations')->insertGetId([
+            'nombre'      => $validated['nombre'],
+            'telefono'    => $validated['telefono'],
+            'email'       => $validated['email'] ?? null,
+            'fecha'       => $validated['fecha'],
+            'hora'        => $validated['hora'] ?? '10:00',
+            'personas'    => $validated['personas'],
+            'mesa_id'     => $validated['mesa_id'] ?? null,
+            'zona'        => $validated['zona'] ?? null,
+            'ocasion'     => $validated['ocasion'] ?? null,
+            'comentarios' => $validated['comentarios'] ?? $validated['nota'] ?? null,
+            'status'      => 'confirmed',
+            'created_at'  => now(),
+            'updated_at'  => now(),
+        ]);
+
         if ($request->ajax() || $request->wantsJson()) {
             return response()->json([
                 'success' => true,
                 'message' => '¡Tu reserva ha sido confirmada con éxito! Te esperamos.',
-                'data'    => $validated
+                'data'    => array_merge($validated, ['id' => $reservaId])
             ]);
         }
 
