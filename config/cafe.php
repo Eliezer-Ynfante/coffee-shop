@@ -13,7 +13,7 @@ return [
     'logo' => '',
 
     /* --- Imágenes principales --- */
-    'hero_img'  => 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=1400&q=85',
+    'hero_img'  => 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=1400&q=85&fm=webp',
     'about_img' => 'https://img.freepik.com/fotos-premium/marco-granos-cafe-espacio-copia-fondo-negro_677155-108.jpg',
 
     /* --- Horario y contacto --- */
@@ -42,7 +42,7 @@ return [
     'menu_categorias' => [
         [
             'nombre' => 'Café caliente',
-            'imagen' => 'https://images.unsplash.com/photo-1510707577719-ae7c14805e3a?w=420&q=80',
+            'imagen' => 'https://images.unsplash.com/photo-1510707577719-ae7c14805e3a?w=420&q=80&fm=webp',
             'items'  => [
                 ['nombre' => 'Cappuccino',  'descripcion' => 'Espresso con leche y abundante espuma',          'precio' => 'S/ 10'],
                 ['nombre' => 'Americano',   'descripcion' => 'Espresso suave con agua caliente',               'precio' => 'S/ 8'],
@@ -52,7 +52,7 @@ return [
         ],
         [
             'nombre' => 'Repostería y postres',
-            'imagen' => 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=420&q=80',
+            'imagen' => 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=420&q=80&fm=webp',
             'items'  => [
                 ['nombre' => 'Croissant',   'descripcion' => 'Clásico croissant con textura mantecosa',        'precio' => 'S/ 9'],
                 ['nombre' => 'Cheesecake',  'descripcion' => 'Tarta de queso cremosa con base de galleta',    'precio' => 'S/ 14'],
@@ -68,21 +68,21 @@ return [
             'nombre'      => 'Espresso Reserva',
             'descripcion' => 'Blend exclusivo de altura, cuerpo intenso con notas a chocolate oscuro.',
             'precio'      => 'S/ 9',
-            'imagen'      => 'https://images.unsplash.com/photo-1510707577719-ae7c14805e3a?w=600&q=80',
+            'imagen'      => 'https://images.unsplash.com/photo-1510707577719-ae7c14805e3a?w=600&q=80&fm=webp',
             'badge'       => 'Firma',
         ],
         [
             'nombre'      => 'Latte de Lúcuma',
             'descripcion' => 'Espresso suave con leche vaporizada y jarabe artesanal de lúcuma peruana.',
             'precio'      => 'S/ 14',
-            'imagen'      => 'https://images.unsplash.com/photo-1541167760496-1628856ab772?w=600&q=80',
+            'imagen'      => 'https://images.unsplash.com/photo-1541167760496-1628856ab772?w=600&q=80&fm=webp',
             'badge'       => 'Favorito',
         ],
         [
             'nombre'      => 'Cold Brew',
             'descripcion' => 'Extracción en frío durante 24 horas. Suave, bajo en acidez y muy refrescante.',
             'precio'      => 'S/ 16',
-            'imagen'      => 'https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=600&q=80',
+            'imagen'      => 'https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=600&q=80&fm=webp',
             'badge'       => 'Nuevo',
         ],
     ],
@@ -102,7 +102,7 @@ return [
             'categoria'   => 'cafe',
             'categoria_nombre' => 'Café & Barismo',
             'descripcion' => 'Diseño cisne vertido a mano alzada con leche texturizada a 65°C.',
-            'imagen'      => 'https://images.unsplash.com/photo-1534778101976-62847782c213?w=900&q=85',
+            'imagen'      => 'https://images.unsplash.com/photo-1534778101976-62847782c213?w=900&q=85&fm=webp',
             'badge'       => 'Arte Latte',
         ],
         [
@@ -110,7 +110,7 @@ return [
             'categoria'   => 'ambiente',
             'categoria_nombre' => 'Espacios & Local',
             'descripcion' => 'Diseño minimalista con madera cálida e iluminación ámbar para disfrutar el ritual.',
-            'imagen'      => 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=900&q=85',
+            'imagen'      => 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=900&q=85&fm=webp',
             'badge'       => 'Barra',
         ],
         [
@@ -118,7 +118,7 @@ return [
             'categoria'   => 'postres',
             'categoria_nombre' => 'Repostería & Postres',
             'descripcion' => 'Hojaldre artesanal francés con 100% mantequilla de campo.',
-            'imagen'      => 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=900&q=85',
+            'imagen'      => 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=900&q=85&fm=webp',
             'badge'       => 'Horneado Diario',
         ],
         [
@@ -126,7 +126,7 @@ return [
             'categoria'   => 'cafe',
             'categoria_nombre' => 'Café & Barismo',
             'descripcion' => 'Método de goteo limpio que resalta las notas cítricas y florales del café de origen.',
-            'imagen'      => 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=900&q=85',
+            'imagen'      => 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=900&q=85&fm=webp',
             'badge'       => 'Métodos',
         ],
         [
@@ -134,7 +134,7 @@ return [
             'categoria'   => 'procesos',
             'categoria_nombre' => 'Tueste & Origen',
             'descripcion' => 'Perfil de tueste medio desarrollado en pequeños lotes para preservar los azúcares.',
-            'imagen'      => 'https://images.unsplash.com/photo-1518832553480-cd0e625ed3e6?w=900&q=85',
+            'imagen'      => 'https://images.unsplash.com/photo-1518832553480-cd0e625ed3e6?w=900&q=85&fm=webp',
             'badge'       => 'Tostaduría',
         ],
         [
@@ -142,7 +142,7 @@ return [
             'categoria'   => 'ambiente',
             'categoria_nombre' => 'Espacios & Local',
             'descripcion' => 'Espacio tranquilo con buena conexión Wi-Fi, luz natural y música jazz suave.',
-            'imagen'      => 'https://images.unsplash.com/photo-1521017432531-fbd92d768814?w=900&q=85',
+            'imagen'      => 'https://images.unsplash.com/photo-1521017432531-fbd92d768814?w=900&q=85&fm=webp',
             'badge'       => 'Espacios',
         ],
         [
@@ -150,7 +150,7 @@ return [
             'categoria'   => 'postres',
             'categoria_nombre' => 'Repostería & Postres',
             'descripcion' => 'Crema suave de queso horneada con compota fresca de berries.',
-            'imagen'      => 'https://images.unsplash.com/photo-1533134242443-d4fd215305ad?w=900&q=85',
+            'imagen'      => 'https://images.unsplash.com/photo-1533134242443-d4fd215305ad?w=900&q=85&fm=webp',
             'badge'       => 'Repostería',
         ],
         [
@@ -158,7 +158,7 @@ return [
             'categoria'   => 'procesos',
             'categoria_nombre' => 'Tueste & Origen',
             'descripcion' => 'Cosecha a mano a más de 1,600 msnm en los valles cafetaleros del norte peruano.',
-            'imagen'      => 'https://images.unsplash.com/photo-1498804103079-a6351b050096?w=900&q=85',
+            'imagen'      => 'https://images.unsplash.com/photo-1498804103079-a6351b050096?w=900&q=85&fm=webp',
             'badge'       => 'Origen',
         ],
         [
@@ -166,7 +166,7 @@ return [
             'categoria'   => 'cafe',
             'categoria_nombre' => 'Café & Barismo',
             'descripcion' => '24 horas de infusión en frío combinado con piel de naranja caramelizada.',
-            'imagen'      => 'https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?w=900&q=85',
+            'imagen'      => 'https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?w=900&q=85&fm=webp',
             'badge'       => 'Especial',
         ],
     ],
@@ -208,28 +208,28 @@ return [
             'titulo' => 'Cosecha Manual en Altura',
             'desc'   => 'Recolección selectiva manual de cerezas 100% maduras en las laderas andinas y de selva alta.',
             'icono'  => 'fa-solid fa-seedling',
-            'imagen' => 'https://images.unsplash.com/photo-1524350876685-274059332603?w=700&q=80',
+            'imagen' => 'https://images.unsplash.com/photo-1524350876685-274059332603?w=700&q=80&fm=webp',
         ],
         [
             'fase'   => '02',
             'titulo' => 'Beneficiado & Secado Solar',
             'desc'   => 'Procesos lavados, honeys y naturales secados lentamente en camas elevadas bajo sombra y sol andino.',
             'icono'  => 'fa-solid fa-sun',
-            'imagen' => 'https://images.unsplash.com/photo-1610832958506-aa56368176cf?w=700&q=80',
+            'imagen' => 'https://images.unsplash.com/photo-1610832958506-aa56368176cf?w=700&q=80&fm=webp',
         ],
         [
             'fase'   => '03',
             'titulo' => 'Tueste & Catación SCA',
             'desc'   => 'Curvas de tueste a medida y rigurosa evaluación en mesa de catación para garantizar notas limpias.',
             'icono'  => 'fa-solid fa-fire',
-            'imagen' => 'https://images.unsplash.com/photo-1518832553480-cd0e625ed3e6?w=700&q=80',
+            'imagen' => 'https://images.unsplash.com/photo-1518832553480-cd0e625ed3e6?w=700&q=80&fm=webp',
         ],
         [
             'fase'   => '04',
             'titulo' => 'Extracción Calibrada',
             'desc'   => 'Espresso y métodos artesanales (V60, Chemex, Aeropress) ejecutados por baristas certificados.',
             'icono'  => 'fa-solid fa-mug-hot',
-            'imagen' => 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=700&q=80',
+            'imagen' => 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=700&q=80&fm=webp',
         ],
     ],
 
@@ -238,21 +238,21 @@ return [
             'nombre'      => 'Mateo Vargas',
             'rol'         => 'Head Roaster & Q-Grader',
             'especialidad'=> 'Curvas de Tueste & Catación',
-            'imagen'      => 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&q=80',
+            'imagen'      => 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&q=80&fm=webp',
             'bio'         => 'Certificado por el Coffee Quality Institute. Obsesionado con balancear dulzor, cuerpo y acidez brillante en cada origen.',
         ],
         [
             'nombre'      => 'Camila Rivas',
             'rol'         => 'Head Barista & Trainer',
             'especialidad'=> 'Métodos Filtrados & Arte Latte',
-            'imagen'      => 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=600&q=80',
+            'imagen'      => 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=600&q=80&fm=webp',
             'bio'         => 'Con más de 7 años detrás de la barra, lidera la formación técnica de nuestro equipo y el servicio al cliente.',
         ],
         [
             'nombre'      => 'Sebastián Morales',
             'rol'         => 'Chef Pastelero',
             'especialidad'=> 'Bollería Francesa & Maridajes',
-            'imagen'      => 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&q=80',
+            'imagen'      => 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&q=80&fm=webp',
             'bio'         => 'Elabora diariamente repostería artesanal con mantequilla pura, diseñada para maridar a la perfección con nuestro espresso.',
         ],
     ],
@@ -303,7 +303,7 @@ return [
             'descripcion' => 'Frente a los baristas, ideal para catar filtrados y presenciar el ritual del café.',
             'icono'       => 'fa-solid fa-mug-hot',
             'capacidad'   => '1 a 4 personas',
-            'imagen'      => 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=700&q=80',
+            'imagen'      => 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=700&q=80&fm=webp',
         ],
         [
             'id'          => 'salon',
@@ -312,7 +312,7 @@ return [
             'descripcion' => 'Sillones cómodos, iluminación tenue y música jazz suave para una estancia relajante.',
             'icono'       => 'fa-solid fa-couch',
             'capacidad'   => '2 a 6 personas',
-            'imagen'      => 'https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=700&q=80',
+            'imagen'      => 'https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=700&q=80&fm=webp',
         ],
         [
             'id'          => 'terraza',
@@ -321,7 +321,7 @@ return [
             'descripcion' => 'Espacio al aire libre rodeado de plantas naturales. Bienvenida para tus mascotas.',
             'icono'       => 'fa-solid fa-seedling',
             'capacidad'   => '2 a 8 personas',
-            'imagen'      => 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=700&q=80',
+            'imagen'      => 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=700&q=80&fm=webp',
         ],
         [
             'id'          => 'coworking',
@@ -330,7 +330,7 @@ return [
             'descripcion' => 'Mesas amplias, tomas de corriente accesibles y Wi-Fi de fibra óptica.',
             'icono'       => 'fa-solid fa-laptop',
             'capacidad'   => '1 a 4 personas',
-            'imagen'      => 'https://images.unsplash.com/photo-1521017432531-fbd92d768814?w=700&q=80',
+            'imagen'      => 'https://images.unsplash.com/photo-1521017432531-fbd92d768814?w=700&q=80&fm=webp',
         ],
     ],
 

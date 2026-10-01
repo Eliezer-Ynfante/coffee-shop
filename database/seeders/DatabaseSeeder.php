@@ -300,5 +300,85 @@ class DatabaseSeeder extends Seeder
                 ],
             ]);
         }
+
+        // ── 6. Reservas de Muestra ───────────────────────────────────────
+        if (DB::table('reservations')->count() === 0) {
+            DB::table('reservations')->insert([
+                [
+                    'nombre'      => 'Lucía Valdivia',
+                    'email'       => 'lucia.valdivia@gmail.com',
+                    'telefono'    => '+51 912 345 678',
+                    'fecha'       => now()->format('Y-m-d'),
+                    'hora'        => '16:30',
+                    'personas'    => 2,
+                    'mesa_id'     => 'S1',
+                    'zona'        => 'Salón Principal',
+                    'ocasion'     => 'Reunión de trabajo',
+                    'comentarios' => 'Mesa cerca a toma de corriente si es posible.',
+                    'status'      => 'confirmed',
+                    'created_at'  => now()->subHours(3),
+                    'updated_at'  => now()->subHours(3),
+                ],
+                [
+                    'nombre'      => 'Martín Paredes',
+                    'email'       => 'martin.paredes@hotmail.com',
+                    'telefono'    => '+51 981 223 344',
+                    'fecha'       => now()->addDay()->format('Y-m-d'),
+                    'hora'        => '19:00',
+                    'personas'    => 4,
+                    'mesa_id'     => 'T2',
+                    'zona'        => 'Terraza Cafetalera',
+                    'ocasion'     => 'Cumpleaños / Celebración',
+                    'comentarios' => 'Traeremos una tarta pequeña.',
+                    'status'      => 'pending',
+                    'created_at'  => now()->subHours(1),
+                    'updated_at'  => now()->subHours(1),
+                ],
+                [
+                    'nombre'      => 'Andrea Sotomayor',
+                    'email'       => 'andrea.soto@outlook.com',
+                    'telefono'    => '+51 999 888 777',
+                    'fecha'       => now()->format('Y-m-d'),
+                    'hora'        => '11:00',
+                    'personas'    => 1,
+                    'mesa_id'     => 'CW1',
+                    'zona'        => 'Rincón Coworking',
+                    'ocasion'     => 'Estudio / Trabajo remoto',
+                    'comentarios' => 'Espacio tranquilo con Wi-Fi.',
+                    'status'      => 'confirmed',
+                    'created_at'  => now()->subDays(1),
+                    'updated_at'  => now()->subDays(1),
+                ],
+            ]);
+        }
+
+        // ── 7. Mensajes de Contacto de Muestra ───────────────────────────
+        if (DB::table('contact_messages')->count() === 0) {
+            DB::table('contact_messages')->insert([
+                [
+                    'nombre'     => 'Roberto Chang',
+                    'email'      => 'roberto.chang@empresa.com',
+                    'telefono'   => '+51 977 112 233',
+                    'motivo'     => 'Eventos Corporativos',
+                    'mensaje'    => 'Buenas tardes, quisiéramos cotizar el alquiler del salón principal para un evento privado de 25 personas el próximo mes.',
+                    'status'     => 'unread',
+                    'created_at' => now()->subHours(5),
+                    'updated_at' => now()->subHours(5),
+                ],
+                [
+                    'nombre'     => 'Sofía Alarcón',
+                    'email'      => 'sofia.alarcon@gmail.com',
+                    'telefono'   => '+51 955 443 322',
+                    'motivo'     => 'Consulta sobre Granos de Café',
+                    'mensaje'    => 'Hola, ¿venden bolsas de 1kg en grano entero del Geisha de Jaén? ¿Tienen envíos a Lima?',
+                    'status'     => 'read',
+                    'created_at' => now()->subDays(1),
+                    'updated_at' => now()->subHours(12),
+                ],
+            ]);
+        }
+
+        // ── 8. Exportación y Sincronización de Catálogo, Ajustes y Mesas ──
+        $this->call(CafeDataExportSeeder::class);
     }
 }
