@@ -1,15 +1,13 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ContactoController;
-use App\Http\Controllers\ReservaController;
-
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ContactoController;
 use App\Http\Controllers\CustomerOrderController;
-
 use App\Http\Controllers\PublicPageController;
+use App\Http\Controllers\ReservaController;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 
 // Vistas públicas dinámicas (con datos de BD y fallback a config)
 Route::get('/', [PublicPageController::class, 'home'])->name('welcome');
@@ -42,59 +40,64 @@ Route::get('/dashboard', function () {
         : redirect()->route('customer.orders');
 })->middleware('auth')->name('dashboard');
 
-use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AdminCatalogController;
+use App\Http\Controllers\AdminDashboardController;
+use App\Http\Controllers\AdminMessageController;
+use App\Http\Controllers\AdminOperationsController;
+use App\Http\Controllers\AdminSettingsController;
+use App\Http\Controllers\AdminUserController;
 
 // ── Rutas del Administrador ─────────────────────────────
 Route::prefix('admin')
     ->middleware(['auth', 'role:admin'])
     ->name('admin.')
     ->group(function () {
-        Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+        Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 
         // Productos
-        Route::get('/productos', [AdminController::class, 'products'])->name('products.index');
-        Route::post('/productos', [AdminController::class, 'storeProduct'])->name('products.store');
-        Route::put('/productos/{id}', [AdminController::class, 'updateProduct'])->name('products.update');
-        Route::patch('/productos/{id}/toggle', [AdminController::class, 'toggleProductStatus'])->name('products.toggle');
-        Route::delete('/productos/{id}', [AdminController::class, 'destroyProduct'])->name('products.destroy');
+        Route::get('/productos', [AdminCatalogController::class, 'products'])->name('products.index');
+        Route::post('/productos', [AdminCatalogController::class, 'storeProduct'])->name('products.store');
+        Route::put('/productos/{id}', [AdminCatalogController::class, 'updateProduct'])->name('products.update');
+        Route::patch('/productos/{id}/toggle', [AdminCatalogController::class, 'toggleProductStatus'])->name('products.toggle');
+        Route::delete('/productos/{id}', [AdminCatalogController::class, 'destroyProduct'])->name('products.destroy');
 
         // Categorías
-        Route::get('/categorias', [AdminController::class, 'categories'])->name('categories.index');
-        Route::post('/categorias', [AdminController::class, 'storeCategory'])->name('categories.store');
-        Route::put('/categorias/{id}', [AdminController::class, 'updateCategory'])->name('categories.update');
-        Route::delete('/categorias/{id}', [AdminController::class, 'destroyCategory'])->name('categories.destroy');
+        Route::get('/categorias', [AdminCatalogController::class, 'categories'])->name('categories.index');
+        Route::post('/categorias', [AdminCatalogController::class, 'storeCategory'])->name('categories.store');
+        Route::put('/categorias/{id}', [AdminCatalogController::class, 'updateCategory'])->name('categories.update');
+        Route::delete('/categorias/{id}', [AdminCatalogController::class, 'destroyCategory'])->name('categories.destroy');
 
         // Reservas
-        Route::get('/reservas', [AdminController::class, 'reservations'])->name('reservations.index');
-        Route::patch('/reservas/{id}/status', [AdminController::class, 'updateReservationStatus'])->name('reservations.status');
-        Route::delete('/reservas/{id}', [AdminController::class, 'destroyReservation'])->name('reservations.destroy');
+        Route::get('/reservas', [AdminOperationsController::class, 'reservations'])->name('reservations.index');
+        Route::patch('/reservas/{id}/status', [AdminOperationsController::class, 'updateReservationStatus'])->name('reservations.status');
+        Route::delete('/reservas/{id}', [AdminOperationsController::class, 'destroyReservation'])->name('reservations.destroy');
 
         // Órdenes
-        Route::get('/ordenes', [AdminController::class, 'orders'])->name('orders.index');
-        Route::patch('/ordenes/{id}/status', [AdminController::class, 'updateOrderStatus'])->name('orders.status');
+        Route::get('/ordenes', [AdminOperationsController::class, 'orders'])->name('orders.index');
+        Route::patch('/ordenes/{id}/status', [AdminOperationsController::class, 'updateOrderStatus'])->name('orders.status');
 
         // Mensajes de contacto
-        Route::get('/mensajes', [AdminController::class, 'messages'])->name('messages.index');
-        Route::patch('/mensajes/{id}/status', [AdminController::class, 'updateMessageStatus'])->name('messages.status');
-        Route::delete('/mensajes/{id}', [AdminController::class, 'destroyMessage'])->name('messages.destroy');
+        Route::get('/mensajes', [AdminMessageController::class, 'index'])->name('messages.index');
+        Route::patch('/mensajes/{id}/status', [AdminMessageController::class, 'updateStatus'])->name('messages.status');
+        Route::delete('/mensajes/{id}', [AdminMessageController::class, 'destroy'])->name('messages.destroy');
 
         // Usuarios
-        Route::get('/usuarios', [AdminController::class, 'users'])->name('users.index');
-        Route::patch('/usuarios/{id}/role', [AdminController::class, 'updateUserRole'])->name('users.role');
+        Route::get('/usuarios', [AdminUserController::class, 'index'])->name('users.index');
+        Route::patch('/usuarios/{id}/role', [AdminUserController::class, 'updateRole'])->name('users.role');
 
         // Galería
-        Route::get('/galeria', [AdminController::class, 'gallery'])->name('gallery.index');
-        Route::post('/galeria', [AdminController::class, 'storeGallery'])->name('gallery.store');
-        Route::put('/galeria/{id}', [AdminController::class, 'updateGallery'])->name('gallery.update');
-        Route::delete('/galeria/{id}', [AdminController::class, 'destroyGallery'])->name('gallery.destroy');
+        Route::get('/galeria', [AdminCatalogController::class, 'gallery'])->name('gallery.index');
+        Route::post('/galeria', [AdminCatalogController::class, 'storeGallery'])->name('gallery.store');
+        Route::put('/galeria/{id}', [AdminCatalogController::class, 'updateGallery'])->name('gallery.update');
+        Route::delete('/galeria/{id}', [AdminCatalogController::class, 'destroyGallery'])->name('gallery.destroy');
 
         // Mesas 3D
-        Route::get('/mesas', [AdminController::class, 'tables'])->name('tables.index');
-        Route::patch('/mesas/{id}/status', [AdminController::class, 'updateTableStatus'])->name('tables.status');
+        Route::get('/mesas', [AdminOperationsController::class, 'tables'])->name('tables.index');
+        Route::patch('/mesas/{id}/status', [AdminOperationsController::class, 'updateTableStatus'])->name('tables.status');
 
         // Ajustes Generales
-        Route::get('/ajustes', [AdminController::class, 'settings'])->name('settings.index');
-        Route::post('/ajustes', [AdminController::class, 'updateSettings'])->name('settings.update');
+        Route::get('/ajustes', [AdminSettingsController::class, 'index'])->name('settings.index');
+        Route::post('/ajustes', [AdminSettingsController::class, 'update'])->name('settings.update');
     });
 
 // ── Rutas del Cliente ───────────────────────────────────
@@ -104,5 +107,3 @@ Route::prefix('mi-cuenta')
     ->group(function () {
         Route::get('/pedidos', [CustomerOrderController::class, 'index'])->name('orders');
     });
-
-

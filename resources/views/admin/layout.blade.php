@@ -17,37 +17,7 @@
         integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
         crossorigin="anonymous" referrerpolicy="no-referrer">
 
-    @if (file_exists(public_path('hot')) || file_exists(public_path('build/manifest.json')))
-        @vite('resources/css/app.css')
-    @else
-        <script src="https://cdn.tailwindcss.com"></script>
-        <script>
-            tailwind.config = {
-                theme: {
-                    extend: {
-                        colors: {
-                            ink: '#0A0704',
-                            dark: '#110D08',
-                            surface: '#17110B',
-                            card: '#1F160E',
-                            cardHover: '#261C13',
-                            amber: '#C8783A',
-                            amberLight: '#E08C4A',
-                            gold: '#D4A017',
-                            cream: '#F4ECE1',
-                            muted: '#8D7B6A',
-                            border: '#2C1E12',
-                            borderLight: '#3D2A19'
-                        },
-                        fontFamily: {
-                            sans: ['"Inter"', 'ui-sans-serif', 'system-ui', '-apple-system', 'sans-serif'],
-                            mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace']
-                        }
-                    }
-                }
-            };
-        </script>
-    @endif
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <style>
         body {
