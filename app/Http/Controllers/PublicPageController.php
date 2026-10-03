@@ -32,11 +32,11 @@ class PublicPageController extends Controller
             ->get()
             ->map(function ($product) {
                 return [
-                    'nombre'      => $product->name,
+                    'nombre' => $product->name,
                     'descripcion' => $product->description,
-                    'precio'      => 'S/ ' . number_format($product->price, 0),
-                    'imagen'      => $product->image_path ?: 'https://images.unsplash.com/photo-1510707577719-ae7c14805e3a?w=600&q=80&fm=webp',
-                    'badge'       => $product->is_featured ? 'Destacado' : null,
+                    'precio' => 'S/ '.number_format($product->price, 0),
+                    'imagen' => $product->image_path ?: 'https://images.unsplash.com/photo-1510707577719-ae7c14805e3a?w=600&q=80&fm=webp',
+                    'badge' => $product->is_featured ? 'Destacado' : null,
                 ];
             })
             ->all();
@@ -58,13 +58,13 @@ class PublicPageController extends Controller
         if ($dbItems->isNotEmpty()) {
             $galeria = $dbItems->map(function ($item) {
                 return [
-                    'id'               => $item->id,
-                    'titulo'           => $item->title,
-                    'categoria'        => $item->category,
+                    'id' => $item->id,
+                    'titulo' => $item->title,
+                    'categoria' => $item->category,
                     'categoria_nombre' => $item->category_name ?? ucfirst($item->category),
-                    'descripcion'      => $item->description,
-                    'imagen'           => $item->image_url,
-                    'badge'            => $item->badge,
+                    'descripcion' => $item->description,
+                    'imagen' => $item->image_url,
+                    'badge' => $item->badge,
                 ];
             })->toArray();
         } else {
@@ -90,11 +90,11 @@ class PublicPageController extends Controller
                 return [
                     'nombre' => $cat->name,
                     'imagen' => $cat->image_path ?: 'https://images.unsplash.com/photo-1510707577719-ae7c14805e3a?w=420&q=80&fm=webp',
-                    'items'  => $cat->products->map(function ($prod) {
+                    'items' => $cat->products->map(function ($prod) {
                         return [
-                            'nombre'      => $prod->name,
+                            'nombre' => $prod->name,
                             'descripcion' => $prod->description,
-                            'precio'      => 'S/ ' . number_format($prod->price, 0),
+                            'precio' => 'S/ '.number_format($prod->price, 0),
                         ];
                     })->toArray(),
                 ];
@@ -117,11 +117,11 @@ class PublicPageController extends Controller
         if ($dbFeatured->isNotEmpty()) {
             return $dbFeatured->map(function ($prod) {
                 return [
-                    'nombre'      => $prod->name,
+                    'nombre' => $prod->name,
                     'descripcion' => $prod->description,
-                    'precio'      => 'S/ ' . number_format($prod->price, 0),
-                    'imagen'      => $prod->image_path ?: 'https://images.unsplash.com/photo-1510707577719-ae7c14805e3a?w=600&q=80&fm=webp',
-                    'badge'       => 'Destacado',
+                    'precio' => 'S/ '.number_format($prod->price, 0),
+                    'imagen' => $prod->image_path ?: 'https://images.unsplash.com/photo-1510707577719-ae7c14805e3a?w=600&q=80&fm=webp',
+                    'badge' => 'Destacado',
                 ];
             })->toArray();
         }
