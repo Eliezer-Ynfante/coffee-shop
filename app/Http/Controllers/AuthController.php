@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -12,8 +13,9 @@ class AuthController extends Controller
      */
     public function showLogin()
     {
-        if (Auth::check()) {
-            return $this->redirectByRole(Auth::user());
+        $user = Auth::user();
+        if ($user instanceof User) {
+            return $this->redirectByRole($user);
         }
 
         return view('auth.login');
@@ -37,8 +39,13 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials, $remember)) {
             $request->session()->regenerate();
+            $user = Auth::user();
 
-            return $this->redirectByRole(Auth::user(), '¡Bienvenido de nuevo, '.Auth::user()->name.'!');
+            if ($user instanceof User) {
+                return $this->redirectByRole($user, '¡Bienvenido de nuevo, '.$user->name.'!');
+            }
+
+            Auth::logout();
         }
 
         return back()->withErrors([
@@ -49,7 +56,7 @@ class AuthController extends Controller
     /**
      * Redirige al usuario según su rol.
      */
-    protected function redirectByRole($user, ?string $message = null)
+    protected function redirectByRole(User $user, ?string $message = null)
     {
         $targetRoute = $user->isAdmin() ? 'admin.dashboard' : 'customer.orders';
         $redirect = redirect()->intended(route($targetRoute));
