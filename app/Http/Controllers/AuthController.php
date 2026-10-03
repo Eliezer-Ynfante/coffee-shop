@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 
 class AuthController extends Controller
 {
@@ -26,11 +25,11 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $credentials = $request->validate([
-            'email'    => ['required', 'email'],
+            'email' => ['required', 'email'],
             'password' => ['required', 'string'],
         ], [
-            'email.required'    => 'El correo electrónico es obligatorio.',
-            'email.email'       => 'Ingresa un correo electrónico válido.',
+            'email.required' => 'El correo electrónico es obligatorio.',
+            'email.email' => 'Ingresa un correo electrónico válido.',
             'password.required' => 'La contraseña es obligatoria.',
         ]);
 
@@ -39,7 +38,7 @@ class AuthController extends Controller
         if (Auth::attempt($credentials, $remember)) {
             $request->session()->regenerate();
 
-            return $this->redirectByRole(Auth::user(), '¡Bienvenido de nuevo, ' . Auth::user()->name . '!');
+            return $this->redirectByRole(Auth::user(), '¡Bienvenido de nuevo, '.Auth::user()->name.'!');
         }
 
         return back()->withErrors([
@@ -69,13 +68,5 @@ class AuthController extends Controller
         $request->session()->regenerateToken();
 
         return redirect()->route('welcome')->with('status', 'Has cerrado sesión correctamente.');
-    }
-
-    /**
-     * Muestra la vista del Panel de Control (Dashboard).
-     */
-    public function dashboard()
-    {
-        return redirect()->route('admin.dashboard');
     }
 }

@@ -69,7 +69,7 @@ class Setting extends Model
             [
                 'value' => $value,
                 'group' => $group,
-                'type'  => $type,
+                'type' => $type,
             ]
         );
 
