@@ -30,11 +30,11 @@ class Product extends Model
     protected function casts(): array
     {
         return [
-            'price'              => 'decimal:2',
-            'cost_price'         => 'decimal:2',
-            'is_active'          => 'boolean',
-            'is_featured'        => 'boolean',
-            'available_in_pos'   => 'boolean',
+            'price' => 'decimal:2',
+            'cost_price' => 'decimal:2',
+            'is_active' => 'boolean',
+            'is_featured' => 'boolean',
+            'available_in_pos' => 'boolean',
             'available_in_store' => 'boolean',
         ];
     }

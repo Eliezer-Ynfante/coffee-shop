@@ -21,14 +21,14 @@ class ReservaController extends Controller
         if ($dbMesas->isNotEmpty()) {
             $mesas3d = $dbMesas->map(function ($m) {
                 return [
-                    'id'        => $m->code,
-                    'zona'      => $m->zone,
-                    'nombre'    => $m->name,
+                    'id' => $m->code,
+                    'zona' => $m->zone,
+                    'nombre' => $m->name,
                     'capacidad' => $m->capacity,
-                    'estado'    => $m->status,
-                    'x'         => $m->coord_x,
-                    'y'         => $m->coord_y,
-                    'icono'     => $m->icon,
+                    'estado' => $m->status,
+                    'x' => $m->coord_x,
+                    'y' => $m->coord_y,
+                    'icono' => $m->icon,
                 ];
             })->toArray();
         } else {
@@ -41,15 +41,15 @@ class ReservaController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'nombre'      => 'required|string|max:100',
-            'telefono'    => 'required|string|max:30',
-            'email'       => 'nullable|email|max:150',
-            'fecha'       => 'required|date|after_or_equal:today',
-            'personas'    => 'required|integer|min:1|max:20',
-            'hora'        => ['required', 'string', Rule::in(config('cafe.turnos_horarios', []))],
-            'mesa_id'     => ['required', 'string', 'max:20', Rule::exists('cafe_tables', 'code')->where('is_active', true)],
-            'ocasion'     => 'nullable|string|max:50',
-            'notas'       => 'nullable|string|max:1000',
+            'nombre' => 'required|string|max:100',
+            'telefono' => 'required|string|max:30',
+            'email' => 'nullable|email|max:150',
+            'fecha' => 'required|date|after_or_equal:today',
+            'personas' => 'required|integer|min:1|max:20',
+            'hora' => ['required', 'string', Rule::in(config('cafe.turnos_horarios', []))],
+            'mesa_id' => ['required', 'string', 'max:20', Rule::exists('cafe_tables', 'code')->where('is_active', true)],
+            'ocasion' => 'nullable|string|max:50',
+            'notas' => 'nullable|string|max:1000',
         ]);
 
         $reservation = DB::transaction(function () use ($validated) {
@@ -97,17 +97,17 @@ class ReservaController extends Controller
             }
 
             return Reservation::create([
-                'nombre'      => $validated['nombre'],
-                'telefono'    => $validated['telefono'],
-                'email'       => $validated['email'] ?? null,
-                'fecha'       => $validated['fecha'],
-                'hora'        => $validated['hora'],
-                'personas'    => $validated['personas'],
-                'mesa_id'     => $table->code,
-                'zona'        => $table->zone_name ?: $table->zone,
-                'ocasion'     => $validated['ocasion'] ?? null,
+                'nombre' => $validated['nombre'],
+                'telefono' => $validated['telefono'],
+                'email' => $validated['email'] ?? null,
+                'fecha' => $validated['fecha'],
+                'hora' => $validated['hora'],
+                'personas' => $validated['personas'],
+                'mesa_id' => $table->code,
+                'zona' => $table->zone_name ?: $table->zone,
+                'ocasion' => $validated['ocasion'] ?? null,
                 'comentarios' => $validated['notas'] ?? null,
-                'status'      => 'pending',
+                'status' => 'pending',
             ]);
         });
 
@@ -115,7 +115,7 @@ class ReservaController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Tu solicitud de reserva fue recibida y está pendiente de confirmación.',
-                'data'    => ['id' => $reservation->id],
+                'data' => ['id' => $reservation->id],
             ]);
         }
 

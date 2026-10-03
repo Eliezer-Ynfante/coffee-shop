@@ -22,9 +22,9 @@ class CafeTable extends Model
     protected function casts(): array
     {
         return [
-            'capacity'  => 'integer',
-            'coord_x'   => 'integer',
-            'coord_y'   => 'integer',
+            'capacity' => 'integer',
+            'coord_x' => 'integer',
+            'coord_y' => 'integer',
             'is_active' => 'boolean',
         ];
     }
