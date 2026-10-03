@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ContactoController extends Controller
 {
@@ -14,20 +15,20 @@ class ContactoController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'nombre'   => 'required|string|max:100',
-            'email'    => 'required|email|max:150',
+            'nombre' => 'required|string|max:100',
+            'email' => 'required|email|max:150',
             'telefono' => 'nullable|string|max:30',
-            'motivo'   => 'required|string|max:50',
-            'mensaje'  => 'required|string|max:2000',
+            'motivo' => 'required|string|max:50',
+            'mensaje' => 'required|string|max:2000',
         ]);
 
-        \Illuminate\Support\Facades\DB::table('contact_messages')->insert([
-            'nombre'     => $validated['nombre'],
-            'email'      => $validated['email'],
-            'telefono'   => $validated['telefono'] ?? null,
-            'motivo'     => $validated['motivo'],
-            'mensaje'    => $validated['mensaje'],
-            'status'     => 'unread',
+        DB::table('contact_messages')->insert([
+            'nombre' => $validated['nombre'],
+            'email' => $validated['email'],
+            'telefono' => $validated['telefono'] ?? null,
+            'motivo' => $validated['motivo'],
+            'mensaje' => $validated['mensaje'],
+            'status' => 'unread',
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -35,7 +36,7 @@ class ContactoController extends Controller
         if ($request->ajax() || $request->wantsJson()) {
             return response()->json([
                 'success' => true,
-                'message' => '¡Mensaje enviado con éxito! Nos comunicaremos contigo a la brevedad.'
+                'message' => '¡Mensaje enviado con éxito! Nos comunicaremos contigo a la brevedad.',
             ]);
         }
 
