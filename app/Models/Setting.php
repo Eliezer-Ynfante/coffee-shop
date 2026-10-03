@@ -24,14 +24,27 @@ class Setting extends Model
                 return self::where('key', $key)->first();
             });
 
-            if ($setting && $setting->value !== null && $setting->value !== '') {
-                if ($setting->type === 'json' || is_array(json_decode($setting->value, true))) {
-                    return json_decode($setting->value, true);
+            if ($setting) {
+                $value = $setting->value;
+
+                if ($setting->type === 'json') {
+                    $decoded = json_decode($value ?? '', true);
+
+                    return is_array($decoded) ? $decoded : [];
                 }
+
                 if ($setting->type === 'boolean') {
-                    return filter_var($setting->value, FILTER_VALIDATE_BOOLEAN);
+                    return filter_var($value, FILTER_VALIDATE_BOOLEAN);
                 }
-                return $setting->value;
+
+                if ($value !== null && $value !== '') {
+                    $decoded = json_decode($value, true);
+                    if (is_array($decoded)) {
+                        return $decoded;
+                    }
+                }
+
+                return $value ?? '';
             }
         } catch (\Throwable $e) {
             // Si la tabla no está disponible, continuar al fallback

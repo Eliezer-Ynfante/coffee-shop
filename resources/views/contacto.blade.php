@@ -42,10 +42,10 @@
                 </div>
                 <div>
                     <h3 class="font-display text-lg font-semibold text-cream mb-1">Nuestra Cafetería</h3>
-                    <p class="text-cream/70 text-xs leading-relaxed mb-1">{{ config('cafe.direccion') }}</p>
+                    <p class="text-cream/70 text-xs leading-relaxed mb-1">{{ setting('direccion', config('cafe.direccion')) }}</p>
                     <p class="text-muted text-xs flex items-center gap-1.5 mt-2">
                         <i class="fa-regular fa-clock text-amber" aria-hidden="true"></i>
-                        <span>{{ config('cafe.horario') }}</span>
+                        <span>{{ setting('horario', config('cafe.horario')) }}</span>
                     </p>
                 </div>
             </div>
@@ -59,9 +59,9 @@
                     <h3 class="font-display text-lg font-semibold text-cream mb-1">WhatsApp & Teléfono</h3>
                     <p class="text-muted text-xs leading-relaxed mb-2">Pedidos rápidos, reservas y consultas inmediatas:</p>
                     <div class="flex flex-wrap gap-2.5">
-                        @if (!empty(config('cafe.redes')['whatsapp']))
+                        @if (!empty(setting('redes', config('cafe.redes', []))['whatsapp']))
                         <a
-                            href="{{ config('cafe.redes')['whatsapp'] }}"
+                            href="{{ setting('redes', config('cafe.redes', []))['whatsapp'] }}"
                             target="_blank"
                             rel="noopener"
                             class="inline-flex items-center gap-1.5 text-xs text-amber font-medium hover:underline"
@@ -71,10 +71,10 @@
                         @endif
                         <span class="text-border">|</span>
                         <a
-                            href="tel:{{ preg_replace('/\s+/', '', config('cafe.telefono') ?? '') }}"
+                            href="tel:{{ preg_replace('/\s+/', '', setting('telefono', config('cafe.telefono', '')) ?? '') }}"
                             class="text-xs text-cream/70 hover:text-amber transition"
                         >
-                            {{ config('cafe.telefono') }}
+                            {{ setting('telefono', config('cafe.telefono')) }}
                         </a>
                     </div>
                 </div>
@@ -89,10 +89,10 @@
                     <h3 class="font-display text-lg font-semibold text-cream mb-1">Correo Electrónico</h3>
                     <p class="text-muted text-xs leading-relaxed mb-1">Para temas corporativos, alianzas o eventos:</p>
                     <a
-                        href="mailto:{{ config('cafe.email') }}"
+                        href="mailto:{{ setting('email', config('cafe.email')) }}"
                         class="text-amber text-xs font-medium hover:underline break-all"
                     >
-                        {{ config('cafe.email') }}
+                        {{ setting('email', config('cafe.email')) }}
                     </a>
                 </div>
             </div>

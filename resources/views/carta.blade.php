@@ -5,14 +5,14 @@
 
 <x-hero-section
     heroClass="carta-hero"
-    :subtag="config('cafe.subtag')"
+    :subtag="setting('subtag', config('cafe.subtag'))"
     title="Nuestra "
     highlight="Carta"
     description="Bebidas de especialidad, repostería artesanal y mucho más, elaborados con los mejores granos de origen."
 />
 
 {{-- ================================================================
-     PRODUCTOS DESTACADOS — Cards con foto (desde config('cafe.productos'))
+    PRODUCTOS DESTACADOS — Cards con foto desde el catálogo
      ================================================================ --}}
 <section class="bg-surface py-24 px-6" aria-label="Especialidades de la carta">
     <div class="max-w-7xl mx-auto">
@@ -27,7 +27,7 @@
 
         {{-- Grid de cards --}}
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-7">
-            @foreach (config('cafe.productos') as $i => $prod)
+            @foreach ($productosCarta as $i => $prod)
             <x-product-card :producto="$prod" :index="$i" />
             @endforeach
         </div>

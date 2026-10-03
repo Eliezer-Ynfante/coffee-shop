@@ -90,14 +90,14 @@
                 El mejor momento<br>para una <em class="text-amber not-italic">taza de café</em>
             </h2>
             <p class="text-cream/52 text-sm md:text-base leading-relaxed mb-8 max-w-md">
-                {{config('cafe.descripcion')}}
+                {{ setting('descripcion', config('cafe.descripcion')) }}
             </p>
 
             <!-- Imagen con stats superpuestos -->
             <div class="relative rounded-lg overflow-hidden max-w-sm">
                 <img
-                    src="{{config('cafe.about_img')}}"
-                    alt="Interior de {{config('cafe.nombre')}}"
+                    src="{{ setting('about_img', config('cafe.about_img')) }}"
+                    alt="Interior de {{ setting('nombre', config('cafe.nombre', 'Raíz & Grano')) }}"
                     class="w-full h-60 object-cover"
                     loading="lazy"
                     decoding="async"

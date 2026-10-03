@@ -109,7 +109,7 @@
                     <div class="flex items-center justify-between border-b border-border/80 pb-4">
                         <div>
                             <span class="font-mono text-sm font-bold text-amber">{{ $order->order_number }}</span>
-                            <span class="text-[11px] text-muted block">{{ date('d/m/Y H:i', strtotime($order->created_at)) }}</span>
+                            <span class="text-[11px] text-muted block">{{ $order->created_at->format('d/m/Y H:i') }}</span>
                         </div>
                         <div class="text-right">
                             <span class="text-base font-bold text-cream block">S/ {{ number_format($order->total, 2) }}</span>
@@ -149,7 +149,7 @@
                             @foreach ($order->items as $item)
                             <li class="py-1.5 flex items-center justify-between">
                                 <div>
-                                    <span class="text-cream font-medium">{{ $item->quantity }}x {{ $item->product_name }}</span>
+                                    <span class="text-cream font-medium">{{ $item->quantity }}x {{ $item->product?->name ?? 'Producto no disponible' }}</span>
                                     @if ($item->notes)
                                     <span class="text-muted text-[10px] block italic">Nota: {{ $item->notes }}</span>
                                     @endif
@@ -215,11 +215,11 @@
                         @foreach ($pastOrders as $order)
                         <tr class="hover:bg-surface/40 transition">
                             <td class="p-4 font-mono font-semibold text-amber">{{ $order->order_number }}</td>
-                            <td class="p-4 text-cream/80">{{ date('d/m/Y H:i', strtotime($order->created_at)) }}</td>
+                            <td class="p-4 text-cream/80">{{ $order->created_at->format('d/m/Y H:i') }}</td>
                             <td class="p-4 uppercase text-[10px] tracking-wider font-semibold text-muted">{{ $order->channel }}</td>
                             <td class="p-4 text-cream/90">
                                 @foreach ($order->items as $it)
-                                <span class="block text-[11px]">{{ $it->quantity }}x {{ $it->product_name }}</span>
+                                <span class="block text-[11px]">{{ $it->quantity }}x {{ $it->product?->name ?? 'Producto no disponible' }}</span>
                                 @endforeach
                             </td>
                             <td class="p-4 font-bold text-cream">S/ {{ number_format($order->total, 2) }}</td>

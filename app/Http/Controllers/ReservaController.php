@@ -71,21 +71,23 @@ class ReservaController extends Controller
             }
 
             $requestedStart = Carbon::parse($validated['hora']);
-            $requestedEnd = $requestedStart->copy()->addMinutes(self::SLOT_DURATION_MINUTES);
+            $requestedStartMinute = ($requestedStart->hour * 60) + $requestedStart->minute;
+            $requestedEndMinute = $requestedStartMinute + self::SLOT_DURATION_MINUTES;
             $hasConflict = Reservation::where('mesa_id', $table->code)
-                ->where('fecha', $validated['fecha'])
+                ->whereDate('fecha', $validated['fecha'])
                 ->whereIn('status', ['pending', 'confirmed'])
                 ->get(['hora'])
-                ->contains(function (Reservation $existing) use ($requestedStart, $requestedEnd) {
+                ->contains(function (Reservation $existing) use ($requestedStartMinute, $requestedEndMinute) {
                     $existingTime = $existing->getAttribute('hora');
                     if (! is_string($existingTime) || $existingTime === '') {
                         return false;
                     }
 
                     $existingStart = Carbon::parse($existingTime);
-                    $existingEnd = $existingStart->copy()->addMinutes(self::SLOT_DURATION_MINUTES);
+                    $existingStartMinute = ($existingStart->hour * 60) + $existingStart->minute;
+                    $existingEndMinute = $existingStartMinute + self::SLOT_DURATION_MINUTES;
 
-                    return $requestedStart->lt($existingEnd) && $requestedEnd->gt($existingStart);
+                    return $requestedStartMinute < $existingEndMinute && $requestedEndMinute > $existingStartMinute;
                 });
 
             if ($hasConflict) {

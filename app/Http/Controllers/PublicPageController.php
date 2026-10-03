@@ -25,8 +25,27 @@ class PublicPageController extends Controller
     public function carta()
     {
         $menuCategorias = $this->getMenuCategorias();
+        $productosCarta = Product::where('is_active', true)
+            ->where('available_in_store', true)
+            ->orderByDesc('is_featured')
+            ->orderBy('name')
+            ->get()
+            ->map(function ($product) {
+                return [
+                    'nombre'      => $product->name,
+                    'descripcion' => $product->description,
+                    'precio'      => 'S/ ' . number_format($product->price, 0),
+                    'imagen'      => $product->image_path ?: 'https://images.unsplash.com/photo-1510707577719-ae7c14805e3a?w=600&q=80&fm=webp',
+                    'badge'       => $product->is_featured ? 'Destacado' : null,
+                ];
+            })
+            ->all();
 
-        return view('carta', compact('menuCategorias'));
+        if ($productosCarta === []) {
+            $productosCarta = config('cafe.productos', []);
+        }
+
+        return view('carta', compact('menuCategorias', 'productosCarta'));
     }
 
     /**
@@ -63,7 +82,7 @@ class PublicPageController extends Controller
     protected function getMenuCategorias(): array
     {
         $dbCategories = Category::with(['products' => function ($q) {
-            $q->where('is_active', true)->orderBy('id');
+            $q->where('is_active', true)->where('available_in_store', true)->orderBy('id');
         }])->where('is_active', true)->orderBy('sort_order')->get();
 
         if ($dbCategories->isNotEmpty()) {

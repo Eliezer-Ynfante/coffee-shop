@@ -177,9 +177,9 @@
         </p>
 
         <div class="flex flex-wrap justify-center gap-4 reveal" style="transition-delay:.25s">
-            @if (!empty(config('cafe.redes')['instagram']))
+            @if (!empty(setting('redes', config('cafe.redes', []))['instagram']))
             <a
-                href="{{ config('cafe.redes')['instagram'] }}"
+                href="{{ setting('redes', config('cafe.redes', []))['instagram'] }}"
                 target="_blank"
                 rel="noopener"
                 class="btn-amber"

@@ -7,12 +7,12 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>
         @hasSection('title')
-            @yield('title') — {{ config('cafe.nombre', 'Raíz & Grano') }}
+            @yield('title') — {{ setting('nombre', config('cafe.nombre', 'Raíz & Grano')) }}
         @else
-            {{ config('cafe.nombre', 'Raíz & Grano') }} — Café de Especialidad
+            {{ setting('nombre', config('cafe.nombre', 'Raíz & Grano')) }} — Café de Especialidad
         @endif
     </title>
-    <meta name="description" content="{{ config('cafe.slogan') }} {{ config('cafe.titulo') }}">
+    <meta name="description" content="{{ setting('slogan', config('cafe.slogan')) }} {{ setting('titulo', config('cafe.titulo')) }}">
     @if (file_exists(public_path('hot')) || file_exists(public_path('build/manifest.json')))
         @vite('resources/css/app.css')
     @else

@@ -1,23 +1,25 @@
 @props(['class' => 'flex gap-2.5'])
 
+@php($redes = setting('redes', config('cafe.redes', [])))
+
 <div class="{{ $class }}">
-    @if (!empty(config('cafe.redes')['instagram']))
-    <a href="{{ config('cafe.redes')['instagram'] }}" target="_blank" rel="noopener" class="soc" aria-label="Instagram">
+    @if (!empty($redes['instagram']))
+    <a href="{{ $redes['instagram'] }}" target="_blank" rel="noopener" class="soc" aria-label="Instagram">
         <i class="fa-brands fa-instagram" aria-hidden="true"></i>
     </a>
     @endif
-    @if (!empty(config('cafe.redes')['facebook']))
-    <a href="{{ config('cafe.redes')['facebook'] }}" target="_blank" rel="noopener" class="soc" aria-label="Facebook">
+    @if (!empty($redes['facebook']))
+    <a href="{{ $redes['facebook'] }}" target="_blank" rel="noopener" class="soc" aria-label="Facebook">
         <i class="fa-brands fa-facebook-f" aria-hidden="true"></i>
     </a>
     @endif
-    @if (!empty(config('cafe.redes')['tiktok']))
-    <a href="{{ config('cafe.redes')['tiktok'] }}" target="_blank" rel="noopener" class="soc" aria-label="TikTok">
+    @if (!empty($redes['tiktok']))
+    <a href="{{ $redes['tiktok'] }}" target="_blank" rel="noopener" class="soc" aria-label="TikTok">
         <i class="fa-brands fa-tiktok" aria-hidden="true"></i>
     </a>
     @endif
-    @if (!empty(config('cafe.redes')['whatsapp']))
-    <a href="{{ config('cafe.redes')['whatsapp'] }}" target="_blank" rel="noopener" class="soc" aria-label="WhatsApp">
+    @if (!empty($redes['whatsapp']))
+    <a href="{{ $redes['whatsapp'] }}" target="_blank" rel="noopener" class="soc" aria-label="WhatsApp">
         <i class="fa-brands fa-whatsapp" aria-hidden="true"></i>
     </a>
     @endif

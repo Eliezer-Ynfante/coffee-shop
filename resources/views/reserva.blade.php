@@ -656,7 +656,7 @@
                         <i class="fa-solid fa-check" aria-hidden="true"></i>
                     </div>
                     <span class="badge text-emerald-400 bg-emerald-500/10 border-emerald-500/30 mb-2 inline-block">Reserva Confirmada</span>
-                    <h3 class="font-display text-3xl font-bold text-cream">¡Te esperamos en {{ config('cafe.nombre') ?? 'Raíz & Grano' }}!</h3>
+                    <h3 class="font-display text-3xl font-bold text-cream">¡Te esperamos en {{ setting('nombre', config('cafe.nombre', 'Raíz & Grano')) }}!</h3>
                     <p class="text-muted text-xs sm:text-sm mt-1">Hemos registrado tu lugar. Presenta este voucher al llegar.</p>
                 </div>
 
@@ -784,9 +784,9 @@
                         <span class="text-cream font-medium block">¿Grupo mayor a 8 personas?</span>
                         <span class="text-muted text-[11px]">Coordinamos mesas especiales y catering.</span>
                     </div>
-                    @if (!empty(config('cafe.redes')['whatsapp']))
+                    @if (!empty(setting('redes', config('cafe.redes', []))['whatsapp']))
                     <a
-                        href="{{ config('cafe.redes')['whatsapp'] }}"
+                        href="{{ setting('redes', config('cafe.redes', []))['whatsapp'] }}"
                         target="_blank"
                         rel="noopener"
                         class="btn-amber text-[11px] py-2 px-3 shrink-0"

@@ -32,7 +32,7 @@
 
             <div class="space-y-4 text-cream/65 text-sm md:text-base leading-relaxed mb-8">
                 <p>
-                    En <strong class="text-cream font-semibold">{{ config('cafe.nombre') ?? 'Raíz & Grano' }}</strong> entendemos que un café memorable no empieza en la máquina de espresso, sino en los suelos fértiles de las altas cordilleras peruanas a más de 1,600 metros sobre el nivel del mar.
+                    En <strong class="text-cream font-semibold">{{ setting('nombre', config('cafe.nombre', 'Raíz & Grano')) }}</strong> entendemos que un café memorable no empieza en la máquina de espresso, sino en los suelos fértiles de las altas cordilleras peruanas a más de 1,600 metros sobre el nivel del mar.
                 </p>
                 <p>
                     Nuestro nombre nace de la profunda admiración por la <span class="text-amber font-medium">raíz</span> —el árbol, la tierra viva y las manos que lo cultivan con sabiduría ancestral— y el <span class="text-amber font-medium">grano</span> —el fruto seleccionado minuciosamente que tostamos y calibramos con rigor científico.
@@ -59,8 +59,8 @@
                 {{-- Foto principal --}}
                 <div class="relative rounded-lg overflow-hidden h-72 sm:h-80 mb-6">
                     <img
-                        src="{{ config('cafe.about_img') }}"
-                        alt="Proceso de tueste y granos en {{ config('cafe.nombre') }}"
+                        src="{{ setting('about_img', config('cafe.about_img')) }}"
+                        alt="Proceso de tueste y granos en {{ setting('nombre', config('cafe.nombre', 'Raíz & Grano')) }}"
                         class="w-full h-full object-cover"
                         loading="lazy"
                         decoding="async"
