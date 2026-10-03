@@ -78,66 +78,16 @@
     {{-- BARRA SUPERIOR EMPRESARIAL / TOP NAVIGATION --}}
     <header class="sticky top-0 z-50 bg-dark/95 backdrop-blur border-b border-border">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16">
+            <div class="flex items-center justify-between min-h-14 py-2">
                 
                 {{-- Marca y Badge de Entorno --}}
-                <div class="flex items-center gap-6">
-                    <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3 group">
-                        <div class="w-8 h-8 rounded-lg bg-amber/15 border border-amber/30 text-amber flex items-center justify-center font-bold text-sm group-hover:bg-amber group-hover:text-white transition">
-                            <i class="fa-solid fa-mug-hot"></i>
-                        </div>
+                <div class="flex items-center">
+                    <a href="{{ route('admin.dashboard') }}" class="flex flex-col group">
                         <div class="flex flex-col">
                             <span class="font-bold text-sm tracking-tight text-cream">Raíz & Grano</span>
                             <span class="text-[10px] font-mono tracking-wider uppercase text-amber">Backoffice</span>
                         </div>
                     </a>
-
-                    {{-- Separador vertical --}}
-                    <div class="hidden md:block h-6 w-px bg-border"></div>
-
-                    {{-- Enlaces de Módulos Administrativos (Desktop) --}}
-                    <nav class="hidden md:flex items-center gap-1 text-xs font-medium">
-                        <a href="{{ route('admin.dashboard') }}"
-                           class="px-3 py-1.5 rounded-md transition {{ request()->routeIs('admin.dashboard') ? 'bg-amber/15 text-amber border border-amber/30' : 'text-cream/70 hover:text-cream hover:bg-surface' }}">
-                            <i class="fa-solid fa-chart-line mr-1.5"></i> Resumen
-                        </a>
-                        <a href="{{ route('admin.products.index') }}"
-                           class="px-3 py-1.5 rounded-md transition {{ request()->routeIs('admin.products.*') ? 'bg-amber/15 text-amber border border-amber/30' : 'text-cream/70 hover:text-cream hover:bg-surface' }}">
-                            <i class="fa-solid fa-mug-saucer mr-1.5"></i> Productos
-                        </a>
-                        <a href="{{ route('admin.categories.index') }}"
-                           class="px-3 py-1.5 rounded-md transition {{ request()->routeIs('admin.categories.*') ? 'bg-amber/15 text-amber border border-amber/30' : 'text-cream/70 hover:text-cream hover:bg-surface' }}">
-                            <i class="fa-solid fa-layer-group mr-1.5"></i> Categorías
-                        </a>
-                        <a href="{{ route('admin.reservations.index') }}"
-                           class="px-3 py-1.5 rounded-md transition {{ request()->routeIs('admin.reservations.*') ? 'bg-amber/15 text-amber border border-amber/30' : 'text-cream/70 hover:text-cream hover:bg-surface' }}">
-                            <i class="fa-solid fa-calendar-check mr-1.5"></i> Reservas
-                        </a>
-                        <a href="{{ route('admin.tables.index') }}"
-                           class="px-3 py-1.5 rounded-md transition {{ request()->routeIs('admin.tables.*') ? 'bg-amber/15 text-amber border border-amber/30' : 'text-cream/70 hover:text-cream hover:bg-surface' }}">
-                            <i class="fa-solid fa-cube mr-1.5"></i> Mesas 3D
-                        </a>
-                        <a href="{{ route('admin.orders.index') }}"
-                           class="px-3 py-1.5 rounded-md transition {{ request()->routeIs('admin.orders.*') ? 'bg-amber/15 text-amber border border-amber/30' : 'text-cream/70 hover:text-cream hover:bg-surface' }}">
-                            <i class="fa-solid fa-receipt mr-1.5"></i> Órdenes
-                        </a>
-                        <a href="{{ route('admin.gallery.index') }}"
-                           class="px-3 py-1.5 rounded-md transition {{ request()->routeIs('admin.gallery.*') ? 'bg-amber/15 text-amber border border-amber/30' : 'text-cream/70 hover:text-cream hover:bg-surface' }}">
-                            <i class="fa-solid fa-images mr-1.5"></i> Galería
-                        </a>
-                        <a href="{{ route('admin.messages.index') }}"
-                           class="px-3 py-1.5 rounded-md transition {{ request()->routeIs('admin.messages.*') ? 'bg-amber/15 text-amber border border-amber/30' : 'text-cream/70 hover:text-cream hover:bg-surface' }}">
-                            <i class="fa-solid fa-inbox mr-1.5"></i> Mensajes
-                        </a>
-                        <a href="{{ route('admin.users.index') }}"
-                           class="px-3 py-1.5 rounded-md transition {{ request()->routeIs('admin.users.*') ? 'bg-amber/15 text-amber border border-amber/30' : 'text-cream/70 hover:text-cream hover:bg-surface' }}">
-                            <i class="fa-solid fa-users mr-1.5"></i> Usuarios
-                        </a>
-                        <a href="{{ route('admin.settings.index') }}"
-                           class="px-3 py-1.5 rounded-md transition {{ request()->routeIs('admin.settings.*') ? 'bg-amber/15 text-amber border border-amber/30' : 'text-cream/70 hover:text-cream hover:bg-surface' }}">
-                            <i class="fa-solid fa-gear mr-1.5"></i> Ajustes
-                        </a>
-                    </nav>
                 </div>
 
                 {{-- Acciones Derecha: Ver Tienda, Usuario y Salir --}}
@@ -150,15 +100,10 @@
 
                     <div class="h-5 w-px bg-border hidden sm:block"></div>
 
-                    {{-- Chip de Usuario --}}
-                    <div class="flex items-center gap-2.5 pl-1">
-                        <div class="w-8 h-8 rounded-full bg-amber/20 border border-amber/50 text-amber text-xs font-bold flex items-center justify-center font-mono">
-                            {{ strtoupper(substr(Auth::user()->name ?? 'AD', 0, 2)) }}
-                        </div>
-                        <div class="hidden lg:flex flex-col text-left">
-                            <span class="text-xs font-medium text-cream leading-tight">{{ Auth::user()->name ?? 'Admin' }}</span>
-                            <span class="text-[10px] text-amber leading-tight">Superadministrador</span>
-                        </div>
+                    {{-- Identidad del Usuario --}}
+                    <div class="hidden sm:flex flex-col text-left pl-1">
+                        <span class="text-xs font-medium text-cream leading-tight">{{ Auth::user()->name ?? 'Admin' }}</span>
+                        <span class="text-[10px] text-amber leading-tight">Superadministrador</span>
                     </div>
 
                     {{-- Botón Cerrar Sesión --}}
@@ -173,8 +118,42 @@
                 </div>
             </div>
 
+            {{-- Enlaces de Módulos Administrativos (Desktop) --}}
+            <nav class="hidden xl:flex items-center justify-between gap-1 border-t border-border/60 py-2 text-xs font-medium">
+                <a href="{{ route('admin.dashboard') }}" class="whitespace-nowrap px-3 py-1.5 rounded-md transition {{ request()->routeIs('admin.dashboard') ? 'bg-amber/15 text-amber border border-amber/30' : 'text-cream/70 hover:text-cream hover:bg-surface' }}">
+                    <i class="fa-solid fa-chart-line mr-1.5"></i>Resumen
+                </a>
+                <a href="{{ route('admin.products.index') }}" class="whitespace-nowrap px-3 py-1.5 rounded-md transition {{ request()->routeIs('admin.products.*') ? 'bg-amber/15 text-amber border border-amber/30' : 'text-cream/70 hover:text-cream hover:bg-surface' }}">
+                    <i class="fa-solid fa-mug-saucer mr-1.5"></i>Productos
+                </a>
+                <a href="{{ route('admin.categories.index') }}" class="whitespace-nowrap px-3 py-1.5 rounded-md transition {{ request()->routeIs('admin.categories.*') ? 'bg-amber/15 text-amber border border-amber/30' : 'text-cream/70 hover:text-cream hover:bg-surface' }}">
+                    <i class="fa-solid fa-layer-group mr-1.5"></i>Categorías
+                </a>
+                <a href="{{ route('admin.orders.index') }}" class="whitespace-nowrap px-3 py-1.5 rounded-md transition {{ request()->routeIs('admin.orders.*') ? 'bg-amber/15 text-amber border border-amber/30' : 'text-cream/70 hover:text-cream hover:bg-surface' }}">
+                    <i class="fa-solid fa-receipt mr-1.5"></i>Órdenes
+                </a>
+                <a href="{{ route('admin.reservations.index') }}" class="whitespace-nowrap px-3 py-1.5 rounded-md transition {{ request()->routeIs('admin.reservations.*') ? 'bg-amber/15 text-amber border border-amber/30' : 'text-cream/70 hover:text-cream hover:bg-surface' }}">
+                    <i class="fa-solid fa-calendar-check mr-1.5"></i>Reservas
+                </a>
+                <a href="{{ route('admin.tables.index') }}" class="whitespace-nowrap px-3 py-1.5 rounded-md transition {{ request()->routeIs('admin.tables.*') ? 'bg-amber/15 text-amber border border-amber/30' : 'text-cream/70 hover:text-cream hover:bg-surface' }}">
+                    <i class="fa-solid fa-cube mr-1.5"></i>Mesas 3D
+                </a>
+                <a href="{{ route('admin.gallery.index') }}" class="whitespace-nowrap px-3 py-1.5 rounded-md transition {{ request()->routeIs('admin.gallery.*') ? 'bg-amber/15 text-amber border border-amber/30' : 'text-cream/70 hover:text-cream hover:bg-surface' }}">
+                    <i class="fa-solid fa-images mr-1.5"></i>Galería
+                </a>
+                <a href="{{ route('admin.messages.index') }}" class="whitespace-nowrap px-3 py-1.5 rounded-md transition {{ request()->routeIs('admin.messages.*') ? 'bg-amber/15 text-amber border border-amber/30' : 'text-cream/70 hover:text-cream hover:bg-surface' }}">
+                    <i class="fa-solid fa-inbox mr-1.5"></i>Mensajes
+                </a>
+                <a href="{{ route('admin.users.index') }}" class="whitespace-nowrap px-3 py-1.5 rounded-md transition {{ request()->routeIs('admin.users.*') ? 'bg-amber/15 text-amber border border-amber/30' : 'text-cream/70 hover:text-cream hover:bg-surface' }}">
+                    <i class="fa-solid fa-users mr-1.5"></i>Usuarios
+                </a>
+                <a href="{{ route('admin.settings.index') }}" class="whitespace-nowrap px-3 py-1.5 rounded-md transition {{ request()->routeIs('admin.settings.*') ? 'bg-amber/15 text-amber border border-amber/30' : 'text-cream/70 hover:text-cream hover:bg-surface' }}">
+                    <i class="fa-solid fa-gear mr-1.5"></i>Ajustes
+                </a>
+            </nav>
+
             {{-- Sub-navegación móvil --}}
-            <div class="flex md:hidden overflow-x-auto py-2.5 gap-2 border-t border-border/60 text-xs no-scrollbar">
+            <div class="flex xl:hidden overflow-x-auto py-2.5 gap-2 border-t border-border/60 text-xs no-scrollbar">
                 <a href="{{ route('admin.dashboard') }}" class="px-2.5 py-1 rounded whitespace-nowrap {{ request()->routeIs('admin.dashboard') ? 'bg-amber/20 text-amber' : 'text-cream/70' }}">Resumen</a>
                 <a href="{{ route('admin.products.index') }}" class="px-2.5 py-1 rounded whitespace-nowrap {{ request()->routeIs('admin.products.*') ? 'bg-amber/20 text-amber' : 'text-cream/70' }}">Productos</a>
                 <a href="{{ route('admin.categories.index') }}" class="px-2.5 py-1 rounded whitespace-nowrap {{ request()->routeIs('admin.categories.*') ? 'bg-amber/20 text-amber' : 'text-cream/70' }}">Categorías</a>
