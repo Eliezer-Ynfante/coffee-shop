@@ -17,7 +17,7 @@ class Setting extends Model
     /**
      * Obtiene el valor de una configuración desde la BD con fallback a config/cafe.php.
      */
-    public static function get(string $key, $default = null)
+    public static function get(string $key, mixed $default = null): mixed
     {
         try {
             $setting = Cache::remember("setting_{$key}", 3600, function () use ($key) {
@@ -57,7 +57,7 @@ class Setting extends Model
     /**
      * Guarda o actualiza un valor de configuración.
      */
-    public static function set(string $key, $value, string $group = 'general', string $type = 'text')
+    public static function set(string $key, mixed $value, string $group = 'general', string $type = 'text'): self
     {
         if (is_array($value) || is_object($value)) {
             $value = json_encode($value, JSON_UNESCAPED_UNICODE);
