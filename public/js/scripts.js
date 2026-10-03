@@ -203,24 +203,48 @@ const ContactoModule = (() => {
         /* ── Feedback de Formulario de Contacto ──────────────── */
         const contactForm = document.getElementById('contacto-form');
         const formSuccess = document.getElementById('contacto-success');
+        const formError = document.getElementById('contacto-error');
 
         if (contactForm && formSuccess) {
-            contactForm.addEventListener('submit', e => {
+            contactForm.addEventListener('submit', async e => {
                 e.preventDefault();
                 const formData = new FormData(contactForm);
                 const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                const submitButton = contactForm.querySelector('button[type="submit"]');
+                if (formError) {
+                    formError.textContent = '';
+                    formError.classList.add('hidden');
+                }
+                if (submitButton) submitButton.disabled = true;
 
-                fetch(contactForm.action || '/contacto', {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                        ...(csrfToken ? { 'X-CSRF-TOKEN': csrfToken } : {})
+                try {
+                    const response = await fetch(contactForm.action || '/contacto', {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest',
+                            ...(csrfToken ? { 'X-CSRF-TOKEN': csrfToken } : {})
+                        }
+                    });
+                    const result = await response.json().catch(() => ({}));
+                    if (!response.ok || !result.success) {
+                        const validationError = Object.values(result.errors || {}).flat()[0];
+                        throw new Error(validationError || result.message || 'No se pudo enviar tu mensaje. Inténtalo de nuevo.');
                     }
-                }).catch(() => {}).finally(() => {
+
                     contactForm.classList.add('hidden');
                     formSuccess.classList.remove('hidden');
-                });
+                } catch (error) {
+                    if (formError) {
+                        formError.textContent = error instanceof TypeError
+                            ? 'No se pudo conectar con el servidor. Revisa tu conexión e inténtalo de nuevo.'
+                            : error.message;
+                        formError.classList.remove('hidden');
+                    }
+                } finally {
+                    if (submitButton) submitButton.disabled = false;
+                }
             });
         }
     }
@@ -308,7 +332,10 @@ const ReservaModule = (() => {
             if (zoneTxt)    zoneTxt.value    = zoneName;
 
             if (summaryBadge) {
-                summaryBadge.innerHTML = `<i class="fa-solid fa-check-circle mr-1 text-amber"></i> ${tableName} · ${zoneName}`;
+                const icon = document.createElement('i');
+                icon.className = 'fa-solid fa-check-circle mr-1 text-amber';
+                icon.setAttribute('aria-hidden', 'true');
+                summaryBadge.replaceChildren(icon, document.createTextNode(` ${tableName} · ${zoneName}`));
                 summaryBadge.classList.remove('hidden');
             }
 
@@ -393,66 +420,87 @@ const ReservaModule = (() => {
 
         /* ── 6. Envío del Formulario y Generación de Ticket ─────── */
         if (form && successCard && formCard) {
-            form.addEventListener('submit', (e) => {
+            form.addEventListener('submit', async (e) => {
                 e.preventDefault();
 
-                // Envío asíncrono al endpoint backend de Laravel
                 const formData = new FormData(form);
                 const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-                fetch(form.action || '/reserva', {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                        ...(csrfToken ? { 'X-CSRF-TOKEN': csrfToken } : {})
-                    }
-                }).catch(() => {});
-
-                const nombre   = document.getElementById('reserva-nombre')?.value || 'Invitado';
-                const fecha    = document.getElementById('reserva-fecha')?.value || '';
-                const hora     = timeInput?.value || '05:00 PM';
-                const personas = guestsIn?.value || '2';
-                const mesa     = tableTxt?.value || 'Mesa Asignada';
-                const zona     = zoneTxt?.value || 'Salón';
-                const randomId = Math.floor(1000 + Math.random() * 9000);
-                const code     = `#RG-${randomId}`;
-
-                // Formatea la fecha
-                let formattedDate = fecha;
-                if (fecha) {
-                    const parts = fecha.split('-');
-                    if (parts.length === 3) {
-                        formattedDate = `${parts[2]}/${parts[1]}/${parts[0]}`;
-                    }
+                const formError = document.getElementById('reserva-error');
+                const submitButton = form.querySelector('button[type="submit"]');
+                if (formError) {
+                    formError.textContent = '';
+                    formError.classList.add('hidden');
                 }
+                if (submitButton) submitButton.disabled = true;
 
-                // Inyecta en el ticket voucher
-                const vCode   = document.getElementById('voucher-code');
-                const vName   = document.getElementById('voucher-name');
-                const vDate   = document.getElementById('voucher-date');
-                const vTime   = document.getElementById('voucher-time');
-                const vGuests = document.getElementById('voucher-guests');
-                const vTable  = document.getElementById('voucher-table');
-                const vZone   = document.getElementById('voucher-zone');
-                const vWs     = document.getElementById('voucher-whatsapp-btn');
+                try {
+                    const response = await fetch(form.action || '/reserva', {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest',
+                            ...(csrfToken ? { 'X-CSRF-TOKEN': csrfToken } : {})
+                        }
+                    });
+                    const result = await response.json().catch(() => ({}));
+                    if (!response.ok || !result.success || !result.data?.id) {
+                        const validationError = Object.values(result.errors || {}).flat()[0];
+                        throw new Error(validationError || result.message || 'No se pudo registrar tu reserva. Inténtalo de nuevo.');
+                    }
 
-                if (vCode)   vCode.textContent   = code;
-                if (vName)   vName.textContent   = nombre;
-                if (vDate)   vDate.textContent   = formattedDate;
-                if (vTime)   vTime.textContent   = hora;
-                if (vGuests) vGuests.textContent = `${personas} personas`;
-                if (vTable)  vTable.textContent  = mesa;
-                if (vZone)   vZone.textContent   = zona;
+                    const nombre   = document.getElementById('reserva-nombre')?.value || 'Invitado';
+                    const fecha    = document.getElementById('reserva-fecha')?.value || '';
+                    const hora     = timeInput?.value || '05:00 PM';
+                    const personas = guestsIn?.value || '2';
+                    const mesa     = tableTxt?.value || 'Mesa Asignada';
+                    const zona     = zoneTxt?.value || 'Salón';
+                    const code     = `#RG-${result.data.id}`;
 
-                if (vWs) {
-                    const msg = encodeURIComponent(`Hola Raíz & Grano, tengo mi reserva ${code} a nombre de ${nombre} para el ${formattedDate} a las ${hora} (${personas} personas en ${mesa} - ${zona}).`);
-                    vWs.href = `https://wa.me/51999999999?text=${msg}`;
+                    let formattedDate = fecha;
+                    if (fecha) {
+                        const parts = fecha.split('-');
+                        if (parts.length === 3) {
+                            formattedDate = `${parts[2]}/${parts[1]}/${parts[0]}`;
+                        }
+                    }
+
+                    const vCode   = document.getElementById('voucher-code');
+                    const vName   = document.getElementById('voucher-name');
+                    const vDate   = document.getElementById('voucher-date');
+                    const vTime   = document.getElementById('voucher-time');
+                    const vGuests = document.getElementById('voucher-guests');
+                    const vTable  = document.getElementById('voucher-table');
+                    const vZone   = document.getElementById('voucher-zone');
+                    const vWs     = document.getElementById('voucher-whatsapp-btn');
+
+                    if (vCode)   vCode.textContent   = code;
+                    if (vName)   vName.textContent   = nombre;
+                    if (vDate)   vDate.textContent   = formattedDate;
+                    if (vTime)   vTime.textContent   = hora;
+                    if (vGuests) vGuests.textContent = `${personas} personas`;
+                    if (vTable)  vTable.textContent  = mesa;
+                    if (vZone)   vZone.textContent   = zona;
+
+                    if (vWs) {
+                        const msg = encodeURIComponent(`Hola Raíz & Grano, tengo mi reserva ${code} a nombre de ${nombre} para el ${formattedDate} a las ${hora} (${personas} personas en ${mesa} - ${zona}).`);
+                        vWs.href = `https://wa.me/51999999999?text=${msg}`;
+                    }
+
+                    formCard.classList.add('hidden');
+                    successCard.classList.remove('hidden');
+
+                    successCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                } catch (error) {
+                    if (formError) {
+                        formError.textContent = error instanceof TypeError
+                            ? 'No se pudo conectar con el servidor. Revisa tu conexión e inténtalo de nuevo.'
+                            : error.message;
+                        formError.classList.remove('hidden');
+                    }
+                } finally {
+                    if (submitButton) submitButton.disabled = false;
                 }
-
-                formCard.classList.add('hidden');
-                successCard.classList.remove('hidden');
-
-                successCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
             });
         }
 

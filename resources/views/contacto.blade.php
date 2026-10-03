@@ -119,6 +119,7 @@
                 {{-- Formulario --}}
                 <form id="contacto-form" action="{{ route('contacto.store') }}" method="POST" class="space-y-6">
                     @csrf
+                    <p id="contacto-error" class="hidden rounded-lg border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-300" role="alert" aria-live="polite"></p>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                         {{-- Nombre completo --}}
                         <div>

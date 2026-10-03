@@ -14,6 +14,12 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        if (! app()->environment(['local', 'testing'])) {
+            $this->call(CafeDataExportSeeder::class);
+
+            return;
+        }
+
         // ── 1. Usuarios: Administrador y Cliente ─────────────────────────
         $adminUser = User::updateOrCreate(
             ['email' => 'admin@raizygrano.pe'],

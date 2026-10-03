@@ -8,6 +8,8 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CustomerOrderController;
 
 use App\Http\Controllers\PublicPageController;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 // Vistas públicas dinámicas (con datos de BD y fallback a config)
 Route::get('/', [PublicPageController::class, 'home'])->name('welcome');
@@ -17,20 +19,25 @@ Route::get('/galeria', [PublicPageController::class, 'galeria'])->name('galeria'
 
 // Reservas
 Route::get('/reserva', [ReservaController::class, 'index'])->name('reserva');
-Route::post('/reserva', [ReservaController::class, 'store'])->name('reserva.store');
+Route::post('/reserva', [ReservaController::class, 'store'])->middleware('throttle:10,1')->name('reserva.store');
 
 // Contacto
 Route::get('/contacto', [ContactoController::class, 'index'])->name('contacto');
-Route::post('/contacto', [ContactoController::class, 'store'])->name('contacto.store');
+Route::post('/contacto', [ContactoController::class, 'store'])->middleware('throttle:10,1')->name('contacto.store');
 
 // Autenticación pública
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-Route::post('/login', [AuthController::class, 'login'])->name('login.post');
+Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:5,1')->name('login.post');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Redirección genérica /dashboard según el rol del usuario autenticado
 Route::get('/dashboard', function () {
-    return auth()->user()->isAdmin()
+    $user = Auth::user();
+    if (! $user instanceof User) {
+        abort(403);
+    }
+
+    return $user->isAdmin()
         ? redirect()->route('admin.dashboard')
         : redirect()->route('customer.orders');
 })->middleware('auth')->name('dashboard');

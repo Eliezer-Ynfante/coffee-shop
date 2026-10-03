@@ -492,6 +492,7 @@
                 {{-- Formulario --}}
                 <form id="reserva-form" action="{{ route('reserva.store') }}" method="POST" class="space-y-6">
                     @csrf
+                    <p id="reserva-error" class="hidden rounded-lg border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-300" role="alert" aria-live="polite"></p>
                     {{-- Campos Ocultos sincronizados con la Maqueta 3D --}}
                     <input type="hidden" id="reserva-mesa-id" name="mesa_id" value="S1">
                     <input type="hidden" id="reserva-mesa-nombre" name="mesa_nombre" value="Mesa Central S1">

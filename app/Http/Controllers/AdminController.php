@@ -16,6 +16,15 @@ use Illuminate\Support\Str;
 
 class AdminController extends Controller
 {
+    private const IMAGE_HOSTS = ['images.unsplash.com', 'raizygrano.pe', 'www.raizygrano.pe'];
+
+    private const SOCIAL_HOSTS = [
+        'whatsapp' => ['wa.me', 'api.whatsapp.com', 'whatsapp.com', 'www.whatsapp.com'],
+        'instagram' => ['instagram.com', 'www.instagram.com'],
+        'facebook' => ['facebook.com', 'www.facebook.com', 'm.facebook.com', 'fb.com', 'www.fb.com'],
+        'tiktok' => ['tiktok.com', 'www.tiktok.com'],
+    ];
+
     /**
      * Dashboard general del panel de administración.
      */
@@ -89,7 +98,7 @@ class AdminController extends Controller
             'cost_price'  => 'nullable|numeric|min:0',
             'stock'       => 'required|integer|min:0',
             'description' => 'nullable|string',
-            'image_path'  => 'nullable|string|max:255',
+            'image_path'  => ['nullable', 'string', 'max:255', $this->imagePathRule()],
             'is_active'   => 'nullable|boolean',
             'is_featured' => 'nullable|boolean',
         ]);
@@ -115,7 +124,7 @@ class AdminController extends Controller
             'cost_price'  => 'nullable|numeric|min:0',
             'stock'       => 'required|integer|min:0',
             'description' => 'nullable|string',
-            'image_path'  => 'nullable|string|max:255',
+            'image_path'  => ['nullable', 'string', 'max:255', $this->imagePathRule()],
             'is_active'   => 'nullable|boolean',
             'is_featured' => 'nullable|boolean',
         ]);
@@ -409,7 +418,7 @@ class AdminController extends Controller
         $validated = $request->validate([
             'title'       => 'required|string|max:150',
             'category'    => 'required|string|max:50',
-            'image_url'   => 'required|url|max:500',
+            'image_url'   => ['required', 'url:https', 'max:500', $this->httpsUrlRule(self::IMAGE_HOSTS)],
             'description' => 'nullable|string',
             'badge'       => 'nullable|string|max:50',
             'sort_order'  => 'nullable|integer',
@@ -439,7 +448,7 @@ class AdminController extends Controller
         $validated = $request->validate([
             'title'       => 'required|string|max:150',
             'category'    => 'required|string|max:50',
-            'image_url'   => 'required|url|max:500',
+            'image_url'   => ['required', 'url:https', 'max:500', $this->httpsUrlRule(self::IMAGE_HOSTS)],
             'description' => 'nullable|string',
             'badge'       => 'nullable|string|max:50',
             'sort_order'  => 'nullable|integer',
@@ -521,6 +530,26 @@ class AdminController extends Controller
 
     public function updateSettings(Request $request)
     {
+        $validated = $request->validate([
+            'nombre'           => 'sometimes|required|string|max:150',
+            'slogan'           => 'sometimes|nullable|string|max:255',
+            'titulo'           => 'sometimes|nullable|string|max:255',
+            'subtitulo'        => 'sometimes|nullable|string|max:2000',
+            'descripcion'      => 'sometimes|nullable|string|max:2000',
+            'subtag'           => 'sometimes|nullable|string|max:255',
+            'horario'          => 'sometimes|nullable|string|max:255',
+            'direccion'        => 'sometimes|nullable|string|max:255',
+            'email'            => 'sometimes|nullable|email|max:150',
+            'telefono'         => 'sometimes|nullable|string|max:30',
+            'hero_img'         => ['sometimes', 'nullable', 'string', 'max:500', $this->imagePathRule()],
+            'about_img'        => ['sometimes', 'nullable', 'string', 'max:500', $this->imagePathRule()],
+            'redes'            => 'sometimes|array:whatsapp,instagram,facebook,tiktok',
+            'redes.whatsapp'   => ['nullable', 'string', 'max:255', $this->httpsUrlRule(self::SOCIAL_HOSTS['whatsapp'])],
+            'redes.instagram'  => ['nullable', 'string', 'max:255', $this->httpsUrlRule(self::SOCIAL_HOSTS['instagram'])],
+            'redes.facebook'   => ['nullable', 'string', 'max:255', $this->httpsUrlRule(self::SOCIAL_HOSTS['facebook'])],
+            'redes.tiktok'     => ['nullable', 'string', 'max:255', $this->httpsUrlRule(self::SOCIAL_HOSTS['tiktok'])],
+        ]);
+
         $keys = [
             'nombre', 'slogan', 'titulo', 'subtitulo', 'descripcion',
             'subtag', 'horario', 'direccion', 'email', 'telefono',
@@ -528,16 +557,53 @@ class AdminController extends Controller
         ];
 
         foreach ($keys as $key) {
-            if ($request->has($key)) {
-                Setting::set($key, $request->input($key), 'general');
+            if (array_key_exists($key, $validated)) {
+                Setting::set($key, $validated[$key], 'general');
             }
         }
 
         // Redes sociales (JSON)
-        if ($request->has('redes')) {
-            Setting::set('redes', $request->input('redes'), 'contacto', 'json');
+        if (array_key_exists('redes', $validated)) {
+            Setting::set('redes', $validated['redes'], 'contacto', 'json');
         }
 
         return back()->with('status', 'Ajustes de la cafetería actualizados correctamente.');
+    }
+
+    private function imagePathRule(): \Closure
+    {
+        return function (string $attribute, mixed $value, \Closure $fail): void {
+            $path = is_string($value) ? parse_url($value, PHP_URL_PATH) : null;
+            $segments = is_string($path) ? explode('/', trim($path, '/')) : [];
+            $isLocalImage = is_string($value)
+                && (str_starts_with($value, '/storage/') || str_starts_with($value, '/images/'))
+                && ! in_array('..', $segments, true)
+                && ! str_contains($value, '\\');
+
+            if ($isLocalImage) {
+                return;
+            }
+
+            $this->validateHttpsUrl($attribute, $value, self::IMAGE_HOSTS, $fail);
+        };
+    }
+
+    private function httpsUrlRule(array $allowedHosts): \Closure
+    {
+        return fn (string $attribute, mixed $value, \Closure $fail) => $this->validateHttpsUrl($attribute, $value, $allowedHosts, $fail);
+    }
+
+    private function validateHttpsUrl(string $attribute, mixed $value, array $allowedHosts, \Closure $fail): void
+    {
+        $parts = is_string($value) ? parse_url($value) : false;
+        $host = is_array($parts) ? strtolower($parts['host'] ?? '') : '';
+        $isAllowed = is_array($parts)
+            && strtolower($parts['scheme'] ?? '') === 'https'
+            && filter_var($value, FILTER_VALIDATE_URL)
+            && in_array($host, $allowedHosts, true);
+
+        if (! $isAllowed) {
+            $fail('El campo :attribute debe usar HTTPS y un dominio permitido.');
+        }
     }
 }

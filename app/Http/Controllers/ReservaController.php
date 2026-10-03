@@ -2,13 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CafeTable;
+use App\Models\Reservation;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 
 class ReservaController extends Controller
 {
+    private const SLOT_DURATION_MINUTES = 90;
+
     public function index()
     {
-        $dbMesas = \App\Models\CafeTable::where('is_active', true)->get();
+        $dbMesas = CafeTable::where('is_active', true)->get();
 
         if ($dbMesas->isNotEmpty()) {
             $mesas3d = $dbMesas->map(function ($m) {
@@ -36,40 +44,79 @@ class ReservaController extends Controller
             'nombre'      => 'required|string|max:100',
             'telefono'    => 'required|string|max:30',
             'email'       => 'nullable|email|max:150',
-            'fecha'       => 'required|date',
+            'fecha'       => 'required|date|after_or_equal:today',
             'personas'    => 'required|integer|min:1|max:20',
-            'hora'        => 'nullable|string|max:20',
-            'mesa_id'     => 'nullable|string|max:10',
-            'zona'        => 'nullable|string|max:50',
+            'hora'        => ['required', 'string', Rule::in(config('cafe.turnos_horarios', []))],
+            'mesa_id'     => ['required', 'string', 'max:20', Rule::exists('cafe_tables', 'code')->where('is_active', true)],
             'ocasion'     => 'nullable|string|max:50',
-            'comentarios' => 'nullable|string|max:1000',
-            'nota'        => 'nullable|string|max:1000',
+            'notas'       => 'nullable|string|max:1000',
         ]);
 
-        $reservaId = \Illuminate\Support\Facades\DB::table('reservations')->insertGetId([
-            'nombre'      => $validated['nombre'],
-            'telefono'    => $validated['telefono'],
-            'email'       => $validated['email'] ?? null,
-            'fecha'       => $validated['fecha'],
-            'hora'        => $validated['hora'] ?? '10:00',
-            'personas'    => $validated['personas'],
-            'mesa_id'     => $validated['mesa_id'] ?? null,
-            'zona'        => $validated['zona'] ?? null,
-            'ocasion'     => $validated['ocasion'] ?? null,
-            'comentarios' => $validated['comentarios'] ?? $validated['nota'] ?? null,
-            'status'      => 'confirmed',
-            'created_at'  => now(),
-            'updated_at'  => now(),
-        ]);
+        $reservation = DB::transaction(function () use ($validated) {
+            $table = CafeTable::where('code', $validated['mesa_id'])
+                ->where('is_active', true)
+                ->lockForUpdate()
+                ->first();
+
+            if (! $table || $table->status !== 'disponible') {
+                throw ValidationException::withMessages([
+                    'mesa_id' => 'La mesa seleccionada ya no está disponible.',
+                ]);
+            }
+
+            if ($validated['personas'] > $table->capacity) {
+                throw ValidationException::withMessages([
+                    'personas' => 'La mesa seleccionada no tiene capacidad para ese grupo.',
+                ]);
+            }
+
+            $requestedStart = Carbon::parse($validated['hora']);
+            $requestedEnd = $requestedStart->copy()->addMinutes(self::SLOT_DURATION_MINUTES);
+            $hasConflict = Reservation::where('mesa_id', $table->code)
+                ->where('fecha', $validated['fecha'])
+                ->whereIn('status', ['pending', 'confirmed'])
+                ->get(['hora'])
+                ->contains(function (Reservation $existing) use ($requestedStart, $requestedEnd) {
+                    $existingTime = $existing->getAttribute('hora');
+                    if (! is_string($existingTime) || $existingTime === '') {
+                        return false;
+                    }
+
+                    $existingStart = Carbon::parse($existingTime);
+                    $existingEnd = $existingStart->copy()->addMinutes(self::SLOT_DURATION_MINUTES);
+
+                    return $requestedStart->lt($existingEnd) && $requestedEnd->gt($existingStart);
+                });
+
+            if ($hasConflict) {
+                throw ValidationException::withMessages([
+                    'mesa_id' => 'Esa mesa ya tiene una reserva para la fecha y el turno seleccionados.',
+                ]);
+            }
+
+            return Reservation::create([
+                'nombre'      => $validated['nombre'],
+                'telefono'    => $validated['telefono'],
+                'email'       => $validated['email'] ?? null,
+                'fecha'       => $validated['fecha'],
+                'hora'        => $validated['hora'],
+                'personas'    => $validated['personas'],
+                'mesa_id'     => $table->code,
+                'zona'        => $table->zone_name ?: $table->zone,
+                'ocasion'     => $validated['ocasion'] ?? null,
+                'comentarios' => $validated['notas'] ?? null,
+                'status'      => 'pending',
+            ]);
+        });
 
         if ($request->ajax() || $request->wantsJson()) {
             return response()->json([
                 'success' => true,
-                'message' => '¡Tu reserva ha sido confirmada con éxito! Te esperamos.',
-                'data'    => array_merge($validated, ['id' => $reservaId])
+                'message' => 'Tu solicitud de reserva fue recibida y está pendiente de confirmación.',
+                'data'    => ['id' => $reservation->id],
             ]);
         }
 
-        return back()->with('success', '¡Tu reserva ha sido confirmada con éxito! Te esperamos.');
+        return back()->with('success', 'Tu solicitud de reserva fue recibida y está pendiente de confirmación.');
     }
 }
