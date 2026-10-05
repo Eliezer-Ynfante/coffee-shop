@@ -22,18 +22,18 @@ class DatabaseSeeder extends Seeder
 
         // ── 1. Usuarios: Administrador y Cliente ─────────────────────────
         $adminUser = User::updateOrCreate(
-            ['email' => 'admin@raizygrano.pe'],
+            ['email' => 'admin@example.test'],
             [
-                'name'     => 'Administrador Raíz & Grano',
+                'name'     => 'Admin Demo',
                 'password' => Hash::make('password'),
                 'role'     => 'admin',
             ]
         );
 
         $customerUser = User::updateOrCreate(
-            ['email' => 'cliente@ejemplo.com'],
+            ['email' => 'cliente@example.test'],
             [
-                'name'     => 'Carlos Mendoza',
+                'name'     => 'Cliente Demo',
                 'password' => Hash::make('password'),
                 'role'     => 'customer',
             ]
@@ -41,7 +41,7 @@ class DatabaseSeeder extends Seeder
 
         // Actualizamos también Test User a customer
         User::updateOrCreate(
-            ['email' => 'test@example.com'],
+            ['email' => 'test-user@example.test'],
             [
                 'name'     => 'Test User',
                 'password' => Hash::make('password'),
@@ -54,13 +54,13 @@ class DatabaseSeeder extends Seeder
         if (! $customer) {
             $customerId = DB::table('customers')->insertGetId([
                 'user_id'        => $customerUser->id,
-                'first_name'     => 'Carlos',
-                'last_name'      => 'Mendoza',
-                'phone'          => '+51 987 654 321',
-                'birth_date'     => '1992-05-14',
-                'address_line1'  => 'Av. Las Palmeras 412, Urb. San Felipe',
-                'city'           => 'Piura',
-                'district'       => 'Piura',
+                'first_name'     => 'Cliente',
+                'last_name'      => 'Demo',
+                'phone'          => '+1 202-555-0100',
+                'birth_date'     => '2000-01-01',
+                'address_line1'  => '123 Example Street',
+                'city'           => 'Example City',
+                'district'       => 'Demo District',
                 'loyalty_points' => 140,
                 'is_active'      => 1,
                 'created_at'     => now(),
@@ -177,7 +177,7 @@ class DatabaseSeeder extends Seeder
             ]);
         }
 
-        // ── 5. Pedidos de Prueba para Carlos Mendoza ─────────────────────
+        // ── 5. Pedidos de Prueba para Cliente Demo ───────────────────────
         // Pedido A: En preparación (activo)
         $order1 = DB::table('orders')->where('order_number', 'RG-2026-0012')->first();
         if (! $order1) {
@@ -193,8 +193,8 @@ class DatabaseSeeder extends Seeder
                 'total'           => 25.00,
                 'payment_method'  => 'yape',
                 'payment_status'  => 'paid',
-                'customer_name'   => 'Carlos Mendoza',
-                'customer_phone'  => '+51 987 654 321',
+                'customer_name'   => 'Cliente Demo',
+                'customer_phone'  => '+1 202-555-0100',
                 'notes'           => 'Empacar para llevar, sin azúcar.',
                 'created_at'      => now()->subMinutes(12),
                 'updated_at'      => now(),
@@ -239,8 +239,8 @@ class DatabaseSeeder extends Seeder
                 'total'           => 12.00,
                 'payment_method'  => 'card',
                 'payment_status'  => 'paid',
-                'customer_name'   => 'Carlos Mendoza',
-                'customer_phone'  => '+51 987 654 321',
+                'customer_name'   => 'Cliente Demo',
+                'customer_phone'  => '+1 202-555-0100',
                 'notes'           => 'Consumo en barra',
                 'created_at'      => now()->subMinutes(35),
                 'updated_at'      => now(),
@@ -275,8 +275,8 @@ class DatabaseSeeder extends Seeder
                 'total'           => 21.00,
                 'payment_method'  => 'plin',
                 'payment_status'  => 'paid',
-                'customer_name'   => 'Carlos Mendoza',
-                'customer_phone'  => '+51 987 654 321',
+                'customer_name'   => 'Cliente Demo',
+                'customer_phone'  => '+1 202-555-0100',
                 'notes'           => 'Mesa central S1',
                 'completed_at'    => now()->subDays(2),
                 'created_at'      => now()->subDays(2),
@@ -311,9 +311,9 @@ class DatabaseSeeder extends Seeder
         if (DB::table('reservations')->count() === 0) {
             DB::table('reservations')->insert([
                 [
-                    'nombre'      => 'Lucía Valdivia',
-                    'email'       => 'lucia.valdivia@gmail.com',
-                    'telefono'    => '+51 912 345 678',
+                    'nombre'      => 'Persona Demo 1',
+                    'email'       => 'persona1@example.test',
+                    'telefono'    => '+1 202-555-0101',
                     'fecha'       => now()->format('Y-m-d'),
                     'hora'        => '16:30',
                     'personas'    => 2,
@@ -326,9 +326,9 @@ class DatabaseSeeder extends Seeder
                     'updated_at'  => now()->subHours(3),
                 ],
                 [
-                    'nombre'      => 'Martín Paredes',
-                    'email'       => 'martin.paredes@hotmail.com',
-                    'telefono'    => '+51 981 223 344',
+                    'nombre'      => 'Persona Demo 2',
+                    'email'       => 'persona2@example.test',
+                    'telefono'    => '+1 202-555-0102',
                     'fecha'       => now()->addDay()->format('Y-m-d'),
                     'hora'        => '19:00',
                     'personas'    => 4,
@@ -341,9 +341,9 @@ class DatabaseSeeder extends Seeder
                     'updated_at'  => now()->subHours(1),
                 ],
                 [
-                    'nombre'      => 'Andrea Sotomayor',
-                    'email'       => 'andrea.soto@outlook.com',
-                    'telefono'    => '+51 999 888 777',
+                    'nombre'      => 'Persona Demo 3',
+                    'email'       => 'persona3@example.test',
+                    'telefono'    => '+1 202-555-0103',
                     'fecha'       => now()->format('Y-m-d'),
                     'hora'        => '11:00',
                     'personas'    => 1,
@@ -362,9 +362,9 @@ class DatabaseSeeder extends Seeder
         if (DB::table('contact_messages')->count() === 0) {
             DB::table('contact_messages')->insert([
                 [
-                    'nombre'     => 'Roberto Chang',
-                    'email'      => 'roberto.chang@empresa.com',
-                    'telefono'   => '+51 977 112 233',
+                    'nombre'     => 'Persona Demo 4',
+                    'email'      => 'persona4@example.test',
+                    'telefono'   => '+1 202-555-0104',
                     'motivo'     => 'Eventos Corporativos',
                     'mensaje'    => 'Buenas tardes, quisiéramos cotizar el alquiler del salón principal para un evento privado de 25 personas el próximo mes.',
                     'status'     => 'unread',
@@ -372,9 +372,9 @@ class DatabaseSeeder extends Seeder
                     'updated_at' => now()->subHours(5),
                 ],
                 [
-                    'nombre'     => 'Sofía Alarcón',
-                    'email'      => 'sofia.alarcon@gmail.com',
-                    'telefono'   => '+51 955 443 322',
+                    'nombre'     => 'Persona Demo 5',
+                    'email'      => 'persona5@example.test',
+                    'telefono'   => '+1 202-555-0105',
                     'motivo'     => 'Consulta sobre Granos de Café',
                     'mensaje'    => 'Hola, ¿venden bolsas de 1kg en grano entero del Geisha de Jaén? ¿Tienen envíos a Lima?',
                     'status'     => 'read',
