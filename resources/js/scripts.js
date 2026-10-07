@@ -296,8 +296,45 @@ const ReservaModule = (() => {
         const form         = document.getElementById('reserva-form');
         const formCard     = document.getElementById('reserva-form-card');
         const successCard  = document.getElementById('reserva-success-card');
+        const guestsDec    = document.getElementById('guests-dec');
+        const guestsInc    = document.getElementById('guests-inc');
+        const guestsVal    = document.getElementById('guests-count');
+        const guestsIn     = document.getElementById('reserva-personas');
+        const reservationType = document.getElementById('reserva-tipo');
+        const zoneModeBtn  = document.getElementById('reserve-mode-zone');
+        const tableModeBtn = document.getElementById('reserve-mode-table');
+        const tableCapacities = mesh?.dataset.capacities ? JSON.parse(mesh.dataset.capacities) : {};
+        let selectedCapacity = 20;
+        let selectionMode = 'mesa';
 
         if (!form && !mesh) return;
+
+        allTables.forEach(table => {
+            const capacity = Number(tableCapacities[table.dataset.tableId]);
+            if (capacity > 0) table.dataset.capacity = String(capacity);
+        });
+
+        zoneCards.forEach(card => {
+            const zoneTables = Array.from(allTables).filter(table => table.dataset.zone === card.dataset.zone);
+            const availableTables = zoneTables.filter(table => !table.classList.contains('occupied'));
+            const totalCapacity = Math.min(20, availableTables.reduce((sum, table) => sum + (Number(table.dataset.capacity) || 1), 0));
+            const summary = card.querySelector('[data-zone-summary]');
+
+            if (summary) {
+                summary.textContent = availableTables.length
+                    ? `${availableTables.length} espacios disponibles · capacidad máxima ${totalCapacity} ${totalCapacity === 1 ? 'persona' : 'personas'}`
+                    : 'Sin espacios disponibles';
+            }
+        });
+
+        function updateGuestCount(value) {
+            if (!guestsIn) return;
+
+            const maximum = Number(guestsIn.max) || selectedCapacity;
+            const current = Math.max(1, Math.min(Number(value) || 1, maximum));
+            guestsIn.value = String(current);
+            if (guestsVal) guestsVal.textContent = `${current} ${current === 1 ? 'persona' : 'personas'}`;
+        }
 
         /* ── 1. Controles de Cámara 3D ────────────────────────── */
         camBtns.forEach(btn => {
@@ -316,7 +353,7 @@ const ReservaModule = (() => {
 
         /* ── 2. Selección de Mesa en la Maqueta 3D ─────────────── */
         function selectTable(tableEl) {
-            if (!tableEl || tableEl.classList.contains('occupied')) return;
+            if (selectionMode !== 'mesa' || !tableEl || tableEl.classList.contains('occupied')) return;
 
             allTables.forEach(t => t.classList.remove('selected'));
             tableEl.classList.add('selected');
@@ -325,6 +362,12 @@ const ReservaModule = (() => {
             const tableName = tableEl.dataset.tableName || '';
             const zoneId    = tableEl.dataset.zone      || '';
             const zoneName  = tableEl.dataset.zoneName  || '';
+            selectedCapacity = Math.max(1, Math.min(20, Number(tableEl.dataset.capacity) || 1));
+            if (reservationType) reservationType.value = 'mesa';
+            if (guestsIn) guestsIn.max = String(selectedCapacity);
+            if (guestsDec) guestsDec.disabled = false;
+            if (guestsInc) guestsInc.disabled = false;
+            updateGuestCount(guestsIn?.value);
 
             if (tableInput) tableInput.value = tableId;
             if (tableTxt)   tableTxt.value   = tableName;
@@ -350,6 +393,86 @@ const ReservaModule = (() => {
             });
         }
 
+        function selectZone(card) {
+            if (selectionMode !== 'zona') return;
+
+            const zone = card.dataset.zone;
+            const zoneTables = Array.from(allTables).filter(table =>
+                table.dataset.zone === zone && !table.classList.contains('occupied')
+            );
+            const totalCapacity = Math.min(20, zoneTables.reduce((sum, table) => sum + (Number(table.dataset.capacity) || 1), 0));
+            if (!totalCapacity) return;
+
+            allTables.forEach(table => table.classList.remove('selected'));
+            zonePerims.forEach(perimeter => perimeter.classList.remove('active-zone'));
+            zoneCards.forEach(zoneCard => zoneCard.classList.toggle('active', zoneCard === card));
+
+            if (reservationType) reservationType.value = 'zona';
+            if (tableInput) tableInput.value = '';
+            if (tableTxt) tableTxt.value = '';
+            if (zoneInput) zoneInput.value = zone;
+            if (zoneTxt) zoneTxt.value = card.dataset.zoneName || '';
+
+            selectedCapacity = totalCapacity;
+            if (guestsIn) guestsIn.max = String(totalCapacity);
+            updateGuestCount(totalCapacity);
+            if (guestsDec) guestsDec.disabled = true;
+            if (guestsInc) guestsInc.disabled = true;
+
+            if (summaryBadge) {
+                const icon = document.createElement('i');
+                icon.className = 'fa-solid fa-check-circle mr-1 text-amber';
+                icon.setAttribute('aria-hidden', 'true');
+                summaryBadge.replaceChildren(icon, document.createTextNode(` Zona completa · ${card.dataset.zoneName || zone}`));
+                summaryBadge.classList.remove('hidden');
+            }
+        }
+
+        function setSelectionMode(mode) {
+            selectionMode = mode;
+            if (reservationType) reservationType.value = mode;
+
+            const selectingZone = mode === 'zona';
+            zoneModeBtn?.classList.toggle('active', selectingZone);
+            zoneModeBtn?.setAttribute('aria-pressed', String(selectingZone));
+            tableModeBtn?.classList.toggle('active', !selectingZone);
+            tableModeBtn?.setAttribute('aria-pressed', String(!selectingZone));
+            mesh?.classList.toggle('selection-mode-zone', selectingZone);
+
+            zoneCards.forEach(card => {
+                card.classList.toggle('is-disabled', !selectingZone);
+                card.setAttribute('aria-disabled', String(!selectingZone));
+                card.classList.remove('active');
+            });
+
+            allTables.forEach(table => table.classList.remove('selected'));
+            zonePerims.forEach(perimeter => perimeter.classList.remove('active-zone'));
+
+            if (selectingZone) {
+                if (tableInput) tableInput.value = '';
+                if (tableTxt) tableTxt.value = '';
+                if (zoneInput) zoneInput.value = '';
+                if (zoneTxt) zoneTxt.value = '';
+                if (guestsIn) guestsIn.removeAttribute('max');
+                updateGuestCount(1);
+                if (guestsDec) guestsDec.disabled = true;
+                if (guestsInc) guestsInc.disabled = true;
+                if (summaryBadge) {
+                    summaryBadge.textContent = 'Selecciona una zona disponible';
+                    summaryBadge.classList.remove('hidden');
+                }
+                return;
+            }
+
+            if (zoneInput) zoneInput.value = '';
+            if (zoneTxt) zoneTxt.value = '';
+            if (guestsDec) guestsDec.disabled = false;
+            if (guestsInc) guestsInc.disabled = false;
+            const defaultTable = document.querySelector('.table-3d[data-table-id="S1"]:not(.occupied)')
+                || Array.from(tables).find(table => !table.classList.contains('occupied'));
+            if (defaultTable) selectTable(defaultTable);
+        }
+
         tables.forEach(table => {
             table.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -371,17 +494,12 @@ const ReservaModule = (() => {
         /* ── 3. Selección desde Tarjetas de Zonas ──────────────── */
         zoneCards.forEach(card => {
             card.addEventListener('click', () => {
-                const zone = card.dataset.zone;
-                zoneCards.forEach(c => c.classList.remove('active'));
-                card.classList.add('active');
-
-                // Busca la primera mesa disponible en esa zona
-                const firstAvailable = document.querySelector(`.table-3d[data-zone="${zone}"]:not(.occupied)`);
-                if (firstAvailable) {
-                    selectTable(firstAvailable);
-                }
+                selectZone(card);
             });
         });
+
+        zoneModeBtn?.addEventListener('click', () => setSelectionMode('zona'));
+        tableModeBtn?.addEventListener('click', () => setSelectionMode('mesa'));
 
         /* ── 4. Selección de Turnos de Horario ─────────────────── */
         timeBtns.forEach(btn => {
@@ -393,28 +511,15 @@ const ReservaModule = (() => {
         });
 
         /* ── 5. Contador de Comensales ────────────────────────── */
-        const guestsDec = document.getElementById('guests-dec');
-        const guestsInc = document.getElementById('guests-inc');
-        const guestsVal = document.getElementById('guests-count');
-        const guestsIn  = document.getElementById('reserva-personas');
-
         if (guestsDec && guestsInc && guestsVal && guestsIn) {
             guestsDec.addEventListener('click', () => {
-                let current = parseInt(guestsIn.value, 10) || 2;
-                if (current > 1) {
-                    current--;
-                    guestsIn.value = current;
-                    guestsVal.textContent = current + (current === 1 ? ' persona' : ' personas');
-                }
+                if (selectionMode !== 'mesa') return;
+                updateGuestCount((Number(guestsIn.value) || 2) - 1);
             });
 
             guestsInc.addEventListener('click', () => {
-                let current = parseInt(guestsIn.value, 10) || 2;
-                if (current < 12) {
-                    current++;
-                    guestsIn.value = current;
-                    guestsVal.textContent = current + ' personas';
-                }
+                if (selectionMode !== 'mesa') return;
+                updateGuestCount((Number(guestsIn.value) || 1) + 1);
             });
         }
 
@@ -504,9 +609,7 @@ const ReservaModule = (() => {
             });
         }
 
-        // Selección por defecto de la primera mesa disponible
-        const initialTable = document.querySelector('.table-3d[data-table-id="S1"]');
-        if (initialTable) selectTable(initialTable);
+        setSelectionMode('mesa');
     }
 
     return { init };

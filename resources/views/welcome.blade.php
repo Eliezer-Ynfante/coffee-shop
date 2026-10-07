@@ -259,7 +259,7 @@
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-7">
-            @foreach ($productosDestacados ?? config('cafe.productos') as $i => $prod)
+            @foreach (array_slice($productosDestacados ?? config('cafe.productos'), 0, 3) as $i => $prod)
             <x-product-card :producto="$prod" :index="$i" />
             @endforeach
         </div>

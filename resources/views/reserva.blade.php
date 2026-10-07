@@ -64,7 +64,7 @@
 
         {{-- Escenario Arquitectónico 3D Recto --}}
         <div class="floorplan-stage reveal">
-            <div id="floorplan-mesh" class="floorplan-mesh view-3d-straight">
+            <div id="floorplan-mesh" class="floorplan-mesh view-3d-straight" data-capacities='@json($capacidadesMesas)'>
                 
                 {{-- Base del Suelo Principal (Microcemento / Parquet Oscuro) --}}
                 <div class="floor-base"></div>
@@ -496,6 +496,7 @@
                     {{-- Campos Ocultos sincronizados con la Maqueta 3D --}}
                     <input type="hidden" id="reserva-mesa-id" name="mesa_id" value="S1">
                     <input type="hidden" id="reserva-mesa-nombre" name="mesa_nombre" value="Mesa Central S1">
+                    <input type="hidden" id="reserva-tipo" name="tipo_reserva" value="mesa">
                     <input type="hidden" id="reserva-zona-id" name="zona_id" value="salon">
                     <input type="hidden" id="reserva-zona-nombre" name="zona_nombre" value="Salón Principal">
                     <input type="hidden" id="reserva-hora" name="hora" value="05:00 PM">
@@ -732,11 +733,21 @@
                     Explora nuestros espacios
                 </h3>
 
+                <div class="reserve-mode-switch mb-4" role="group" aria-label="Tipo de reserva">
+                    <button id="reserve-mode-zone" type="button" class="reserve-mode-btn" aria-pressed="false">
+                        <i class="fa-solid fa-layer-group" aria-hidden="true"></i> Zona completa
+                    </button>
+                    <button id="reserve-mode-table" type="button" class="reserve-mode-btn active" aria-pressed="true">
+                        <i class="fa-solid fa-chair" aria-hidden="true"></i> Mesa exacta
+                    </button>
+                </div>
+
                 <div class="space-y-3">
                     @foreach (config('cafe.zonas_reserva') as $z)
                     <div
                         class="zona-card {{ $z['id'] === 'salon' ? 'active' : '' }} p-4 flex items-center gap-4"
                         data-zone="{{ $z['id'] }}"
+                        data-zone-name="{{ $z['nombre'] }}"
                     >
                         <div class="w-16 h-16 rounded-lg overflow-hidden shrink-0 relative">
                             <img src="{{ $z['imagen'] }}" alt="{{ $z['nombre'] }}" class="w-full h-full object-cover" loading="lazy" decoding="async">
@@ -749,7 +760,8 @@
                             </div>
                             <p class="text-muted text-xs line-clamp-1 leading-snug">{{ $z['descripcion'] }}</p>
                             <span class="text-amber text-[10px] font-medium block mt-1">
-                                <i class="fa-solid fa-user-group mr-1" aria-hidden="true"></i>{{ $z['capacidad'] }}
+                                <i class="fa-solid fa-user-group mr-1" aria-hidden="true"></i>
+                                <span data-zone-summary>{{ $z['capacidad'] }}</span>
                             </span>
                         </div>
                     </div>

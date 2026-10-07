@@ -67,6 +67,82 @@ class ReservationSecurityTest extends TestCase
         $this->assertDatabaseCount('reservations', 1);
     }
 
+    public function test_zone_reservation_uses_its_full_capacity_without_assigning_a_table(): void
+    {
+        foreach (['S1', 'S2'] as $code) {
+            CafeTable::create([
+                'code' => $code,
+                'zone' => 'salon',
+                'zone_name' => 'Salón Principal',
+                'name' => "Mesa {$code}",
+                'capacity' => 4,
+                'status' => 'disponible',
+                'is_active' => true,
+            ]);
+        }
+
+        $this->postJson(route('reserva.store'), array_merge($this->reservationData(), [
+            'tipo_reserva' => 'zona',
+            'mesa_id' => null,
+            'zona_id' => 'salon',
+            'personas' => 8,
+        ]))->assertOk()->assertJsonPath('success', true);
+
+        $this->assertDatabaseHas('reservations', [
+            'mesa_id' => null,
+            'zona' => 'Salón Principal',
+            'personas' => 8,
+        ]);
+    }
+
+    public function test_zone_reservation_rejects_a_group_below_the_zone_capacity(): void
+    {
+        CafeTable::create([
+            'code' => 'S1',
+            'zone' => 'salon',
+            'zone_name' => 'Salón Principal',
+            'name' => 'Mesa S1',
+            'capacity' => 4,
+            'status' => 'disponible',
+            'is_active' => true,
+        ]);
+
+        $this->postJson(route('reserva.store'), array_merge($this->reservationData(), [
+            'tipo_reserva' => 'zona',
+            'mesa_id' => null,
+            'zona_id' => 'salon',
+            'personas' => 3,
+        ]))->assertUnprocessable()->assertJsonValidationErrors('personas');
+    }
+
+    public function test_zone_reservation_blocks_table_reservations_in_the_same_zone(): void
+    {
+        CafeTable::create([
+            'code' => 'S1',
+            'zone' => 'salon',
+            'zone_name' => 'Salón Principal',
+            'name' => 'Mesa S1',
+            'capacity' => 4,
+            'status' => 'disponible',
+            'is_active' => true,
+        ]);
+
+        Reservation::create([
+            'nombre' => 'Reserva por zona',
+            'telefono' => '999111222',
+            'fecha' => now()->addDays(3)->toDateString(),
+            'hora' => '04:30 PM',
+            'personas' => 4,
+            'mesa_id' => null,
+            'zona' => 'Salón Principal',
+            'status' => 'confirmed',
+        ]);
+
+        $this->postJson(route('reserva.store'), $this->reservationData())
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors('mesa_id');
+    }
+
     public function test_admin_rejects_image_and_social_urls_outside_the_allowlist(): void
     {
         $this->actingAs(User::factory()->create(['role' => 'admin']));
@@ -90,6 +166,7 @@ class ReservationSecurityTest extends TestCase
             'email' => 'cliente@example.com',
             'fecha' => now()->addDays(3)->toDateString(),
             'personas' => 2,
+            'tipo_reserva' => 'mesa',
             'hora' => '05:00 PM',
             'mesa_id' => 'S1',
         ];

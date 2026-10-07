@@ -15,6 +15,10 @@ body {
     color: var(--cream);
 }
 
+#inicio h1.font-display {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+}
+
 /* ── Scrollbar personalizada ─────────────────── */
 ::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-track { background: var(--ink); }
@@ -1069,6 +1073,43 @@ body {
     border-color: var(--amber);
     background: rgba(34, 22, 8, 0.9);
     box-shadow: 0 0 20px rgba(200, 120, 58, 0.3);
+}
+.zona-card.is-disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    pointer-events: none;
+    transform: none;
+    box-shadow: none;
+}
+
+.reserve-mode-switch {
+    display: inline-flex;
+    gap: 0.25rem;
+    padding: 0.25rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--ink);
+}
+.reserve-mode-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.55rem 0.75rem;
+    border: 0;
+    border-radius: 5px;
+    background: transparent;
+    color: rgba(240, 230, 208, 0.7);
+    font: inherit;
+    font-size: 0.75rem;
+    cursor: pointer;
+}
+.reserve-mode-btn.active {
+    background: var(--amber);
+    color: #fff;
+}
+#floorplan-mesh.selection-mode-zone .table-3d {
+    pointer-events: none !important;
+    opacity: 0.45;
 }
 
 /* Ticket Voucher Digital */
