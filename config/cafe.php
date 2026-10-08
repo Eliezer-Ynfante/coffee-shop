@@ -360,6 +360,18 @@ return [
         ['id' => 'C4', 'zona' => 'coworking', 'nombre' => 'Estación Focus C4', 'capacidad' => 1, 'estado' => 'ocupada',    'x' => 90, 'y' => 74, 'icono' => 'fa-solid fa-plug'],
     ],
 
+    /*
+     * Duración base de cada reserva en minutos.
+     * Cambia este valor para ajustar el bloqueo de tiempo sin tocar el controlador.
+     */
+    'slot_duration_minutes' => 90,
+
+    /*
+     * Tolerancia (buffer) entre el fin de una reserva y el inicio de la siguiente.
+     * Coincide con la política publicada de 15 minutos.
+     */
+    'slot_buffer_minutes' => 15,
+
     'turnos_horarios' => [
         '08:00 AM', '09:30 AM', '11:00 AM', '12:30 PM', '02:00 PM', '03:30 PM', '05:00 PM', '06:30 PM', '07:30 PM',
     ],
