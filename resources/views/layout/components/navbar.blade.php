@@ -53,14 +53,28 @@
             </a>
             @endauth
 
+            <!-- Carrito de compras (Sprint A) -->
+            <button type="button" class="cart-toggle-btn relative w-9 h-9 rounded-full bg-card border border-border hover:border-amber text-cream hover:text-amber flex items-center justify-center transition cursor-pointer" aria-label="Ver carrito">
+                <i class="fa-solid fa-bag-shopping text-sm"></i>
+                <span class="cart-count-badge hidden absolute -top-1 -right-1 w-4 h-4 rounded-full bg-amber text-ink font-bold text-[9px] flex items-center justify-center">0</span>
+            </button>
+
             <a href="{{ route('reserva') }}" class="btn-amber py-2 px-5 text-xs">Reservar mesa</a>
         </div>
 
-        <!-- Hamburger -->
-        <button id="ham-btn" class="md:hidden text-cream p-2" aria-label="Abrir menú" aria-expanded="false">
-            <i id="ham-open"  class="fa-solid fa-bars   text-lg" aria-hidden="true"></i>
-            <i id="ham-close" class="fa-solid fa-xmark  text-lg hidden" aria-hidden="true"></i>
-        </button>
+        <div class="flex items-center gap-3 md:hidden">
+            <!-- Carrito de compras móvil -->
+            <button type="button" class="cart-toggle-btn relative w-9 h-9 rounded-full bg-card border border-border text-cream flex items-center justify-center cursor-pointer" aria-label="Ver carrito">
+                <i class="fa-solid fa-bag-shopping text-sm"></i>
+                <span class="cart-count-badge hidden absolute -top-1 -right-1 w-4 h-4 rounded-full bg-amber text-ink font-bold text-[9px] flex items-center justify-center">0</span>
+            </button>
+
+            <!-- Hamburger -->
+            <button id="ham-btn" class="text-cream p-2" aria-label="Abrir menú" aria-expanded="false">
+                <i id="ham-open"  class="fa-solid fa-bars   text-lg" aria-hidden="true"></i>
+                <i id="ham-close" class="fa-solid fa-xmark  text-lg hidden" aria-hidden="true"></i>
+            </button>
+        </div>
     </div>
 
     <!-- Menú mobile -->

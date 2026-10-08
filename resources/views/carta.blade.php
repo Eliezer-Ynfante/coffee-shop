@@ -35,9 +35,6 @@
     </div>
 </section>
 
-    </div>
-</section>
-
 
 {{-- ================================================================
      MENÚ / CARTA — Lista punteada por categorías
@@ -79,7 +76,7 @@
                 <ul class="space-y-4">
                     @foreach ($cat['items'] as $item)
                     <li>
-                        <div class="flex items-end gap-1">
+                        <div class="flex items-end gap-2">
                             <span class="font-body font-medium text-cream text-sm uppercase tracking-wide shrink-0">
                                 {{ $item['nombre'] }}
                             </span>
@@ -87,6 +84,16 @@
                             <span class="text-amber font-semibold text-sm shrink-0">
                                 {{ $item['precio'] }}
                             </span>
+                            <button
+                                type="button"
+                                class="add-to-cart-btn group/btn w-7 h-7 rounded-full bg-amber/20 border border-amber/40 text-amber hover:bg-gold hover:border-gold hover:text-ink active:scale-90 flex items-center justify-center transition-all duration-200 hover:scale-110 shrink-0 cursor-pointer text-xs shadow-xs"
+                                data-name="{{ $item['nombre'] }}"
+                                data-price="{{ $item['precio'] }}"
+                                title="Agregar {{ $item['nombre'] }} al pedido"
+                                aria-label="Agregar {{ $item['nombre'] }} al pedido"
+                            >
+                                <i class="fa-solid fa-plus text-amber group-hover/btn:text-ink transition-colors" aria-hidden="true"></i>
+                            </button>
                         </div>
                         <p class="text-muted text-xs mt-0.5 leading-relaxed">
                             {{ $item['descripcion'] }}

@@ -27,6 +27,16 @@
             <span class="text-amber font-bold text-2xl shrink-0">
                 {{ $producto['precio'] }}
             </span>
+            <button
+                type="button"
+                class="add-to-cart-btn group/btn w-9 h-9 rounded-full bg-amber/20 border border-amber/40 text-amber hover:bg-gold hover:border-gold hover:text-ink active:scale-90 flex items-center justify-center transition-all duration-200 hover:scale-110 shrink-0 cursor-pointer text-sm shadow-sm"
+                data-name="{{ $producto['nombre'] }}"
+                data-price="{{ $producto['precio'] }}"
+                title="Agregar {{ $producto['nombre'] }} al pedido"
+                aria-label="Agregar {{ $producto['nombre'] }} al pedido"
+            >
+                <i class="fa-solid fa-plus text-amber group-hover/btn:text-ink transition-colors" aria-hidden="true"></i>
+            </button>
         </div>
     </div>
 </article>

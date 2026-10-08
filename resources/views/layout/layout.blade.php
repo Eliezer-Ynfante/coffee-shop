@@ -35,7 +35,9 @@
     @yield('content')
     
     @include('layout.components.footer')
-
+    
+    <x-cart-drawer />
+    @stack('scripts')
 </body>
 
 </html>
