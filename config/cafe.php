@@ -21,6 +21,8 @@ return [
     'direccion' => 'Av. La Mar 620, Piura, Perú',
     'email' => 'hola@raizygrano.pe',
     'telefono' => '+51 999 999 999',
+    'yape_phone' => '',
+    'payment_qr' => '',
 
     /* --- Redes sociales (dejar vacío para ocultar el ícono) --- */
     'redes' => [

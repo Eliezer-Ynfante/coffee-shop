@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\SettingsFormRequest;
 use App\Models\Setting;
+use Illuminate\Support\Facades\Storage;
 
 class AdminSettingsController extends Controller
 {
@@ -20,7 +21,7 @@ class AdminSettingsController extends Controller
         $keys = [
             'nombre', 'slogan', 'titulo', 'subtitulo', 'descripcion',
             'subtag', 'horario', 'direccion', 'email', 'telefono',
-            'hero_img', 'about_img',
+            'yape_phone', 'hero_img', 'about_img',
         ];
 
         foreach ($keys as $key) {
@@ -31,6 +32,11 @@ class AdminSettingsController extends Controller
 
         if (array_key_exists('redes', $validated)) {
             Setting::set('redes', $validated['redes'], 'contacto', 'json');
+        }
+
+        if ($request->hasFile('payment_qr')) {
+            $qrPath = $request->file('payment_qr')->store('payment-qr', 'public');
+            Setting::set('payment_qr', $qrPath, 'payments', 'image');
         }
 
         return back()->with('status', 'Ajustes de la cafetería actualizados correctamente.');

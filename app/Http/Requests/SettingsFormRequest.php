@@ -34,6 +34,8 @@ class SettingsFormRequest extends FormRequest
             'direccion' => ['sometimes', 'nullable', 'string', 'max:255'],
             'email' => ['sometimes', 'nullable', 'email', 'max:150'],
             'telefono' => ['sometimes', 'nullable', 'string', 'max:30'],
+            'yape_phone' => ['sometimes', 'nullable', 'string', 'max:30'],
+            'payment_qr' => ['sometimes', 'nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:5120'],
             'hero_img' => ['sometimes', 'nullable', 'string', 'max:500', new AllowedUrl(self::IMAGE_HOSTS, true)],
             'about_img' => ['sometimes', 'nullable', 'string', 'max:500', new AllowedUrl(self::IMAGE_HOSTS, true)],
             'redes' => ['sometimes', 'array:whatsapp,instagram,facebook,tiktok'],

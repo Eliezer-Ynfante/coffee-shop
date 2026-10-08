@@ -19,6 +19,16 @@ Route::get('/galeria', [PublicPageController::class, 'galeria'])->name('galeria'
 Route::get('/reserva', [ReservaController::class, 'index'])->name('reserva');
 Route::post('/reserva', [ReservaController::class, 'store'])->middleware('throttle:10,1')->name('reserva.store');
 
+// Venta Web (Sprint A) & Pagos (Sprint B)
+use App\Http\Controllers\OrderCheckoutController;
+use App\Http\Controllers\PaymentController;
+
+Route::get('/checkout', [OrderCheckoutController::class, 'showCheckout'])->name('checkout');
+Route::post('/pedido/crear', [OrderCheckoutController::class, 'store'])->middleware('throttle:10,1')->name('pedido.store');
+Route::get('/pedido/{order_number}', [OrderCheckoutController::class, 'confirmation'])->name('pedido.confirmacion');
+Route::post('/pedido/{order_number}/pagar', [PaymentController::class, 'processPayment'])->middleware('throttle:10,1')->name('pedido.pagar');
+Route::post('/pedido/{order_number}/reembolsar', [PaymentController::class, 'refundPayment'])->middleware(['auth', 'role:admin'])->name('pedido.reembolsar');
+
 // Contacto
 Route::get('/contacto', [ContactoController::class, 'index'])->name('contacto');
 Route::post('/contacto', [ContactoController::class, 'store'])->middleware('throttle:10,1')->name('contacto.store');

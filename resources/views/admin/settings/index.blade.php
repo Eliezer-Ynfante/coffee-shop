@@ -25,7 +25,7 @@
     </div>
 </div>
 
-<form id="form-settings" action="{{ route('admin.settings.update') }}" method="POST" class="space-y-6">
+<form id="form-settings" action="{{ route('admin.settings.update') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
     @csrf
 
     {{-- BLOQUE 1: IDENTIDAD COMERCIAL --}}
@@ -111,6 +111,28 @@
                 <label class="block text-muted mb-1 font-medium">Horario de Atención Comercial</label>
                 <input type="text" name="horario" value="{{ setting('horario', 'Lun – Vie: 7 am – 8 pm · Sáb – Dom: 8 am – 6 pm') }}"
                        class="w-full py-2 px-3 bg-dark border border-border rounded-lg text-cream focus:outline-none focus:border-amber transition">
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-surface border border-border rounded-xl p-5 space-y-4">
+        <div class="border-b border-border/60 pb-3">
+            <h3 class="text-sm font-semibold text-cream">Pagos con Yape y Plin</h3>
+            <p class="text-[11px] text-muted">Configura el número receptor y carga el QR real de la cuenta de la cafetería.</p>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+            <div>
+                <label class="block text-muted mb-1 font-medium" for="yape_phone">Número receptor</label>
+                <input id="yape_phone" type="text" name="yape_phone" value="{{ setting('yape_phone', config('cafe.yape_phone')) }}"
+                       class="w-full py-2 px-3 bg-dark border border-border rounded-lg text-cream focus:outline-none focus:border-amber transition font-mono">
+            </div>
+            <div>
+                <label class="block text-muted mb-1 font-medium" for="payment_qr">Imagen del QR (JPEG, PNG o WebP)</label>
+                <input id="payment_qr" type="file" name="payment_qr" accept="image/jpeg,image/png,image/webp"
+                       class="w-full py-2 px-3 bg-dark border border-border rounded-lg text-cream focus:outline-none focus:border-amber transition">
+                @if (setting('payment_qr', config('cafe.payment_qr')))
+                    <img src="{{ asset('storage/' . setting('payment_qr', config('cafe.payment_qr'))) }}" alt="QR de pago configurado" class="mt-3 w-28 aspect-square object-contain bg-white rounded-md p-1">
+                @endif
             </div>
         </div>
     </div>
