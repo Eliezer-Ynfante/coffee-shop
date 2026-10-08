@@ -86,6 +86,11 @@ Route::prefix('admin')
         Route::get('/ordenes', [AdminOperationsController::class, 'orders'])->name('orders.index');
         Route::patch('/ordenes/{id}/status', [AdminOperationsController::class, 'updateOrderStatus'])->name('orders.status');
 
+        // Inventario y clientes
+        Route::get('/inventario', [AdminOperationsController::class, 'inventoryIndex'])->name('inventory.index');
+        Route::post('/inventario/ajuste', [AdminOperationsController::class, 'adjustInventory'])->name('inventory.adjust');
+        Route::get('/clientes', [AdminOperationsController::class, 'customersIndex'])->name('customers.index');
+
         // POS y barra
         Route::get('/pos', [AdminOperationsController::class, 'posIndex'])->name('pos.index');
         Route::post('/pos/turno', [AdminOperationsController::class, 'setShift'])->name('pos.shift');

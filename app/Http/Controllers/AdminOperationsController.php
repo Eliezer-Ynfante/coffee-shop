@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\AdminStatusFormRequest;
 use App\Models\CafeTable;
+use App\Models\Customer;
+use App\Models\InventoryLog;
 use App\Models\Order;
 use App\Models\Payment;
 use App\Models\Product;
@@ -274,6 +276,81 @@ class AdminOperationsController extends Controller
             ->get();
 
         return view('admin.barista.index', compact('orders'));
+    }
+
+    public function inventoryIndex(Request $request)
+    {
+        $query = Product::with('category')->orderBy('stock');
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('sku', 'like', "%{$search}%");
+            });
+        }
+
+        $products = $query->paginate(15)->withQueryString();
+        $recentLogs = InventoryLog::with('product')->latest('created_at')->limit(8)->get();
+        $lowStockCount = Product::whereColumn('stock', '<=', 'min_stock_alert')->count();
+
+        return view('admin.inventory.index', compact('products', 'recentLogs', 'lowStockCount'));
+    }
+
+    public function adjustInventory(Request $request)
+    {
+        $validated = $request->validate([
+            'product_id' => 'required|exists:products,id',
+            'type' => 'required|in:restock,adjustment,waste,return',
+            'quantity' => 'required|integer|min:1',
+            'notes' => 'nullable|string|max:255',
+        ]);
+
+        $product = Product::lockForUpdate()->findOrFail($validated['product_id']);
+        $before = (int) $product->stock;
+        $delta = (int) $validated['quantity'];
+
+        if (in_array($validated['type'], ['waste'], true)) {
+            $delta = -abs($delta);
+        } elseif (in_array($validated['type'], ['restock', 'adjustment', 'return'], true)) {
+            $delta = abs($delta);
+        }
+
+        $updatedStock = max(0, $before + $delta);
+        $product->stock = $updatedStock;
+        $product->save();
+
+        InventoryLog::create([
+            'product_id' => $product->id,
+            'user_id' => Auth::id(),
+            'type' => $validated['type'],
+            'quantity' => $delta,
+            'stock_before' => $before,
+            'stock_after' => $updatedStock,
+            'channel' => 'manual',
+            'notes' => $validated['notes'] ?? null,
+            'created_at' => now(),
+        ]);
+
+        return redirect()->route('admin.inventory.index')->with('status', "Inventario actualizado para {$product->name}.");
+    }
+
+    public function customersIndex(Request $request)
+    {
+        $query = Customer::with('user')->latest();
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('first_name', 'like', "%{$search}%")
+                    ->orWhere('last_name', 'like', "%{$search}%")
+                    ->orWhere('phone', 'like', "%{$search}%");
+            });
+        }
+
+        $customers = $query->paginate(15)->withQueryString();
+
+        return view('admin.customers.index', compact('customers'));
     }
 
     public function tables(Request $request)
