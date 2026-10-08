@@ -484,22 +484,30 @@
                         <p class="text-muted text-xs sm:text-sm mt-1">Configura fecha, hora y datos de contacto.</p>
                     </div>
 
-                    <div id="reserva-selection-badge" class="badge inline-flex items-center text-xs self-start sm:self-auto">
-                        <i class="fa-solid fa-check-circle mr-1 text-amber" aria-hidden="true"></i> Mesa Central S1 · Salón Principal
+                    {{-- Sprint 0 — P1: badge neutro, sin preselección hardcodeada. El JS lo actualiza. --}}
+                    <div id="reserva-selection-badge" class="badge inline-flex items-center text-xs self-start sm:self-auto opacity-60">
+                        <i class="fa-solid fa-hand-pointer mr-1 text-amber" aria-hidden="true"></i>
+                        <span id="reserva-selection-text">Selecciona una mesa en el mapa</span>
                     </div>
+
                 </div>
 
                 {{-- Formulario --}}
                 <form id="reserva-form" action="{{ route('reserva.store') }}" method="POST" class="space-y-6">
                     @csrf
                     <p id="reserva-error" class="hidden rounded-lg border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-300" role="alert" aria-live="polite"></p>
-                    {{-- Campos Ocultos sincronizados con la Maqueta 3D --}}
-                    <input type="hidden" id="reserva-mesa-id" name="mesa_id" value="S1">
-                    <input type="hidden" id="reserva-mesa-nombre" name="mesa_nombre" value="Mesa Central S1">
-                    <input type="hidden" id="reserva-tipo" name="tipo_reserva" value="mesa">
-                    <input type="hidden" id="reserva-zona-id" name="zona_id" value="salon">
-                    <input type="hidden" id="reserva-zona-nombre" name="zona_nombre" value="Salón Principal">
-                    <input type="hidden" id="reserva-hora" name="hora" value="05:00 PM">
+                    {{--
+                        Sprint 0 — P1: Campos ocultos sin preselección hardcodeada.
+                        El JavaScript del mapa los actualiza cuando el usuario hace clic
+                        en una mesa o selecciona una zona. El servidor los valida.
+                    --}}
+                    <input type="hidden" id="reserva-mesa-id"      name="mesa_id"      value="">
+                    <input type="hidden" id="reserva-mesa-nombre"   name="mesa_nombre"  value="">
+                    <input type="hidden" id="reserva-tipo"          name="tipo_reserva" value="mesa">
+                    <input type="hidden" id="reserva-zona-id"       name="zona_id"      value="">
+                    <input type="hidden" id="reserva-zona-nombre"   name="zona_nombre"  value="">
+                    <input type="hidden" id="reserva-hora"          name="hora"         value="">
+
 
                     {{-- Fila 1: Fecha y Número de Comensales --}}
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -653,13 +661,19 @@
             <div id="reserva-success-card" class="hidden ticket-voucher p-8 sm:p-10 reveal">
                 {{-- Encabezado del Voucher --}}
                 <div class="text-center pb-6 border-b border-border/80">
-                    <div class="w-14 h-14 rounded-full border border-emerald-500/60 bg-emerald-500/10 flex items-center justify-center mx-auto mb-3 text-emerald-400 text-2xl">
-                        <i class="fa-solid fa-check" aria-hidden="true"></i>
+                    <div class="w-14 h-14 rounded-full border border-amber/60 bg-amber/10 flex items-center justify-center mx-auto mb-3 text-amber text-2xl">
+                        <i class="fa-solid fa-hourglass-half" aria-hidden="true"></i>
                     </div>
-                    <span class="badge text-emerald-400 bg-emerald-500/10 border-emerald-500/30 mb-2 inline-block">Reserva Confirmada</span>
+                    {{--
+                        Sprint 0 — P3: El servidor guarda status='pending'.
+                        Solo mostramos "Confirmada" cuando el admin cambia el estado.
+                        El badge refleja la realidad: solicitud recibida, pendiente de confirmación.
+                    --}}
+                    <span id="voucher-status-badge" class="badge text-amber bg-amber/10 border-amber/30 mb-2 inline-block">Solicitud recibida · Pendiente</span>
                     <h3 class="font-display text-3xl font-bold text-cream">¡Te esperamos en {{ setting('nombre', config('cafe.nombre', 'Raíz & Grano')) }}!</h3>
-                    <p class="text-muted text-xs sm:text-sm mt-1">Hemos registrado tu lugar. Presenta este voucher al llegar.</p>
+                    <p class="text-muted text-xs sm:text-sm mt-1">Hemos registrado tu solicitud. El equipo la confirmará pronto.</p>
                 </div>
+
 
                 {{-- Código y Datos del Ticket --}}
                 <div class="py-6 space-y-4">
@@ -816,3 +830,309 @@
 
 @endsection
 
+@push('scripts')
+<script>
+/**
+ * Sprint 0 — P2, P9: gestión del flujo de reserva en el frontend.
+ *
+ * Responsabilidades:
+ *  - Sincronizar la selección de mesa/zona del mapa 3D con los campos ocultos.
+ *  - Enviar el formulario vía fetch (AJAX) y construir el voucher con la
+ *    respuesta del SERVIDOR, nunca con los valores locales del formulario.
+ *  - Limpiar el estado de selección al cambiar entre modo mesa y modo zona.
+ *  - Gestionar los botones de turno horario.
+ *  - Gestionar el contador de personas con límite dinámico por mesa.
+ */
+(function () {
+    'use strict';
+
+    /* ── Estado de selección ─────────────────────────────────────────── */
+    const selection = {
+        tipo:       'mesa',  // 'mesa' | 'zona'
+        mesaId:     '',
+        mesaNombre: '',
+        zonaId:     '',
+        zonaNombre: '',
+        capacidad:  null,
+        hora:       '',
+    };
+
+    /* ── Helpers de DOM ──────────────────────────────────────────────── */
+    const $  = id  => document.getElementById(id);
+    const $$ = sel => document.querySelectorAll(sel);
+
+    /* ── Sincronizar campos ocultos con el estado de selección ────────── */
+    function syncHiddenFields() {
+        $('reserva-mesa-id').value      = selection.mesaId;
+        $('reserva-mesa-nombre').value  = selection.mesaNombre;
+        $('reserva-tipo').value         = selection.tipo;
+        $('reserva-zona-id').value      = selection.zonaId;
+        $('reserva-zona-nombre').value  = selection.zonaNombre;
+        $('reserva-hora').value         = selection.hora;
+    }
+
+    /* ── Actualizar badge de selección en el formulario ──────────────── */
+    function updateSelectionBadge() {
+        const badge = $('reserva-selection-badge');
+        const text  = $('reserva-selection-text');
+        if (! badge || ! text) return;
+
+        if (selection.tipo === 'mesa' && selection.mesaId) {
+            badge.classList.remove('opacity-60');
+            badge.querySelector('i').className = 'fa-solid fa-check-circle mr-1 text-amber';
+            text.textContent = selection.mesaNombre + ' · ' + selection.zonaNombre;
+        } else if (selection.tipo === 'zona' && selection.zonaId) {
+            badge.classList.remove('opacity-60');
+            badge.querySelector('i').className = 'fa-solid fa-layer-group mr-1 text-amber';
+            text.textContent = 'Zona: ' + selection.zonaNombre;
+        } else {
+            badge.classList.add('opacity-60');
+            badge.querySelector('i').className = 'fa-solid fa-hand-pointer mr-1 text-amber';
+            text.textContent = 'Selecciona una ' + (selection.tipo === 'zona' ? 'zona' : 'mesa') + ' en el mapa';
+        }
+    }
+
+    /* ── Limpiar selección de mesa/zona (Sprint 0 — P9) ─────────────── */
+    function clearTableSelection() {
+        $$('.table-3d.selected').forEach(el => el.classList.remove('selected'));
+        selection.mesaId     = '';
+        selection.mesaNombre = '';
+        selection.capacidad  = null;
+        syncHiddenFields();
+        updateSelectionBadge();
+        resetGuestLimit();
+    }
+
+    function clearZoneSelection() {
+        $$('.zona-card.active').forEach(el => el.classList.remove('active'));
+        selection.zonaId     = '';
+        selection.zonaNombre = '';
+        syncHiddenFields();
+        updateSelectionBadge();
+    }
+
+    /* ── Contador de personas ─────────────────────────────────────────── */
+    let guestsCount = 1;
+    let guestsMax   = 20;
+
+    function resetGuestLimit() {
+        guestsMax = 20;
+        renderGuests();
+    }
+
+    function renderGuests() {
+        guestsCount = Math.min(guestsCount, guestsMax);
+        guestsCount = Math.max(1, guestsCount);
+        const span = $('guests-count');
+        const inp  = $('reserva-personas');
+        if (span) span.textContent = guestsCount + (guestsCount === 1 ? ' persona' : ' personas');
+        if (inp)  inp.value = guestsCount;
+    }
+
+    $('guests-dec') && $('guests-dec').addEventListener('click', () => {
+        guestsCount = Math.max(1, guestsCount - 1);
+        renderGuests();
+    });
+
+    $('guests-inc') && $('guests-inc').addEventListener('click', () => {
+        guestsCount = Math.min(guestsMax, guestsCount + 1);
+        renderGuests();
+    });
+
+    /* ── Clic en mesa del mapa 3D ─────────────────────────────────────── */
+    document.addEventListener('click', function (e) {
+        const tableEl = e.target.closest('.table-3d');
+        if (! tableEl) return;
+        if (tableEl.dataset.state === 'ocupada') return; // no seleccionable
+
+        // Solo permitir clic en mesas cuando el modo es 'mesa exacta'
+        if (selection.tipo !== 'mesa') return;
+
+        $$('.table-3d.selected').forEach(el => el.classList.remove('selected'));
+        tableEl.classList.add('selected');
+
+        selection.mesaId     = tableEl.dataset.tableId    || '';
+        selection.mesaNombre = tableEl.dataset.tableName  || '';
+        selection.zonaId     = tableEl.dataset.zone       || '';
+        selection.zonaNombre = tableEl.dataset.zoneName   || '';
+        selection.capacidad  = parseInt(tableEl.dataset.capacity, 10) || 20;
+
+        // Actualizar límite de personas según capacidad de la mesa
+        guestsMax = selection.capacidad;
+        renderGuests();
+
+        syncHiddenFields();
+        updateSelectionBadge();
+    });
+
+    /* ── Cambio de modo: Mesa exacta ↔ Zona completa (Sprint 0 — P9) ── */
+    $('reserve-mode-table') && $('reserve-mode-table').addEventListener('click', () => {
+        if (selection.tipo === 'mesa') return;
+        selection.tipo = 'mesa';
+        $('reserve-mode-table').classList.add('active');
+        $('reserve-mode-table').setAttribute('aria-pressed', 'true');
+        $('reserve-mode-zone').classList.remove('active');
+        $('reserve-mode-zone').setAttribute('aria-pressed', 'false');
+        // P9: limpiar selección de zona al cambiar de modo
+        clearZoneSelection();
+        syncHiddenFields();
+        updateSelectionBadge();
+    });
+
+    $('reserve-mode-zone') && $('reserve-mode-zone').addEventListener('click', () => {
+        if (selection.tipo === 'zona') return;
+        selection.tipo = 'zona';
+        $('reserve-mode-zone').classList.add('active');
+        $('reserve-mode-zone').setAttribute('aria-pressed', 'true');
+        $('reserve-mode-table').classList.remove('active');
+        $('reserve-mode-table').setAttribute('aria-pressed', 'false');
+        // P9: limpiar selección de mesa al cambiar de modo
+        clearTableSelection();
+        syncHiddenFields();
+        updateSelectionBadge();
+    });
+
+    /* ── Clic en tarjeta de zona ──────────────────────────────────────── */
+    document.addEventListener('click', function (e) {
+        const zonaCard = e.target.closest('.zona-card');
+        if (! zonaCard) return;
+
+        $$('.zona-card.active').forEach(el => el.classList.remove('active'));
+        zonaCard.classList.add('active');
+
+        selection.zonaId     = zonaCard.dataset.zone     || '';
+        selection.zonaNombre = zonaCard.dataset.zoneName || '';
+
+        // Si estamos en modo zona, actualizar los ocultos
+        if (selection.tipo === 'zona') {
+            syncHiddenFields();
+            updateSelectionBadge();
+        }
+    });
+
+    /* ── Selector de turno horario ────────────────────────────────────── */
+    document.addEventListener('click', function (e) {
+        const slotBtn = e.target.closest('.time-slot-btn');
+        if (! slotBtn) return;
+
+        $$('.time-slot-btn.active').forEach(el => el.classList.remove('active'));
+        slotBtn.classList.add('active');
+        selection.hora = slotBtn.dataset.time || '';
+        $('reserva-hora').value = selection.hora;
+    });
+
+    /* ── Envío del formulario vía fetch (Sprint 0 — P2) ──────────────── */
+    const form = $('reserva-form');
+    form && form.addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        const errorEl  = $('reserva-error');
+        const submitBtn = form.querySelector('[type="submit"]');
+        const btnSpan   = submitBtn && submitBtn.querySelector('span');
+
+        // Validación mínima del lado cliente antes de enviar
+        if (selection.tipo === 'mesa' && ! selection.mesaId) {
+            errorEl.textContent = 'Por favor selecciona una mesa en el mapa antes de continuar.';
+            errorEl.classList.remove('hidden');
+            return;
+        }
+        if (selection.tipo === 'zona' && ! selection.zonaId) {
+            errorEl.textContent = 'Por favor selecciona una zona antes de continuar.';
+            errorEl.classList.remove('hidden');
+            return;
+        }
+        if (! selection.hora) {
+            errorEl.textContent = 'Por favor elige un turno horario.';
+            errorEl.classList.remove('hidden');
+            return;
+        }
+
+        errorEl.classList.add('hidden');
+        if (submitBtn) submitBtn.disabled = true;
+        if (btnSpan)   btnSpan.textContent = 'Enviando…';
+
+        try {
+            const resp = await fetch(form.action, {
+                method:  'POST',
+                headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' },
+                body:    new FormData(form),
+            });
+
+            const json = await resp.json();
+
+            if (! resp.ok || ! json.success) {
+                // Mostrar errores de validación del servidor
+                const errors = json.errors
+                    ? Object.values(json.errors).flat().join(' ')
+                    : (json.message || 'Ocurrió un error al procesar tu solicitud. Por favor intenta de nuevo.');
+                errorEl.textContent = errors;
+                errorEl.classList.remove('hidden');
+                return;
+            }
+
+            // ── Sprint 0 — P2: llenar el voucher SOLO con datos del servidor ──
+            const d = json.data;
+
+            $('voucher-code').textContent   = '#' + d.code;
+            $('voucher-name').textContent   = d.nombre;
+            $('voucher-guests').textContent = d.personas + (d.personas === 1 ? ' persona' : ' personas');
+            $('voucher-date').textContent   = d.fecha;
+            $('voucher-time').textContent   = d.hora;
+            $('voucher-table').textContent  = d.mesa_nombre || d.zona;
+            $('voucher-zone').textContent   = d.zona;
+
+            // El status siempre llega como 'pending'; el badge ya está en "Solicitud recibida".
+            // (Si en el futuro el servidor devuelve 'confirmed', actualizar el badge aquí.)
+
+            // Mostrar tarjeta de éxito y ocultar el formulario
+            $('reserva-form-card').classList.add('hidden');
+            $('reserva-success-card').classList.remove('hidden');
+
+        } catch (err) {
+            errorEl.textContent = 'Error de conexión. Por favor verifica tu internet e intenta de nuevo.';
+            errorEl.classList.remove('hidden');
+        } finally {
+            if (submitBtn) submitBtn.disabled = false;
+            if (btnSpan)   btnSpan.textContent = 'Confirmar Reserva de Mesa';
+        }
+    });
+
+    /* ── Botón "Nueva Reserva" ────────────────────────────────────────── */
+    document.addEventListener('click', function (e) {
+        if (! e.target.closest('[data-action="nueva-reserva"]') &&
+            ! e.target.closest('#reserva-success-card button[type="button"]')) return;
+
+        // Resetear estado de selección
+        selection.mesaId     = '';
+        selection.mesaNombre = '';
+        selection.zonaId     = '';
+        selection.zonaNombre = '';
+        selection.hora       = '';
+        guestsCount = 1;
+        guestsMax   = 20;
+        renderGuests();
+        $$('.table-3d.selected').forEach(el => el.classList.remove('selected'));
+        $$('.time-slot-btn.active').forEach(el => el.classList.remove('active'));
+        syncHiddenFields();
+        updateSelectionBadge();
+
+        form.reset();
+        $('reserva-form-card').classList.remove('hidden');
+        $('reserva-success-card').classList.add('hidden');
+        $('reserva-error').classList.add('hidden');
+    });
+
+    /* ── Inicializar con el primer turno horario como activo ─────────── */
+    const firstSlot = document.querySelector('.time-slot-btn');
+    if (firstSlot) {
+        firstSlot.classList.add('active');
+        selection.hora = firstSlot.dataset.time || '';
+        $('reserva-hora').value = selection.hora;
+    }
+
+    syncHiddenFields();
+    updateSelectionBadge();
+
+})();
+</script>
+@endpush
