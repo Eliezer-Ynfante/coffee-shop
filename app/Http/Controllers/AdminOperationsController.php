@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 class AdminOperationsController extends Controller
 {
@@ -82,6 +83,23 @@ class AdminOperationsController extends Controller
     {
         $order = Order::findOrFail($id);
         $validated = $request->validated();
+
+        $allowedTransitions = [
+            'pending' => ['confirmed'],
+            'confirmed' => ['preparing', 'cancelled'],
+            'preparing' => ['ready', 'cancelled'],
+            'ready' => ['completed', 'cancelled'],
+            'completed' => ['completed'],
+            'cancelled' => ['cancelled'],
+            'refunded' => ['refunded'],
+        ];
+
+        if (! isset($allowedTransitions[$order->status]) || ! in_array($validated['status'], $allowedTransitions[$order->status], true)) {
+            return back()->withErrors([
+                'status' => "La transición de estado {$order->status} → {$validated['status']} no es válida.",
+            ])->withInput();
+        }
+
         $updates = ['status' => $validated['status']];
 
         if ($validated['status'] === 'preparing' && ! $order->prepared_at) {
@@ -219,6 +237,12 @@ class AdminOperationsController extends Controller
                 }
 
                 $quantity = (int) $item['quantity'];
+                if ($product->stock < $quantity) {
+                    throw ValidationException::withMessages([
+                        'items' => "No hay stock suficiente para {$product->name}. Disponibles: {$product->stock}.",
+                    ]);
+                }
+
                 $lineTotal = round((float) $product->price * $quantity, 2);
                 $subtotal += $lineTotal;
 
@@ -248,6 +272,27 @@ class AdminOperationsController extends Controller
 
             foreach ($orderItems as $item) {
                 $order->items()->create($item);
+            }
+
+            foreach ($orderItems as $item) {
+                $product = Product::whereKey($item['product_id'])->lockForUpdate()->firstOrFail();
+                $before = (int) $product->stock;
+                $after = $before - (int) $item['quantity'];
+                $product->stock = max(0, $after);
+                $product->save();
+
+                InventoryLog::create([
+                    'product_id' => $product->id,
+                    'order_id' => $order->id,
+                    'user_id' => Auth::id(),
+                    'type' => 'sale',
+                    'quantity' => -(int) $item['quantity'],
+                    'stock_before' => $before,
+                    'stock_after' => $product->stock,
+                    'channel' => 'pos',
+                    'notes' => 'Venta POS ' . $order->order_number,
+                    'created_at' => now(),
+                ]);
             }
 
             Payment::create([

@@ -69,6 +69,74 @@ class PosOperationsTest extends TestCase
         ]);
     }
 
+    public function test_pos_sale_reduces_stock_and_tracks_inventory_log(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $product = $this->createPosProduct();
+        $this->actingAs($admin);
+
+        $this->post(route('admin.pos.store'), [
+            'customer_name' => 'Cliente Mesa',
+            'payment_method' => 'cash',
+            'payment_reference' => 'CAJA-1001',
+            'items' => [[
+                'product_id' => $product->id,
+                'quantity' => 3,
+            ]],
+        ])->assertRedirect(route('admin.pos.index'));
+
+        $this->assertDatabaseHas('products', [
+            'id' => $product->id,
+            'stock' => 47,
+        ]);
+
+        $this->assertDatabaseHas('inventory_logs', [
+            'type' => 'sale',
+            'quantity' => -3,
+            'channel' => 'pos',
+        ]);
+    }
+
+    public function test_order_status_transitions_are_restricted_to_valid_flow(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $this->actingAs($admin);
+
+        $order = Order::create([
+            'order_number' => 'POS-QUEUE-02',
+            'channel' => 'pos',
+            'status' => 'pending',
+            'subtotal' => 12.00,
+            'discount_amount' => 0,
+            'tax_amount' => 0,
+            'total' => 12.00,
+            'payment_method' => 'cash',
+            'payment_status' => 'pending',
+            'customer_name' => 'Cliente flujo',
+            'customer_phone' => null,
+            'notes' => 'Mesa 2',
+        ]);
+
+        $response = $this->patch(route('admin.orders.status', ['id' => $order->id]), [
+            'status' => 'completed',
+        ]);
+
+        $response->assertSessionHasErrors('status');
+        $this->assertDatabaseHas('orders', [
+            'id' => $order->id,
+            'status' => 'pending',
+        ]);
+
+        $this->patch(route('admin.orders.status', ['id' => $order->id]), [
+            'status' => 'confirmed',
+        ]);
+
+        $this->assertDatabaseHas('orders', [
+            'id' => $order->id,
+            'status' => 'confirmed',
+        ]);
+    }
+
     public function test_barista_queue_shows_orders_in_preparation(): void
     {
         $admin = User::factory()->create(['role' => 'admin']);

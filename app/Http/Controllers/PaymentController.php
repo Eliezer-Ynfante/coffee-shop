@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\InventoryLog;
 use App\Models\Order;
 use App\Models\Payment;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -32,21 +34,18 @@ class PaymentController extends Controller
 
         $order = Order::where('order_number', $order_number)->firstOrFail();
 
-        // Regla contra pagos duplicados o conciliación falsa
         if ($order->payment_status === 'paid') {
             throw ValidationException::withMessages([
                 'payment_method' => "El pedido #{$order->order_number} ya se encuentra pagado y confirmado.",
             ]);
         }
 
-        // Manejo de referencia por método de pago
         $ref = match ($validated['payment_method']) {
             'yape', 'plin' => $validated['transaction_reference'],
             'cash' => $validated['cash_code'],
             'card' => 'CARD-****-' . substr(preg_replace('/[^0-9]/', '', $validated['card_number']), -4),
         };
 
-        // Procesar archivo adjunto si fue subido
         $voucherPath = null;
         if ($request->hasFile('payment_voucher')) {
             $file = $request->file('payment_voucher');
@@ -55,7 +54,40 @@ class PaymentController extends Controller
         }
 
         $payment = DB::transaction(function () use ($order, $validated, $ref, $voucherPath) {
-            $payment = null;
+            foreach ($order->items()->with('product')->get() as $item) {
+                $product = Product::whereKey($item->product_id)->lockForUpdate()->first();
+                if (! $product) {
+                    $productName = $item->product ? $item->product->name : 'desconocido';
+                    throw ValidationException::withMessages([
+                        'items' => "El producto {$productName} no existe en el catálogo.",
+                    ]);
+                }
+
+                $before = (int) $product->stock;
+                $quantity = (int) $item->quantity;
+                if ($before < $quantity) {
+                    throw ValidationException::withMessages([
+                        'items' => "No hay stock suficiente para {$product->name}. Disponibles: {$before}.",
+                    ]);
+                }
+
+                $after = $before - $quantity;
+                $product->stock = max(0, $after);
+                $product->save();
+
+                InventoryLog::create([
+                    'product_id' => $product->id,
+                    'order_id' => $order->id,
+                    'user_id' => Auth::id(),
+                    'type' => 'sale',
+                    'quantity' => -$quantity,
+                    'stock_before' => $before,
+                    'stock_after' => $product->stock,
+                    'channel' => 'ecommerce',
+                    'notes' => 'Pago confirmado ' . $order->order_number,
+                    'created_at' => now(),
+                ]);
+            }
 
             $payment = Payment::create([
                 'order_id'              => $order->id,
@@ -69,7 +101,6 @@ class PaymentController extends Controller
                 'notes'                 => $voucherPath ? "Comprobante: {$voucherPath}" : ($validated['notes'] ?? null),
             ]);
 
-            // Conciliación atómica: actualizar orden a pagada y confirmada
             $order->update([
                 'payment_method' => $validated['payment_method'],
                 'payment_status' => 'paid',
