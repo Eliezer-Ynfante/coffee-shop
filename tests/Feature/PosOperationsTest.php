@@ -131,4 +131,62 @@ class PosOperationsTest extends TestCase
         $response->assertSee('Mesa 3');
         $response->assertSee('Cierre de caja');
     }
+
+    public function test_admin_can_adjust_inventory_and_review_customers(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $this->actingAs($admin);
+
+        $category = Category::create([
+            'name' => 'Bebidas calientes',
+            'slug' => 'bebidas-calientes',
+            'is_active' => true,
+        ]);
+
+        $product = Product::create([
+            'category_id' => $category->id,
+            'name' => 'Latte',
+            'slug' => 'latte',
+            'price' => 18.00,
+            'cost_price' => 6.00,
+            'stock' => 12,
+            'available_in_pos' => true,
+            'available_in_store' => true,
+            'is_active' => true,
+            'preparation_time' => 5,
+        ]);
+
+        $this->post(route('admin.inventory.adjust'), [
+            'product_id' => $product->id,
+            'type' => 'restock',
+            'quantity' => 5,
+            'notes' => 'Reposición de fin de turno',
+        ])->assertRedirect(route('admin.inventory.index'));
+
+        $this->assertDatabaseHas('products', [
+            'id' => $product->id,
+            'stock' => 17,
+        ]);
+
+        $this->assertDatabaseHas('inventory_logs', [
+            'product_id' => $product->id,
+            'type' => 'restock',
+            'quantity' => 5,
+        ]);
+
+        $customer = \App\Models\Customer::create([
+            'user_id' => $admin->id,
+            'first_name' => 'Lucía',
+            'last_name' => 'Sánchez',
+            'phone' => '999888777',
+            'loyalty_points' => 120,
+            'is_active' => true,
+        ]);
+
+        $response = $this->get(route('admin.customers.index'));
+
+        $response->assertOk();
+        $response->assertSee('Lucía');
+        $response->assertSee('120');
+    }
 }
