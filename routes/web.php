@@ -88,6 +88,8 @@ Route::prefix('admin')
 
         // POS y barra
         Route::get('/pos', [AdminOperationsController::class, 'posIndex'])->name('pos.index');
+        Route::post('/pos/turno', [AdminOperationsController::class, 'setShift'])->name('pos.shift');
+        Route::post('/pos/cierre', [AdminOperationsController::class, 'closeCash'])->name('pos.close');
         Route::post('/pos/crear', [AdminOperationsController::class, 'storePosOrder'])->name('pos.store');
         Route::get('/barra', [AdminOperationsController::class, 'baristaIndex'])->name('barista.index');
 

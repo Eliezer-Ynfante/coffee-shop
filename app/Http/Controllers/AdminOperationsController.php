@@ -106,7 +106,84 @@ class AdminOperationsController extends Controller
             ->orderBy('name')
             ->get();
 
-        return view('admin.pos.index', compact('products'));
+        $shiftName = session('admin_pos_shift', 'mañana');
+        $openingCash = (float) session('admin_pos_opening_cash', 0);
+        $closingCash = session()->has('admin_pos_closing_cash') ? (float) session('admin_pos_closing_cash') : null;
+
+        $todayOrders = Order::query()
+            ->whereDate('created_at', today())
+            ->with('items.product')
+            ->get();
+
+        $cashSales = (float) $todayOrders->where('payment_method', 'cash')->sum('total');
+        $cardSales = (float) $todayOrders->where('payment_method', 'card')->sum('total');
+        $yapeSales = (float) $todayOrders->whereIn('payment_method', ['yape', 'plin'])->sum('total');
+        $totalSales = (float) $todayOrders->sum('total');
+
+        $tableSales = $todayOrders
+            ->filter(fn ($order) => $order->status !== 'cancelled')
+            ->groupBy(function ($order) {
+                $notes = strtolower((string) ($order->notes ?? ''));
+                if (preg_match('/mesa\s*[:#]?\s*(\d+)/i', $notes, $matches)) {
+                    return 'Mesa ' . trim($matches[1]);
+                }
+
+                if (preg_match('/mesa\s*[:#]?\s*([a-z0-9]+)/i', $order->customer_name ?? '', $matches)) {
+                    return 'Mesa ' . trim($matches[1]);
+                }
+
+                return 'Sin mesa';
+            })
+            ->map(function ($orders, $tableName) {
+                return [
+                    'table' => $tableName,
+                    'count' => $orders->count(),
+                    'total' => (float) $orders->sum('total'),
+                ];
+            })
+            ->sortByDesc('total')
+            ->values()
+            ->all();
+
+        $cashDifference = $closingCash !== null ? round($closingCash - ($openingCash + $cashSales), 2) : null;
+
+        return view('admin.pos.index', compact(
+            'products',
+            'shiftName',
+            'openingCash',
+            'closingCash',
+            'cashDifference',
+            'cashSales',
+            'cardSales',
+            'yapeSales',
+            'totalSales',
+            'tableSales',
+        ));
+    }
+
+    public function setShift(Request $request)
+    {
+        $validated = $request->validate([
+            'shift_name' => 'required|string|in:mañana,tarde,noche',
+            'opening_cash' => 'required|numeric|min:0',
+        ]);
+
+        session()->put('admin_pos_shift', $validated['shift_name']);
+        session()->put('admin_pos_opening_cash', (float) $validated['opening_cash']);
+        session()->forget('admin_pos_closing_cash');
+
+        return redirect()->route('admin.pos.index')->with('status', 'Turno '. $validated['shift_name'] .' abierto correctamente.');
+    }
+
+    public function closeCash(Request $request)
+    {
+        $validated = $request->validate([
+            'closing_cash' => 'required|numeric|min:0',
+        ]);
+
+        session()->put('admin_pos_closing_cash', (float) $validated['closing_cash']);
+
+        return redirect()->route('admin.pos.index')->with('status', 'Cierre de caja registrado correctamente.');
     }
 
     public function storePosOrder(Request $request)
