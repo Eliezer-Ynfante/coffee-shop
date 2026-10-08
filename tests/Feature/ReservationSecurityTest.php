@@ -158,17 +158,121 @@ class ReservationSecurityTest extends TestCase
         ])->assertUnprocessable()->assertJsonValidationErrors('redes.instagram');
     }
 
+    /**
+     * Sprint 0 — P8: El voucher (respuesta JSON) debe contener los datos reales
+     * persistidos en la base de datos, no los del formulario.
+     */
+    public function test_json_response_contains_persisted_reservation_data(): void
+    {
+        CafeTable::create([
+            'code'      => 'S1',
+            'zone'      => 'salon',
+            'zone_name' => 'Salón Principal',
+            'name'      => 'Mesa S1',
+            'capacity'  => 4,
+            'status'    => 'disponible',
+            'is_active' => true,
+        ]);
+
+        $response = $this->postJson(route('reserva.store'), $this->reservationData());
+
+        $response->assertOk()
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('data.mesa_id', 'S1')
+            ->assertJsonPath('data.zona', 'Salón Principal')
+            ->assertJsonPath('data.personas', 2)
+            ->assertJsonPath('data.status', 'pending');
+
+        // El código del voucher debe referirse al ID real persistido
+        $reservation = \App\Models\Reservation::first();
+        $response->assertJsonPath('data.id', $reservation->id);
+        $this->assertStringContainsString((string) $reservation->id, $response->json('data.code'));
+    }
+
+    /**
+     * Sprint 0 — P4: Una mesa con status='ocupada' (ocupada ahora mismo en el local)
+     * puede reservarse para una fecha futura si no hay solapamiento de reservas.
+     * La disponibilidad para fechas futuras la determina hasTimeConflict, no el status global.
+     */
+    public function test_table_with_global_occupied_status_can_be_reserved_for_future_date(): void
+    {
+        CafeTable::create([
+            'code'      => 'S1',
+            'zone'      => 'salon',
+            'zone_name' => 'Salón Principal',
+            'name'      => 'Mesa S1',
+            'capacity'  => 4,
+            'status'    => 'ocupada', // ocupada ahora, pero sin reservas en la fecha solicitada
+            'is_active' => true,
+        ]);
+
+        $response = $this->postJson(route('reserva.store'), $this->reservationData());
+
+        $response->assertOk()->assertJsonPath('success', true);
+        $this->assertDatabaseHas('reservations', [
+            'mesa_id' => 'S1',
+            'status'  => 'pending',
+        ]);
+    }
+
+    /**
+     * Sprint 0 — P1: Enviar mesa_id vacío con tipo_reserva=mesa debe ser rechazado
+     * con error de validación, sin crear ninguna reserva.
+     */
+    public function test_empty_mesa_id_is_rejected_for_table_reservation(): void
+    {
+        $response = $this->postJson(route('reserva.store'), array_merge($this->reservationData(), [
+            'tipo_reserva' => 'mesa',
+            'mesa_id'      => '',
+        ]));
+
+        $response->assertUnprocessable()->assertJsonValidationErrors('mesa_id');
+        $this->assertDatabaseCount('reservations', 0);
+    }
+
+    /**
+     * Sprint 0 — P8: Dos solicitudes concurrentes para la misma mesa, fecha y hora
+     * solo deben crear una reserva. La segunda debe recibir un error de validación.
+     *
+     * Nota: En SQLite (testing) los bloqueos FOR UPDATE son simulados; este test
+     * verifica que la lógica de hasTimeConflict detecta el solapamiento correctamente
+     * cuando la primera reserva ya fue persistida antes de que llegue la segunda.
+     */
+    public function test_concurrent_requests_do_not_double_book_same_table(): void
+    {
+        CafeTable::create([
+            'code'      => 'S1',
+            'zone'      => 'salon',
+            'zone_name' => 'Salón Principal',
+            'name'      => 'Mesa S1',
+            'capacity'  => 4,
+            'status'    => 'disponible',
+            'is_active' => true,
+        ]);
+
+        // Primera solicitud: debe aceptarse
+        $first = $this->postJson(route('reserva.store'), $this->reservationData());
+        $first->assertOk()->assertJsonPath('success', true);
+
+        // Segunda solicitud con misma mesa, fecha y hora: debe rechazarse
+        $second = $this->postJson(route('reserva.store'), $this->reservationData());
+        $second->assertUnprocessable()->assertJsonValidationErrors('mesa_id');
+
+        // Solo debe existir una reserva en la base de datos
+        $this->assertDatabaseCount('reservations', 1);
+    }
+
     private function reservationData(): array
     {
         return [
-            'nombre' => 'Cliente de prueba',
-            'telefono' => '999111222',
-            'email' => 'cliente@example.com',
-            'fecha' => now()->addDays(3)->toDateString(),
-            'personas' => 2,
+            'nombre'       => 'Cliente de prueba',
+            'telefono'     => '999111222',
+            'email'        => 'cliente@example.com',
+            'fecha'        => now()->addDays(3)->toDateString(),
+            'personas'     => 2,
             'tipo_reserva' => 'mesa',
-            'hora' => '05:00 PM',
-            'mesa_id' => 'S1',
+            'hora'         => '05:00 PM',
+            'mesa_id'      => 'S1',
         ];
     }
-}
+}
