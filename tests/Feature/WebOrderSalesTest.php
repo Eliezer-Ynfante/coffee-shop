@@ -112,6 +112,51 @@ class WebOrderSalesTest extends TestCase
         ]);
     }
 
+    public function test_authenticated_checkout_creates_customer_profile_from_form_schema(): void
+    {
+        $user = User::factory()->create([
+            'name' => 'Ana Torres',
+            'role' => 'customer',
+        ]);
+
+        $this->actingAs($user);
+
+        $category = Category::create([
+            'name' => 'Café',
+            'slug' => 'cafe',
+            'is_active' => true,
+        ]);
+
+        Product::create([
+            'category_id' => $category->id,
+            'name' => 'Cappuccino',
+            'slug' => 'cappuccino',
+            'price' => 10.00,
+            'cost_price' => 4.00,
+            'stock' => 30,
+            'is_active' => true,
+            'available_in_store' => true,
+        ]);
+
+        $response = $this->postJson(route('pedido.store'), [
+            'customer_name' => 'Ana Torres',
+            'customer_phone' => '999111222',
+            'delivery_type' => 'delivery',
+            'address' => 'Av. Principal 123',
+            'items' => [['name' => 'Cappuccino', 'quantity' => 1]],
+        ]);
+
+        $response->assertOk()->assertJsonPath('success', true);
+
+        $this->assertDatabaseHas('customers', [
+            'user_id' => $user->id,
+            'first_name' => 'Ana',
+            'last_name' => 'Torres',
+            'phone' => '999111222',
+            'address_line1' => 'Av. Principal 123',
+        ]);
+    }
+
     public function test_order_creation_requires_valid_items_and_contact(): void
     {
         $response = $this->postJson(route('pedido.store'), [

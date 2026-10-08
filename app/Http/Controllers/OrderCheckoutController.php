@@ -58,15 +58,16 @@ class OrderCheckoutController extends Controller
             $customer = null;
 
             if ($user) {
-                $customer = Customer::firstOrCreate(
-                    ['user_id' => $user->id],
-                    [
-                        'name' => $validated['customer_name'] ?: $user->name,
-                        'email' => $user->email,
-                        'phone' => $validated['customer_phone'],
-                        'is_active' => true,
-                    ]
-                );
+                $fullName = trim((string) ($validated['customer_name'] ?: $user->name ?: 'Cliente'));
+                $nameParts = array_pad(preg_split('/\s+/', $fullName, 2) ?: [], 2, '');
+
+                $customer = $user->customer()->updateOrCreate([], [
+                    'first_name' => mb_substr($nameParts[0] !== '' ? $nameParts[0] : 'Cliente', 0, 80),
+                    'last_name' => mb_substr($nameParts[1] ?? '', 0, 80),
+                    'phone' => $validated['customer_phone'] ?? null,
+                    'address_line1' => $validated['address'] ?? null,
+                    'is_active' => true,
+                ]);
             }
 
             // Validar productos y calcular importes en el servidor (NUNCA confiar en precios del navegador)

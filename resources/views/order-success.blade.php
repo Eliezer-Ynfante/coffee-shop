@@ -128,8 +128,11 @@
 
                     <!-- 1. Formulario Yape / Plin (QR + N° Operación + Foto de comprobante) -->
                     <div id="pay-panel-yape" class="space-y-2.5 pt-1">
+                        @php
+                            $paymentQr = setting('payment_qr', config('cafe.payment_qr'));
+                            $yapePhone = setting('yape_phone', config('cafe.yape_phone'));
+                        @endphp
                         <div class="p-2.5 rounded-xl bg-card border border-border/60 flex items-center gap-3">
-                            @php($paymentQr = setting('payment_qr', config('cafe.payment_qr')))
                             @if ($paymentQr)
                                 <img src="{{ asset('storage/' . $paymentQr) }}" alt="QR de pago Yape o Plin" class="w-20 h-20 rounded-lg bg-white p-1 shrink-0 object-contain border border-amber/40 shadow-xs">
                             @else
@@ -139,8 +142,8 @@
                             @endif
                             <div class="text-xs space-y-0.5 min-w-0">
                                 <span class="text-amber font-semibold block text-[11px]">Yapea o Plinea a {{ setting('nombre', config('cafe.nombre')) }}</span>
-                                @if (setting('yape_phone', config('cafe.yape_phone')))
-                                    <span class="font-mono text-cream font-bold text-sm block">{{ setting('yape_phone', config('cafe.yape_phone')) }}</span>
+                                @if ($yapePhone)
+                                    <span class="font-mono text-cream font-bold text-sm block">{{ $yapePhone }}</span>
                                 @endif
                                 <span class="text-muted text-[10px] block">Envía el importe exacto de S/ {{ number_format($order->total, 2) }}.</span>
                             </div>
