@@ -94,4 +94,41 @@ class PosOperationsTest extends TestCase
         $response->assertOk();
         $response->assertSee('POS-QUEUE-01');
     }
+
+    public function test_admin_can_register_shift_and_cash_close_summary(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $this->actingAs($admin);
+
+        Order::create([
+            'order_number' => 'POS-TABLE-01',
+            'channel' => 'pos',
+            'status' => 'completed',
+            'subtotal' => 25.00,
+            'discount_amount' => 0,
+            'tax_amount' => 0,
+            'total' => 25.00,
+            'payment_method' => 'cash',
+            'payment_status' => 'paid',
+            'customer_name' => 'Mesa 3',
+            'customer_phone' => null,
+            'notes' => 'Mesa 3',
+        ]);
+
+        $this->post(route('admin.pos.shift'), [
+            'shift_name' => 'mañana',
+            'opening_cash' => '180.00',
+        ])->assertRedirect(route('admin.pos.index'));
+
+        $this->post(route('admin.pos.close'), [
+            'closing_cash' => '220.00',
+        ])->assertRedirect(route('admin.pos.index'));
+
+        $response = $this->get(route('admin.pos.index'));
+
+        $response->assertOk();
+        $response->assertSee('mañana');
+        $response->assertSee('Mesa 3');
+        $response->assertSee('Cierre de caja');
+    }
 }
