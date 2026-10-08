@@ -5,8 +5,13 @@ namespace App\Http\Controllers;
 use App\Http\Requests\AdminStatusFormRequest;
 use App\Models\CafeTable;
 use App\Models\Order;
+use App\Models\Payment;
+use App\Models\Product;
 use App\Models\Reservation;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class AdminOperationsController extends Controller
 {
@@ -90,6 +95,108 @@ class AdminOperationsController extends Controller
         $order->update($updates);
 
         return back()->with('status', "Orden {$order->order_number} actualizada a: ".ucfirst($validated['status']).'.');
+    }
+
+    public function posIndex()
+    {
+        $products = Product::query()
+            ->where('is_active', true)
+            ->where('available_in_pos', true)
+            ->orderBy('category_id')
+            ->orderBy('name')
+            ->get();
+
+        return view('admin.pos.index', compact('products'));
+    }
+
+    public function storePosOrder(Request $request)
+    {
+        $validated = $request->validate([
+            'customer_name' => 'nullable|string|max:100',
+            'payment_method' => 'required|string|in:cash,card,yape,plin',
+            'payment_reference' => 'nullable|string|max:100',
+            'notes' => 'nullable|string|max:255',
+            'items' => 'required|array|min:1',
+            'items.*.product_id' => 'required_with:items|exists:products,id',
+            'items.*.quantity' => 'required_with:items|integer|min:1|max:20',
+        ]);
+
+        $items = $validated['items'];
+        if (! array_is_list($items)) {
+            $items = collect($items)->map(function ($item, $key) {
+                return is_array($item) ? $item : ['product_id' => $key, 'quantity' => 1];
+            })->values()->all();
+        }
+
+        $order = DB::transaction(function () use ($validated, $items) {
+            $subtotal = 0.0;
+            $orderItems = [];
+
+            foreach ($items as $item) {
+                $product = Product::whereKey($item['product_id'])->firstOrFail();
+
+                if (! $product->is_active || ! $product->available_in_pos) {
+                    abort(422, "El producto {$product->name} no está disponible para POS.");
+                }
+
+                $quantity = (int) $item['quantity'];
+                $lineTotal = round((float) $product->price * $quantity, 2);
+                $subtotal += $lineTotal;
+
+                $orderItems[] = [
+                    'product_id' => $product->id,
+                    'quantity' => $quantity,
+                    'unit_price' => (float) $product->price,
+                    'subtotal' => $lineTotal,
+                ];
+            }
+
+            $order = Order::create([
+                'order_number' => 'POS-' . now()->format('Ymd') . '-' . strtoupper(Str::random(4)),
+                'channel' => 'pos',
+                'status' => 'confirmed',
+                'subtotal' => $subtotal,
+                'discount_amount' => 0,
+                'tax_amount' => 0,
+                'total' => $subtotal,
+                'payment_method' => $validated['payment_method'],
+                'payment_status' => 'paid',
+                'customer_name' => $validated['customer_name'] ?? 'Cliente POS',
+                'customer_phone' => null,
+                'notes' => $validated['notes'] ?? 'Venta console POS',
+                'attendant_id' => Auth::id(),
+            ]);
+
+            foreach ($orderItems as $item) {
+                $order->items()->create($item);
+            }
+
+            Payment::create([
+                'order_id' => $order->id,
+                'payment_method' => $validated['payment_method'],
+                'transaction_reference' => $validated['payment_reference'] ?? 'POS-' . $order->id,
+                'amount' => $order->total,
+                'currency' => 'PEN',
+                'status' => 'completed',
+                'provider' => 'pos_manual',
+                'confirmed_by_id' => Auth::id(),
+                'notes' => $validated['notes'] ?? 'Pago registrado en caja POS',
+            ]);
+
+            return $order;
+        });
+
+        return redirect()->route('admin.pos.index')->with('status', "Venta {$order->order_number} registrada correctamente.");
+    }
+
+    public function baristaIndex()
+    {
+        $orders = Order::with('items.product')
+            ->whereIn('status', ['pending', 'confirmed', 'preparing', 'ready'])
+            ->latest('created_at')
+            ->get();
+
+        return view('admin.barista.index', compact('orders'));
     }
 
     public function tables(Request $request)

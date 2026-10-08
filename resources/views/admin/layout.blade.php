@@ -102,6 +102,12 @@
                 <a href="{{ route('admin.orders.index') }}" class="whitespace-nowrap px-3 py-1.5 rounded-md transition {{ request()->routeIs('admin.orders.*') ? 'bg-amber/15 text-amber border border-amber/30' : 'text-cream/70 hover:text-cream hover:bg-surface' }}">
                     <i class="fa-solid fa-receipt mr-1.5"></i>Órdenes
                 </a>
+                <a href="{{ route('admin.pos.index') }}" class="whitespace-nowrap px-3 py-1.5 rounded-md transition {{ request()->routeIs('admin.pos.*') ? 'bg-amber/15 text-amber border border-amber/30' : 'text-cream/70 hover:text-cream hover:bg-surface' }}">
+                    <i class="fa-solid fa-cash-register mr-1.5"></i>POS
+                </a>
+                <a href="{{ route('admin.barista.index') }}" class="whitespace-nowrap px-3 py-1.5 rounded-md transition {{ request()->routeIs('admin.barista.*') ? 'bg-amber/15 text-amber border border-amber/30' : 'text-cream/70 hover:text-cream hover:bg-surface' }}">
+                    <i class="fa-solid fa-kitchen-set mr-1.5"></i>Barra
+                </a>
                 <a href="{{ route('admin.reservations.index') }}" class="whitespace-nowrap px-3 py-1.5 rounded-md transition {{ request()->routeIs('admin.reservations.*') ? 'bg-amber/15 text-amber border border-amber/30' : 'text-cream/70 hover:text-cream hover:bg-surface' }}">
                     <i class="fa-solid fa-calendar-check mr-1.5"></i>Reservas
                 </a>
@@ -130,6 +136,8 @@
                 <a href="{{ route('admin.reservations.index') }}" class="px-2.5 py-1 rounded whitespace-nowrap {{ request()->routeIs('admin.reservations.*') ? 'bg-amber/20 text-amber' : 'text-cream/70' }}">Reservas</a>
                 <a href="{{ route('admin.tables.index') }}" class="px-2.5 py-1 rounded whitespace-nowrap {{ request()->routeIs('admin.tables.*') ? 'bg-amber/20 text-amber' : 'text-cream/70' }}">Mesas 3D</a>
                 <a href="{{ route('admin.orders.index') }}" class="px-2.5 py-1 rounded whitespace-nowrap {{ request()->routeIs('admin.orders.*') ? 'bg-amber/20 text-amber' : 'text-cream/70' }}">Órdenes</a>
+                <a href="{{ route('admin.pos.index') }}" class="px-2.5 py-1 rounded whitespace-nowrap {{ request()->routeIs('admin.pos.*') ? 'bg-amber/20 text-amber' : 'text-cream/70' }}">POS</a>
+                <a href="{{ route('admin.barista.index') }}" class="px-2.5 py-1 rounded whitespace-nowrap {{ request()->routeIs('admin.barista.*') ? 'bg-amber/20 text-amber' : 'text-cream/70' }}">Barra</a>
                 <a href="{{ route('admin.gallery.index') }}" class="px-2.5 py-1 rounded whitespace-nowrap {{ request()->routeIs('admin.gallery.*') ? 'bg-amber/20 text-amber' : 'text-cream/70' }}">Galería</a>
                 <a href="{{ route('admin.messages.index') }}" class="px-2.5 py-1 rounded whitespace-nowrap {{ request()->routeIs('admin.messages.*') ? 'bg-amber/20 text-amber' : 'text-cream/70' }}">Mensajes</a>
                 <a href="{{ route('admin.users.index') }}" class="px-2.5 py-1 rounded whitespace-nowrap {{ request()->routeIs('admin.users.*') ? 'bg-amber/20 text-amber' : 'text-cream/70' }}">Usuarios</a>

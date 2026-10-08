@@ -34,7 +34,7 @@ class OrderCheckoutController extends Controller
             'customer_email' => 'nullable|email|max:150',
             'delivery_type'  => 'required|in:mesa,recojo,delivery',
             'table_number'   => 'nullable|string|max:20',
-            'address'        => 'nullable|string|max:255',
+            'address'        => 'nullable|required_if:delivery_type,delivery|string|max:255',
             'notes'          => 'nullable|string|max:500',
             'items'          => 'required|array|min:1',
             'items.*.name'   => 'required|string|max:150',
