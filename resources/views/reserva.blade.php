@@ -64,10 +64,38 @@
 
         {{-- Escenario Arquitectónico 3D Recto --}}
         <div class="floorplan-stage reveal">
-            <div id="floorplan-mesh" class="floorplan-mesh view-3d-straight" data-capacities='@json($capacidadesMesas)'>
+            <div id="floorplan-mesh" class="floorplan-mesh view-3d-straight" data-availability-url="{{ route('reserva.availability') }}">
                 
                 {{-- Base del Suelo Principal (Microcemento / Parquet Oscuro) --}}
                 <div class="floor-base"></div>
+
+                @foreach ($mesas3d as $mesa)
+                <button
+                    type="button"
+                    class="table-3d reservation-table occupied"
+                    data-table-id="{{ $mesa['id'] }}"
+                    data-table-name="{{ $mesa['nombre'] }}"
+                    data-zone="{{ $mesa['zona'] }}"
+                    data-zone-name="{{ $mesa['zona_nombre'] }}"
+                    data-capacity="{{ $mesa['capacidad'] }}"
+                    data-state="{{ $mesa['estado'] }}"
+                    data-available="false"
+                    aria-label="{{ $mesa['nombre'] }}, {{ $mesa['capacidad'] }} personas"
+                    aria-disabled="true"
+                    style="left: {{ $mesa['x'] }}%; top: {{ $mesa['y'] }}%; width: 58px; height: 58px;"
+                >
+                    <i class="{{ $mesa['icono'] }} text-amber" aria-hidden="true"></i>
+                    <span class="text-[10px] font-bold text-cream">{{ $mesa['id'] }}</span>
+                    <span class="text-[8px] text-muted">{{ $mesa['capacidad'] }} {{ $mesa['capacidad'] === 1 ? 'persona' : 'personas' }}</span>
+                    <span class="table-tooltip">{{ $mesa['nombre'] }} · {{ $mesa['zona_nombre'] }}</span>
+                </button>
+                @endforeach
+
+                @if (empty($mesas3d))
+                <div class="absolute inset-0 z-20 flex items-center justify-center text-center text-sm text-cream">
+                    No hay mesas activas configuradas para reservas.
+                </div>
+                @endif
 
                 {{-- Alfombra tejida decorativa bajo el Salón Principal --}}
                 <div class="dining-carpet" style="left: 4%; top: 40%; width: 49%; height: 48%;"></div>
@@ -561,10 +589,10 @@
                             <i class="fa-regular fa-clock mr-1.5" aria-hidden="true"></i> Turno / Horario Disponible *
                         </label>
                         <div class="grid grid-cols-3 sm:grid-cols-5 gap-2.5">
-                            @foreach (config('cafe.turnos_horarios') as $idx => $t)
+                            @foreach ($reservationSlots as $t)
                             <button
                                 type="button"
-                                class="time-slot-btn {{ $t === '05:00 PM' ? 'active' : '' }}"
+                                class="time-slot-btn"
                                 data-time="{{ $t }}"
                             >
                                 {{ $t }}
@@ -652,7 +680,7 @@
                         class="btn-amber w-full py-4 text-sm font-semibold tracking-wide shadow-xl flex items-center justify-center gap-2"
                     >
                         <i class="fa-regular fa-calendar-check" aria-hidden="true"></i>
-                        <span>Confirmar Reserva de Mesa</span>
+                        <span>Solicitar Reserva</span>
                     </button>
                 </form>
             </div>
@@ -757,25 +785,26 @@
                 </div>
 
                 <div class="space-y-3">
-                    @foreach (config('cafe.zonas_reserva') as $z)
+                    @foreach ($reservationZones as $z)
                     <div
-                        class="zona-card {{ $z['id'] === 'salon' ? 'active' : '' }} p-4 flex items-center gap-4"
+                        class="zona-card is-disabled p-4 flex items-center gap-4"
                         data-zone="{{ $z['id'] }}"
                         data-zone-name="{{ $z['nombre'] }}"
+                        data-available="false"
                     >
                         <div class="w-16 h-16 rounded-lg overflow-hidden shrink-0 relative">
-                            <img src="{{ $z['imagen'] }}" alt="{{ $z['nombre'] }}" class="w-full h-full object-cover" loading="lazy" decoding="async">
+                            <img src="{{ $z['imagen'] ?? config('cafe.hero_img') }}" alt="{{ $z['nombre'] }}" class="w-full h-full object-cover" loading="lazy" decoding="async">
                             <div class="absolute inset-0 bg-ink/30"></div>
                         </div>
                         <div class="flex-1 min-w-0">
                             <div class="flex items-center justify-between gap-2 mb-0.5">
                                 <h4 class="font-display text-lg font-semibold text-cream truncate">{{ $z['nombre'] }}</h4>
-                                <span class="badge text-[9px] shrink-0">{{ $z['badge'] }}</span>
+                                <span class="badge text-[9px] shrink-0">{{ $z['badge'] ?? 'Zona de reserva' }}</span>
                             </div>
-                            <p class="text-muted text-xs line-clamp-1 leading-snug">{{ $z['descripcion'] }}</p>
+                            <p class="text-muted text-xs line-clamp-1 leading-snug">{{ $z['descripcion'] ?? 'Reserva una zona completa del local.' }}</p>
                             <span class="text-amber text-[10px] font-medium block mt-1">
                                 <i class="fa-solid fa-user-group mr-1" aria-hidden="true"></i>
-                                <span data-zone-summary>{{ $z['capacidad'] }}</span>
+                                <span data-zone-summary>Hasta {{ $z['capacidad'] }} personas</span>
                             </span>
                         </div>
                     </div>
@@ -860,6 +889,10 @@
     /* ── Helpers de DOM ──────────────────────────────────────────────── */
     const $  = id  => document.getElementById(id);
     const $$ = sel => document.querySelectorAll(sel);
+    const floorplan = $('floorplan-mesh');
+
+    // Discard the decorative sample tables; the selectable layer is rendered from active database tables.
+    $$('#floorplan-mesh .table-3d:not(.reservation-table), #floorplan-mesh .table-set-wrapper').forEach(el => el.remove());
 
     /* ── Sincronizar campos ocultos con el estado de selección ────────── */
     function syncHiddenFields() {
@@ -943,7 +976,7 @@
     document.addEventListener('click', function (e) {
         const tableEl = e.target.closest('.table-3d');
         if (! tableEl) return;
-        if (tableEl.dataset.state === 'ocupada') return; // no seleccionable
+        if (tableEl.dataset.available !== 'true') return;
 
         // Solo permitir clic en mesas cuando el modo es 'mesa exacta'
         if (selection.tipo !== 'mesa') return;
@@ -996,6 +1029,7 @@
     document.addEventListener('click', function (e) {
         const zonaCard = e.target.closest('.zona-card');
         if (! zonaCard) return;
+        if (zonaCard.dataset.available !== 'true') return;
 
         $$('.zona-card.active').forEach(el => el.classList.remove('active'));
         zonaCard.classList.add('active');
@@ -1019,7 +1053,50 @@
         slotBtn.classList.add('active');
         selection.hora = slotBtn.dataset.time || '';
         $('reserva-hora').value = selection.hora;
+        refreshAvailability();
     });
+
+    async function refreshAvailability() {
+        const fecha = $('reserva-fecha')?.value;
+        if (! fecha || ! selection.hora || ! floorplan) return;
+
+        const url = new URL(floorplan.dataset.availabilityUrl, window.location.origin);
+        url.searchParams.set('fecha', fecha);
+        url.searchParams.set('hora', selection.hora);
+
+        try {
+            const response = await fetch(url, { headers: { 'Accept': 'application/json' } });
+            if (! response.ok) throw new Error('No se pudo consultar disponibilidad.');
+            const data = await response.json();
+
+            $$('#floorplan-mesh .reservation-table').forEach(table => {
+                const available = data.tables[table.dataset.tableId] === true;
+                table.dataset.available = String(available);
+                table.classList.toggle('occupied', ! available);
+                table.setAttribute('aria-disabled', String(! available));
+                if (! available && table.classList.contains('selected')) clearTableSelection();
+            });
+
+            $$('.zona-card').forEach(zone => {
+                const available = data.zones[zone.dataset.zone] === true;
+                zone.dataset.available = String(available);
+                zone.classList.toggle('is-disabled', ! available);
+                if (! available && zone.classList.contains('active')) clearZoneSelection();
+            });
+        } catch (error) {
+            $$('#floorplan-mesh .reservation-table').forEach(table => {
+                table.dataset.available = 'false';
+                table.classList.add('occupied');
+                table.setAttribute('aria-disabled', 'true');
+            });
+            $$('.zona-card').forEach(zone => {
+                zone.dataset.available = 'false';
+                zone.classList.add('is-disabled');
+            });
+        }
+    }
+
+    $('reserva-fecha')?.addEventListener('change', refreshAvailability);
 
     /* ── Envío del formulario vía fetch (Sprint 0 — P2) ──────────────── */
     const form = $('reserva-form');
@@ -1093,7 +1170,7 @@
             errorEl.classList.remove('hidden');
         } finally {
             if (submitBtn) submitBtn.disabled = false;
-            if (btnSpan)   btnSpan.textContent = 'Confirmar Reserva de Mesa';
+            if (btnSpan)   btnSpan.textContent = 'Solicitar Reserva';
         }
     });
 
@@ -1129,6 +1206,8 @@
         selection.hora = firstSlot.dataset.time || '';
         $('reserva-hora').value = selection.hora;
     }
+
+    refreshAvailability();
 
     syncHiddenFields();
     updateSelectionBadge();

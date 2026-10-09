@@ -957,6 +957,10 @@ body {
     user-select: none;
     z-index: 10;
 }
+#floorplan-mesh .table-3d:not(.reservation-table),
+#floorplan-mesh .table-set-wrapper {
+    display: none;
+}
 .table-3d:hover:not(.occupied) {
     transform: translateZ(10px) scale(1.05);
     border-color: var(--gold);
