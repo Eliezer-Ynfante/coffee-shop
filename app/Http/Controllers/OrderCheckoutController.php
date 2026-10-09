@@ -30,17 +30,26 @@ class OrderCheckoutController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'customer_name'  => 'required|string|max:100',
-            'customer_phone' => 'nullable|required_if:delivery_type,delivery|string|max:20',
-            'customer_email' => 'nullable|email|max:150',
-            'delivery_type'  => 'required|in:mesa,recojo,delivery',
-            'table_number'   => 'nullable|string|max:20',
-            'address'        => 'nullable|required_if:delivery_type,delivery|string|max:255',
-            'notes'          => 'nullable|string|max:500',
-            'items'          => 'required|array|min:1',
-            'items.*.name'   => 'required|string|max:150',
+            'customer_name'    => 'required|string|max:100',
+            'customer_phone'   => 'nullable|required_if:delivery_type,delivery|string|max:20',
+            'customer_email'   => 'nullable|email|max:150',
+            'delivery_type'    => 'required|in:mesa,recojo,delivery',
+            'table_number'     => 'nullable|string|max:20',
+            'address'          => 'nullable|required_if:delivery_type,delivery|string|max:255',
+            'notes'            => 'nullable|string|max:500',
+            'items'            => 'required|array|min:1',
+            'items.*.product_id' => ['nullable', 'integer', 'exists:products,id'],
+            'items.*.name'     => 'nullable|string|max:150',
             'items.*.quantity' => 'required|integer|min:1|max:50',
         ]);
+
+        foreach ($validated['items'] as $index => $itemInput) {
+            if (empty($itemInput['product_id']) && empty($itemInput['name'])) {
+                throw ValidationException::withMessages([
+                    "items.{$index}.name" => 'Cada item debe indicar un producto existente por ID o por nombre.',
+                ]);
+            }
+        }
 
         if ($validated['delivery_type'] === 'mesa' && empty($validated['table_number'])) {
             throw ValidationException::withMessages([
@@ -84,61 +93,55 @@ class OrderCheckoutController extends Controller
             $subtotal = 0.0;
 
             foreach ($validated['items'] as $itemInput) {
-                $productName = trim($itemInput['name']);
                 $quantity = (int) $itemInput['quantity'];
 
-                // Buscar producto activo en la base de datos
-                $product = Product::where('name', $productName)
-                    ->where('is_active', true)
-                    ->lockForUpdate()
-                    ->first();
-
-                if ($product) {
-                    $unitPrice = (float) $product->price;
-                    $productId = $product->id;
+                if (! empty($itemInput['product_id'])) {
+                    $product = Product::whereKey($itemInput['product_id'])
+                        ->where('is_active', true)
+                        ->lockForUpdate()
+                        ->first();
                 } else {
-                    // Fallback a catálogo en config si no está en BD
-                    $menuConfigProducts = collect(config('cafe.productos', []));
-                    $configCatProducts = collect(config('cafe.menu_categorias', []))
-                        ->pluck('items')
-                        ->flatten(1);
-
-                    $found = $menuConfigProducts->firstWhere('nombre', $productName)
-                        ?: $configCatProducts->firstWhere('nombre', $productName);
-
-                    if (! $found) {
-                        throw ValidationException::withMessages([
-                            'items' => "El producto '{$productName}' no se encuentra disponible en la carta.",
-                        ]);
-                    }
-
-                    // Extraer precio numérico
-                    $rawPrice = preg_replace('/[^0-9.]/', '', str_replace(',', '.', $found['precio']));
-                    $unitPrice = (float) $rawPrice;
-
-                    // Asegurar existencia mínima de producto en BD para mantener la clave foránea
-                    $product = Product::firstOrCreate(
-                        ['name' => $productName],
-                        [
-                            'price' => $unitPrice,
-                            'cost_price' => round($unitPrice * 0.4, 2),
-                            'stock' => 100,
-                            'available_in_store' => true,
-                            'is_active' => true,
-                        ]
-                    );
-                    $productId = $product->id;
+                    $productName = trim((string) ($itemInput['name'] ?? ''));
+                    $product = Product::where('name', $productName)
+                        ->where('is_active', true)
+                        ->lockForUpdate()
+                        ->first();
                 }
 
+                if (! $product) {
+                    $productLabel = ! empty($itemInput['product_id'])
+                        ? 'ID ' . $itemInput['product_id']
+                        : (string) ($itemInput['name'] ?? 'sin nombre');
+
+                    throw ValidationException::withMessages([
+                        'items' => "El producto {$productLabel} no existe o no está disponible en la carta.",
+                    ]);
+                }
+
+                if (! $product->available_in_store) {
+                    throw ValidationException::withMessages([
+                        'items' => "El producto {$product->name} no está disponible para pedidos web.",
+                    ]);
+                }
+
+                if ($product->stock < $quantity) {
+                    throw ValidationException::withMessages([
+                        'items' => "No hay stock suficiente para {$product->name}. Disponibles: {$product->stock}.",
+                    ]);
+                }
+
+                $unitPrice = (float) $product->price;
                 $itemSubtotal = round($unitPrice * $quantity, 2);
                 $subtotal += $itemSubtotal;
 
                 $orderItemsData[] = [
-                    'product_id' => $productId,
-                    'quantity'   => $quantity,
+                    'product_id' => $product->id,
+                    'product_name' => $product->name,
+                    'product_sku' => $product->sku,
+                    'quantity' => $quantity,
                     'unit_price' => $unitPrice,
-                    'subtotal'   => $itemSubtotal,
-                    'notes'      => null,
+                    'subtotal' => $itemSubtotal,
+                    'notes' => null,
                 ];
             }
 
