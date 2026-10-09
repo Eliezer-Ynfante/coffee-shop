@@ -15,7 +15,7 @@ class AdminStatusFormRequest extends FormRequest
     public function rules(): array
     {
         $statuses = match ($this->route()->getName()) {
-            'admin.reservations.status' => ['pending', 'confirmed', 'completed', 'cancelled'],
+            'admin.reservations.status' => ['pending', 'confirmed', 'completed', 'cancelled', 'no_show'],
             'admin.orders.status' => ['pending', 'confirmed', 'preparing', 'ready', 'completed', 'cancelled'],
             'admin.messages.status' => ['unread', 'read', 'attended'],
             'admin.tables.status' => ['disponible', 'ocupada', 'reservada', 'mantenimiento'],

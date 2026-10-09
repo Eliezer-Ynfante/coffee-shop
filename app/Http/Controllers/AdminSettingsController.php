@@ -22,6 +22,9 @@ class AdminSettingsController extends Controller
             'nombre', 'slogan', 'titulo', 'subtitulo', 'descripcion',
             'subtag', 'horario', 'direccion', 'email', 'telefono',
             'yape_phone', 'hero_img', 'about_img',
+            'reservation_open_time', 'reservation_close_time',
+            'reservation_slot_interval_minutes', 'reservation_slot_duration_minutes',
+            'reservation_buffer_minutes',
         ];
 
         foreach ($keys as $key) {
