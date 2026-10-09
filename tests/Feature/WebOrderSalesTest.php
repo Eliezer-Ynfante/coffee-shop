@@ -157,6 +157,61 @@ class WebOrderSalesTest extends TestCase
         ]);
     }
 
+    public function test_order_requires_existing_product_id_and_keeps_item_snapshot(): void
+    {
+        $category = Category::create([
+            'name' => 'Café',
+            'slug' => 'cafe',
+            'is_active' => true,
+        ]);
+
+        $product = Product::create([
+            'category_id' => $category->id,
+            'name' => 'Mocha',
+            'slug' => 'mocha',
+            'sku' => 'MO-001',
+            'price' => 15.00,
+            'cost_price' => 5.00,
+            'stock' => 10,
+            'is_active' => true,
+            'available_in_store' => true,
+        ]);
+
+        $response = $this->postJson(route('pedido.store'), [
+            'customer_name' => 'Rosa',
+            'delivery_type' => 'mesa',
+            'table_number' => 'A2',
+            'items' => [[
+                'product_id' => $product->id,
+                'quantity' => 2,
+            ]],
+        ]);
+
+        $response->assertOk()->assertJsonPath('success', true);
+
+        $this->assertDatabaseHas('order_items', [
+            'product_id' => $product->id,
+            'product_name' => 'Mocha',
+            'product_sku' => 'MO-001',
+            'quantity' => 2,
+            'unit_price' => 15.00,
+            'subtotal' => 30.00,
+        ]);
+
+        $unknownResponse = $this->postJson(route('pedido.store'), [
+            'customer_name' => 'Rosa',
+            'delivery_type' => 'mesa',
+            'table_number' => 'A2',
+            'items' => [[
+                'name' => 'Producto inexistente',
+                'quantity' => 1,
+            ]],
+        ]);
+
+        $unknownResponse->assertUnprocessable()->assertJsonValidationErrors('items');
+        $this->assertDatabaseMissing('products', ['name' => 'Producto inexistente']);
+    }
+
     public function test_order_creation_requires_valid_items_and_contact(): void
     {
         $response = $this->postJson(route('pedido.store'), [
