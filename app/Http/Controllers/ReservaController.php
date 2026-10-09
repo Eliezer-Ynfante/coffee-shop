@@ -4,49 +4,82 @@ namespace App\Http\Controllers;
 
 use App\Models\CafeTable;
 use App\Models\Reservation;
+use App\Notifications\ReservationStatusNotification;
+use App\Services\ReservationSchedule;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
 class ReservaController extends Controller
 {
-    /**
-     * Devuelve la duración de cada slot de reserva en minutos.
-     * Lee de config/cafe.php (clave 'slot_duration_minutes'); si no existe, usa 90.
-     * Sprint 0 — P5: duración configurable sin tocar código.
-     */
-    private function slotDurationMinutes(): int
+    public function __construct(private readonly ReservationSchedule $schedule)
     {
-        return max(30, (int) config('cafe.slot_duration_minutes', 90));
     }
 
     public function index()
     {
-        $dbMesas = CafeTable::where('is_active', true)->get();
+        $tables = CafeTable::where('is_active', true)->orderBy('zone')->orderBy('code')->get();
+        $zoneIndexes = [];
+        $mesas3d = $tables->map(function (CafeTable $table) use (&$zoneIndexes) {
+            $index = $zoneIndexes[$table->zone] ?? 0;
+            $zoneIndexes[$table->zone] = $index + 1;
+            [$defaultX, $defaultY] = $this->defaultCoordinates($table->zone, $index);
 
-        if ($dbMesas->isNotEmpty()) {
-            $mesas3d = $dbMesas->map(function ($m) {
-                return [
-                    'id'       => $m->code,
-                    'zona'     => $m->zone,
-                    'nombre'   => $m->name,
-                    'capacidad'=> $m->capacity,
-                    'estado'   => $m->status,
-                    'x'        => $m->coord_x,
-                    'y'        => $m->coord_y,
-                    'icono'    => $m->icon,
-                ];
-            })->toArray();
-        } else {
-            $mesas3d = config('cafe.mesas_3d', []);
-        }
+            return [
+                'id' => $table->code,
+                'zona' => $table->zone,
+                'zona_nombre' => $table->zone_name ?: ucfirst($table->zone),
+                'nombre' => $table->name,
+                'capacidad' => $table->capacity,
+                'estado' => $table->status,
+                'x' => $table->coord_x ?: $defaultX,
+                'y' => $table->coord_y ?: $defaultY,
+                'icono' => $table->icon,
+            ];
+        })->values()->all();
 
-        $capacidadesMesas = array_column($mesas3d, 'capacidad', 'id');
+        $zoneDetails = collect(config('cafe.zonas_reserva', []))->keyBy('id');
+        $reservationZones = $tables->groupBy('zone')->map(function ($zoneTables, string $zone) use ($zoneDetails) {
+            $details = $zoneDetails->get($zone, []);
 
-        return view('reserva', compact('mesas3d', 'capacidadesMesas'));
+            return array_merge($details, [
+                'id' => $zone,
+                'nombre' => $zoneTables->first()->zone_name ?: ($details['nombre'] ?? ucfirst($zone)),
+                'capacidad' => min(20, (int) $zoneTables->sum('capacity')),
+            ]);
+        })->values()->all();
+
+        $reservationSlots = $this->schedule->slots();
+
+        return view('reserva', compact('mesas3d', 'reservationZones', 'reservationSlots'));
+    }
+
+    public function availability(Request $request)
+    {
+        $validated = $request->validate([
+            'fecha' => ['required', 'date', 'after_or_equal:today'],
+            'hora' => ['required', 'string', Rule::in($this->schedule->slots())],
+        ]);
+
+        $tables = CafeTable::where('is_active', true)->orderBy('zone')->orderBy('code')->get();
+        $availability = $tables->mapWithKeys(function (CafeTable $table) use ($validated) {
+            return [$table->code => $table->status !== 'mantenimiento'
+                && ! $this->tableHasConflict($table, $validated['fecha'], $validated['hora'])];
+        });
+
+        $zones = $tables->groupBy('zone')->map(function ($zoneTables, $zoneCode) use ($validated) {
+            $zoneName = $zoneTables->first()->zone_name ?: ucfirst($zoneCode);
+
+            return ! $zoneTables->contains(fn (CafeTable $table) => $table->status === 'mantenimiento')
+                && ! $this->zoneHasConflict($zoneCode, $zoneName, $zoneTables, $validated['fecha'], $validated['hora']);
+        });
+
+        return response()->json(['tables' => $availability, 'zones' => $zones]);
     }
 
     public function store(Request $request)
@@ -57,10 +90,10 @@ class ReservaController extends Controller
             'email'        => 'nullable|email|max:150',
             'fecha'        => 'required|date|after_or_equal:today',
             'personas'     => 'required|integer|min:1|max:20',
-            'hora'         => ['required', 'string', Rule::in(config('cafe.turnos_horarios', []))],
+            'hora'         => ['required', 'string', Rule::in($this->schedule->slots())],
             'tipo_reserva' => ['required', Rule::in(['mesa', 'zona'])],
             'mesa_id'      => ['nullable', 'required_if:tipo_reserva,mesa', 'string', 'max:20', Rule::exists('cafe_tables', 'code')->where('is_active', true)],
-            'zona_id'      => ['nullable', 'required_if:tipo_reserva,zona', 'string', Rule::in(array_column(config('cafe.zonas_reserva', []), 'id'))],
+            'zona_id'      => ['nullable', 'required_if:tipo_reserva,zona', 'string', Rule::in($this->reservationZoneIds())],
             'ocasion'      => 'nullable|string|max:50',
             'notas'        => 'nullable|string|max:1000',
         ]);
@@ -83,6 +116,12 @@ class ReservaController extends Controller
                     ]);
                 }
 
+                if ($tables->contains(fn (CafeTable $table) => $table->status === 'mantenimiento')) {
+                    throw ValidationException::withMessages([
+                        'zona_id' => 'La zona contiene mesas en mantenimiento y no está disponible para reservarse completa.',
+                    ]);
+                }
+
                 $capacity = min(20, (int) $tables->sum('capacity'));
                 if ((int) $validated['personas'] !== $capacity) {
                     throw ValidationException::withMessages([
@@ -94,13 +133,11 @@ class ReservaController extends Controller
                 $zoneName   = $tables->first()->zone_name ?: ($zoneConfig['nombre'] ?? $validated['zona_id']);
 
                 // Sprint 0 — P4: verificar solapamiento por fecha+hora, no por status global.
-                $hasConflict = $this->hasTimeConflict(
-                    Reservation::whereDate('fecha', $validated['fecha'])
-                        ->whereIn('status', ['pending', 'confirmed'])
-                        ->where(function (Builder $query) use ($zoneName, $tables) {
-                            $query->where('zona', $zoneName)
-                                ->orWhereIn('mesa_id', $tables->pluck('code'));
-                        }),
+                $hasConflict = $this->zoneHasConflict(
+                    $validated['zona_id'],
+                    $zoneName,
+                    $tables,
+                    $validated['fecha'],
                     $validated['hora']
                 );
 
@@ -118,7 +155,9 @@ class ReservaController extends Controller
                     'hora'        => $validated['hora'],
                     'personas'    => $validated['personas'],
                     'mesa_id'     => null,
+                    'cafe_table_id' => null,
                     'zona'        => $zoneName,
+                    'zone_code'   => $validated['zona_id'],
                     'ocasion'     => $validated['ocasion'] ?? null,
                     'comentarios' => $validated['notas'] ?? null,
                     'status'      => 'pending',
@@ -130,6 +169,7 @@ class ReservaController extends Controller
              * ---------------------------------------------------------------- */
             $table = CafeTable::where('code', $validated['mesa_id'])
                 ->where('is_active', true)
+                ->where('status', '!=', 'mantenimiento')
                 ->lockForUpdate()
                 ->first();
 
@@ -149,19 +189,8 @@ class ReservaController extends Controller
                 ]);
             }
 
-            $zoneName    = $table->zone_name ?: $table->zone;
-            $hasConflict = $this->hasTimeConflict(
-                Reservation::whereDate('fecha', $validated['fecha'])
-                    ->whereIn('status', ['pending', 'confirmed'])
-                    ->where(function (Builder $query) use ($table, $zoneName) {
-                        $query->where('mesa_id', $table->code)
-                            ->orWhere(function (Builder $query) use ($zoneName) {
-                                // Una reserva de zona completa bloquea esta mesa en el mismo intervalo.
-                                $query->whereNull('mesa_id')->where('zona', $zoneName);
-                            });
-                    }),
-                $validated['hora']
-            );
+            $zoneName = $table->zone_name ?: $table->zone;
+            $hasConflict = $this->tableHasConflict($table, $validated['fecha'], $validated['hora']);
 
             if ($hasConflict) {
                 throw ValidationException::withMessages([
@@ -177,12 +206,18 @@ class ReservaController extends Controller
                 'hora'        => $validated['hora'],
                 'personas'    => $validated['personas'],
                 'mesa_id'     => $table->code,
+                'cafe_table_id' => $table->id,
                 'zona'        => $table->zone_name ?: $table->zone,
+                'zone_code'   => $table->zone,
                 'ocasion'     => $validated['ocasion'] ?? null,
                 'comentarios' => $validated['notas'] ?? null,
                 'status'      => 'pending',
             ]);
         });
+
+        if ($reservation->email) {
+            Notification::route('mail', $reservation->email)->notify(new ReservationStatusNotification($reservation->load('table')));
+        }
 
         // Sprint 0 — P2: la respuesta incluye todos los datos persistidos.
         // El frontend construye el voucher exclusivamente desde esta respuesta,
@@ -195,9 +230,7 @@ class ReservaController extends Controller
                     'id'          => $reservation->id,
                     'code'        => 'RG-' . str_pad($reservation->id, 4, '0', STR_PAD_LEFT),
                     'mesa_id'     => $reservation->mesa_id,
-                    'mesa_nombre' => $reservation->mesa_id
-                        ? (CafeTable::where('code', $reservation->mesa_id)->value('name') ?? $reservation->mesa_id)
-                        : null,
+                    'mesa_nombre' => $reservation->table?->name ?? $reservation->mesa_id,
                     'zona'        => $reservation->zona,
                     'fecha'       => $reservation->fecha->format('d/m/Y'),
                     'hora'        => $reservation->hora,
@@ -220,7 +253,7 @@ class ReservaController extends Controller
      */
     private function hasTimeConflict(Builder $reservations, string $requestedTime): bool
     {
-        $duration = $this->slotDurationMinutes();
+        $duration = $this->schedule->durationMinutes() + $this->schedule->bufferMinutes();
 
         $requestedStart       = Carbon::parse($requestedTime);
         $requestedStartMinute = ($requestedStart->hour * 60) + $requestedStart->minute;
@@ -238,5 +271,61 @@ class ReservaController extends Controller
 
             return $requestedStartMinute < $existingEndMinute && $requestedEndMinute > $existingStartMinute;
         });
+    }
+
+    private function tableHasConflict(CafeTable $table, string $date, string $time): bool
+    {
+        return $this->hasTimeConflict(
+            Reservation::query()->whereDate('fecha', $date)
+                ->whereIn('status', ['pending', 'confirmed'])
+                ->where(function (Builder $query) use ($table) {
+                    $query->where('cafe_table_id', $table->id)
+                        ->orWhere('mesa_id', $table->code)
+                        ->orWhere(function (Builder $query) use ($table) {
+                            $query->whereNull('cafe_table_id')
+                                ->whereNull('mesa_id')
+                                ->where(function (Builder $query) use ($table) {
+                                    $query->where('zone_code', $table->zone)
+                                        ->orWhere('zona', $table->zone_name ?: $table->zone)
+                                        ->orWhere('zona', $table->zone);
+                                });
+                        });
+                }),
+            $time
+        );
+    }
+
+    private function zoneHasConflict(string $zoneCode, string $zoneName, $tables, string $date, string $time): bool
+    {
+        return $this->hasTimeConflict(
+            Reservation::query()->whereDate('fecha', $date)
+                ->whereIn('status', ['pending', 'confirmed'])
+                ->where(function (Builder $query) use ($zoneCode, $zoneName, $tables) {
+                    $query->where('zone_code', $zoneCode)
+                        ->orWhere('zona', $zoneName)
+                        ->orWhereIn('cafe_table_id', $tables->pluck('id'))
+                        ->orWhereIn('mesa_id', $tables->pluck('code'));
+                }),
+            $time
+        );
+    }
+
+    private function defaultCoordinates(string $zone, int $index): array
+    {
+        return match ($zone) {
+            'barra' => [8 + ($index % 4) * 10, 20],
+            'salon' => [8 + ($index % 4) * 12, 45 + intdiv($index, 4) * 20],
+            'terraza' => [60 + ($index % 2) * 18, 18 + intdiv($index, 2) * 18],
+            default => [60 + ($index % 4) * 9, 72 + intdiv($index, 4) * 14],
+        };
+    }
+
+    private function reservationZoneIds(): array
+    {
+        if (! Schema::hasTable('cafe_tables')) {
+            return array_column(config('cafe.zonas_reserva', []), 'id');
+        }
+
+        return CafeTable::where('is_active', true)->distinct()->pluck('zone')->all();
     }
 }
