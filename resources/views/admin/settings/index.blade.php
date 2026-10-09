@@ -117,6 +117,40 @@
 
     <div class="bg-surface border border-border rounded-xl p-5 space-y-4">
         <div class="border-b border-border/60 pb-3">
+            <h3 class="text-sm font-semibold text-cream">Disponibilidad de reservas</h3>
+            <p class="text-[11px] text-muted">Los turnos se generan con esta ventana y duración; el margen se bloquea entre reservas.</p>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 text-xs">
+            <div>
+                <label class="block text-muted mb-1 font-medium" for="reservation_open_time">Apertura</label>
+                <input id="reservation_open_time" type="time" name="reservation_open_time" value="{{ setting('reservation_open_time', '08:00') }}" required
+                       class="w-full py-2 px-3 bg-dark border border-border rounded-lg text-cream focus:outline-none focus:border-amber">
+            </div>
+            <div>
+                <label class="block text-muted mb-1 font-medium" for="reservation_close_time">Cierre</label>
+                <input id="reservation_close_time" type="time" name="reservation_close_time" value="{{ setting('reservation_close_time', '21:45') }}" required
+                       class="w-full py-2 px-3 bg-dark border border-border rounded-lg text-cream focus:outline-none focus:border-amber">
+            </div>
+            <div>
+                <label class="block text-muted mb-1 font-medium" for="reservation_slot_interval_minutes">Intervalo (min)</label>
+                <input id="reservation_slot_interval_minutes" type="number" name="reservation_slot_interval_minutes" min="15" max="240" value="{{ setting('reservation_slot_interval_minutes', 105) }}" required
+                       class="w-full py-2 px-3 bg-dark border border-border rounded-lg text-cream focus:outline-none focus:border-amber">
+            </div>
+            <div>
+                <label class="block text-muted mb-1 font-medium" for="reservation_slot_duration_minutes">Duración (min)</label>
+                <input id="reservation_slot_duration_minutes" type="number" name="reservation_slot_duration_minutes" min="30" max="360" value="{{ setting('reservation_slot_duration_minutes', config('cafe.slot_duration_minutes', 90)) }}" required
+                       class="w-full py-2 px-3 bg-dark border border-border rounded-lg text-cream focus:outline-none focus:border-amber">
+            </div>
+            <div>
+                <label class="block text-muted mb-1 font-medium" for="reservation_buffer_minutes">Margen (min)</label>
+                <input id="reservation_buffer_minutes" type="number" name="reservation_buffer_minutes" min="0" max="120" value="{{ setting('reservation_buffer_minutes', config('cafe.slot_buffer_minutes', 15)) }}" required
+                       class="w-full py-2 px-3 bg-dark border border-border rounded-lg text-cream focus:outline-none focus:border-amber">
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-surface border border-border rounded-xl p-5 space-y-4">
+        <div class="border-b border-border/60 pb-3">
             <h3 class="text-sm font-semibold text-cream">Pagos con Yape y Plin</h3>
             <p class="text-[11px] text-muted">Configura el número receptor y carga el QR real de la cuenta de la cafetería.</p>
         </div>

@@ -27,7 +27,7 @@
 </div>
 
 {{-- MÉTRICAS DE ESTADO --}}
-<div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+<div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
     <a href="{{ route('admin.reservations.index') }}"
        class="p-3.5 rounded-xl bg-surface border {{ !request('status') ? 'border-amber/60 bg-card' : 'border-border' }} transition">
         <span class="text-[10px] text-muted font-semibold uppercase tracking-wider block mb-1">Todas las Reservas</span>
@@ -48,6 +48,11 @@
         <span class="text-[10px] text-sky-400 font-semibold uppercase tracking-wider block mb-1">Completadas</span>
         <span class="text-xl font-bold font-mono text-sky-400">{{ $statusCounts['completed'] }}</span>
     </a>
+    <a href="{{ route('admin.reservations.index', ['status' => 'no_show']) }}"
+       class="p-3.5 rounded-xl bg-surface border {{ request('status') === 'no_show' ? 'border-red-500/60 bg-card' : 'border-border' }} transition">
+        <span class="text-[10px] text-red-400 font-semibold uppercase tracking-wider block mb-1">No-show</span>
+        <span class="text-xl font-bold font-mono text-red-400">{{ $statusCounts['no_show'] }}</span>
+    </a>
 </div>
 
 {{-- FILTROS --}}
@@ -66,6 +71,7 @@
             <option value="confirmed" {{ request('status') === 'confirmed' ? 'selected' : '' }}>Confirmada</option>
             <option value="completed" {{ request('status') === 'completed' ? 'selected' : '' }}>Completada</option>
             <option value="cancelled" {{ request('status') === 'cancelled' ? 'selected' : '' }}>Cancelada</option>
+            <option value="no_show" {{ request('status') === 'no_show' ? 'selected' : '' }}>No-show</option>
         </select>
     </div>
 
@@ -120,10 +126,10 @@
                     <td class="py-3.5 px-4">
                         <div class="flex items-center gap-1.5">
                             <span class="w-6 h-6 rounded bg-card border border-border text-amber font-mono font-bold flex items-center justify-center text-[11px]">
-                                {{ $res->mesa_id ?? '?' }}
+                                {{ $res->table?->code ?? $res->mesa_id ?? '?' }}
                             </span>
                             <div>
-                                <span class="font-medium text-cream block text-[11px]">Mesa {{ $res->mesa_id ?? 'Por asignar' }}</span>
+                                <span class="font-medium text-cream block text-[11px]">{{ $res->table?->name ?? ($res->mesa_id ? 'Mesa '.$res->mesa_id : 'Zona completa') }}</span>
                                 <span class="text-[10px] text-muted block">{{ $res->zona ?? 'Salón Principal' }}</span>
                             </div>
                         </div>
@@ -149,12 +155,19 @@
                         <form action="{{ route('admin.reservations.status', $res->id) }}" method="POST">
                             @csrf
                             @method('PATCH')
+                            @php
+                                $nextReservationStatuses = match ($res->status) {
+                                    'pending' => ['pending', 'confirmed', 'cancelled'],
+                                    'confirmed' => ['confirmed', 'completed', 'cancelled', 'no_show'],
+                                    default => [$res->status],
+                                };
+                                $reservationStatusLabels = ['pending' => 'Pendiente', 'confirmed' => 'Confirmada', 'completed' => 'Completada', 'cancelled' => 'Cancelada', 'no_show' => 'No-show'];
+                            @endphp
                             <select name="status" onchange="this.form.submit()"
                                     class="py-1 px-2 rounded-lg text-[11px] font-medium border transition focus:outline-none cursor-pointer {{ $res->status === 'confirmed' ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30' : ($res->status === 'completed' ? 'bg-sky-500/15 text-sky-400 border-sky-500/30' : ($res->status === 'cancelled' ? 'bg-red-500/15 text-red-400 border-red-500/30' : 'bg-amber/15 text-amber border-amber/30')) }}">
-                                <option value="pending" {{ $res->status === 'pending' ? 'selected' : '' }}>Pendiente</option>
-                                <option value="confirmed" {{ $res->status === 'confirmed' ? 'selected' : '' }}>Confirmada</option>
-                                <option value="completed" {{ $res->status === 'completed' ? 'selected' : '' }}>Completada</option>
-                                <option value="cancelled" {{ $res->status === 'cancelled' ? 'selected' : '' }}>Cancelada</option>
+                                @foreach ($nextReservationStatuses as $reservationStatus)
+                                <option value="{{ $reservationStatus }}">{{ $reservationStatusLabels[$reservationStatus] }}</option>
+                                @endforeach
                             </select>
                         </form>
                     </td>
