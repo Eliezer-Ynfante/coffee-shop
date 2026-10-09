@@ -18,10 +18,13 @@ class CustomerOrderController extends Controller
         }
 
         $nameParts = array_pad(preg_split('/\s+/', trim($user->name), 2) ?: [], 2, '');
-        $customer = $user->customer()->firstOrCreate([], [
+        $customer = $user->customer()->firstOrNew([]);
+        $customer->fill([
             'first_name' => mb_substr($nameParts[0] !== '' ? $nameParts[0] : 'Cliente', 0, 80),
-            'last_name' => mb_substr($nameParts[1], 0, 80),
+            'last_name' => mb_substr($nameParts[1] ?? '', 0, 80),
         ]);
+        $customer->setAttribute('user_id', $user->getKey());
+        $customer->save();
 
         $allOrders = $customer->orders()
             ->with('items.product')

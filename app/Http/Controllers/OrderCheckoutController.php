@@ -6,6 +6,7 @@ use App\Models\Customer;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -56,18 +57,26 @@ class OrderCheckoutController extends Controller
         $order = DB::transaction(function () use ($validated) {
             $user = Auth::user();
             $customer = null;
+            $customerId = null;
 
-            if ($user) {
+            if ($user instanceof User) {
                 $fullName = trim((string) ($validated['customer_name'] ?: $user->name ?: 'Cliente'));
                 $nameParts = array_pad(preg_split('/\s+/', $fullName, 2) ?: [], 2, '');
 
-                $customer = $user->customer()->updateOrCreate([], [
+                /** @var Customer $customer */
+                $customer = $user->customer()->firstOrNew([]);
+                $userId = $user->getKey();
+
+                $customer->fill([
                     'first_name' => mb_substr($nameParts[0] !== '' ? $nameParts[0] : 'Cliente', 0, 80),
                     'last_name' => mb_substr($nameParts[1] ?? '', 0, 80),
                     'phone' => $validated['customer_phone'] ?? null,
                     'address_line1' => $validated['address'] ?? null,
                     'is_active' => true,
                 ]);
+                $customer->setAttribute('user_id', $userId);
+                $customer->save();
+                $customerId = $customer->getKey();
             }
 
             // Validar productos y calcular importes en el servidor (NUNCA confiar en precios del navegador)
@@ -155,7 +164,7 @@ class OrderCheckoutController extends Controller
 
             $order = Order::create([
                 'order_number'    => $orderNumber,
-                'customer_id'     => $customer?->id,
+                'customer_id'     => $customerId,
                 'channel'         => 'ecommerce',
                 'status'          => 'pending',
                 'subtotal'        => $subtotal,
