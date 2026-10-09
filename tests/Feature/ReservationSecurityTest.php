@@ -4,8 +4,11 @@ namespace Tests\Feature;
 
 use App\Models\CafeTable;
 use App\Models\Reservation;
+use App\Models\Setting;
 use App\Models\User;
+use App\Notifications\ReservationStatusNotification;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
 
 class ReservationSecurityTest extends TestCase
@@ -33,6 +36,8 @@ class ReservationSecurityTest extends TestCase
         $this->assertDatabaseHas('reservations', [
             'id' => 1,
             'mesa_id' => 'S1',
+            'cafe_table_id' => 1,
+            'zone_code' => 'salon',
             'zona' => 'Salón Principal',
             'status' => 'pending',
         ]);
@@ -90,6 +95,8 @@ class ReservationSecurityTest extends TestCase
 
         $this->assertDatabaseHas('reservations', [
             'mesa_id' => null,
+            'cafe_table_id' => null,
+            'zone_code' => 'salon',
             'zona' => 'Salón Principal',
             'personas' => 8,
         ]);
@@ -262,6 +269,111 @@ class ReservationSecurityTest extends TestCase
         $this->assertDatabaseCount('reservations', 1);
     }
 
+    public function test_public_map_uses_active_database_tables(): void
+    {
+        CafeTable::create([
+            'code' => 'DB9',
+            'zone' => 'salon-nuevo',
+            'zone_name' => 'Salón Nuevo',
+            'name' => 'Mesa Base de Datos',
+            'capacity' => 3,
+            'status' => 'disponible',
+            'is_active' => true,
+            'coord_x' => 42,
+            'coord_y' => 56,
+        ]);
+
+        $this->get(route('reserva'))
+            ->assertOk()
+            ->assertSee('data-table-id="DB9"', false)
+            ->assertSee('data-zone="salon-nuevo"', false)
+            ->assertSee('Mesa Base de Datos');
+    }
+
+    public function test_availability_uses_the_same_table_and_zone_conflicts_as_booking(): void
+    {
+        Notification::fake();
+        CafeTable::create([
+            'code' => 'S1',
+            'zone' => 'salon',
+            'zone_name' => 'Salón Principal',
+            'name' => 'Mesa S1',
+            'capacity' => 4,
+            'status' => 'disponible',
+            'is_active' => true,
+        ]);
+
+        $this->postJson(route('reserva.store'), $this->reservationData())->assertOk();
+
+        $this->getJson(route('reserva.availability', [
+            'fecha' => now()->addDays(3)->toDateString(),
+            'hora' => '05:00 PM',
+        ]))
+            ->assertOk()
+            ->assertJsonPath('tables.S1', false)
+            ->assertJsonPath('zones.salon', false);
+
+        $this->getJson(route('reserva.availability', [
+            'fecha' => now()->addDays(3)->toDateString(),
+            'hora' => '07:30 PM',
+        ]))->assertJsonPath('tables.S1', true);
+    }
+
+    public function test_admin_can_configure_reservation_schedule_and_slots_are_generated(): void
+    {
+        $this->actingAs(User::factory()->create(['role' => 'admin']))
+            ->post(route('admin.settings.update'), [
+                'reservation_open_time' => '09:00',
+                'reservation_close_time' => '12:00',
+                'reservation_slot_interval_minutes' => 60,
+                'reservation_slot_duration_minutes' => 90,
+                'reservation_buffer_minutes' => 15,
+            ])
+            ->assertRedirect();
+
+        $this->assertDatabaseHas('settings', ['key' => 'reservation_open_time', 'value' => '09:00']);
+
+        $this->get(route('reserva'))
+            ->assertOk()
+            ->assertSee('data-time="09:00 AM"', false)
+            ->assertSee('data-time="10:00 AM"', false)
+            ->assertDontSee('data-time="11:00 AM"', false);
+
+        $this->getJson(route('reserva.availability', [
+            'fecha' => now()->addDays(3)->toDateString(),
+            'hora' => '11:00 AM',
+        ]))->assertUnprocessable()->assertJsonValidationErrors('hora');
+    }
+
+    public function test_reservation_creation_and_admin_status_changes_notify_the_customer(): void
+    {
+        Notification::fake();
+        CafeTable::create([
+            'code' => 'S1',
+            'zone' => 'salon',
+            'zone_name' => 'Salón Principal',
+            'name' => 'Mesa S1',
+            'capacity' => 4,
+            'status' => 'disponible',
+            'is_active' => true,
+        ]);
+
+        $this->postJson(route('reserva.store'), $this->reservationData())->assertOk();
+        Notification::assertSentOnDemand(ReservationStatusNotification::class);
+
+        $this->actingAs(User::factory()->create(['role' => 'admin']))
+            ->patch(route('admin.reservations.status', ['id' => 1]), ['status' => 'confirmed'])
+            ->assertSessionHasNoErrors();
+
+        $this->assertDatabaseHas('reservations', ['id' => 1, 'status' => 'confirmed']);
+        $this->patch(route('admin.reservations.status', ['id' => 1]), ['status' => 'no_show'])
+            ->assertSessionHasNoErrors();
+        $this->assertDatabaseHas('reservations', ['id' => 1, 'status' => 'no_show']);
+        Notification::assertSentOnDemand(ReservationStatusNotification::class, function (ReservationStatusNotification $notification, array $channels, $notifiable) {
+            return in_array('mail', $channels, true) && $notifiable->routes['mail'] === 'cliente@example.com';
+        });
+    }
+
     private function reservationData(): array
     {
         return [
@@ -275,4 +387,4 @@ class ReservationSecurityTest extends TestCase
             'mesa_id'      => 'S1',
         ];
     }
-}
+}
