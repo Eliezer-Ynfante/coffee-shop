@@ -17,6 +17,7 @@ Route::get('/galeria', [PublicPageController::class, 'galeria'])->name('galeria'
 
 // Reservas
 Route::get('/reserva', [ReservaController::class, 'index'])->name('reserva');
+Route::get('/reserva/disponibilidad', [ReservaController::class, 'availability'])->middleware('throttle:60,1')->name('reserva.availability');
 Route::post('/reserva', [ReservaController::class, 'store'])->middleware('throttle:10,1')->name('reserva.store');
 
 // Venta Web (Sprint A) & Pagos (Sprint B)
