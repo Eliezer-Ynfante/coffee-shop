@@ -10,9 +10,11 @@ use App\Models\Order;
 use App\Models\Payment;
 use App\Models\Product;
 use App\Models\Reservation;
+use App\Notifications\ReservationStatusNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
@@ -20,7 +22,7 @@ class AdminOperationsController extends Controller
 {
     public function reservations(Request $request)
     {
-        $query = Reservation::latest();
+        $query = Reservation::with('table')->latest();
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
@@ -35,6 +37,7 @@ class AdminOperationsController extends Controller
             'confirmed' => Reservation::where('status', 'confirmed')->count(),
             'completed' => Reservation::where('status', 'completed')->count(),
             'cancelled' => Reservation::where('status', 'cancelled')->count(),
+            'no_show' => Reservation::where('status', 'no_show')->count(),
         ];
 
         return view('admin.reservations.index', compact('reservations', 'statusCounts'));
@@ -44,7 +47,24 @@ class AdminOperationsController extends Controller
     {
         $reservation = Reservation::findOrFail($id);
         $validated = $request->validated();
+
+        $allowedTransitions = [
+            'pending' => ['confirmed', 'cancelled'],
+            'confirmed' => ['completed', 'cancelled', 'no_show'],
+            'completed' => [],
+            'cancelled' => [],
+            'no_show' => [],
+        ];
+
+        if (! in_array($validated['status'], $allowedTransitions[$reservation->status] ?? [], true)) {
+            return back()->withErrors(['status' => 'La transición de estado de la reserva no es válida.']);
+        }
+
         $reservation->update(['status' => $validated['status']]);
+
+        if ($reservation->email) {
+            Notification::route('mail', $reservation->email)->notify(new ReservationStatusNotification($reservation->load('table')));
+        }
 
         return back()->with('status', "Reserva #{$reservation->id} de {$reservation->nombre} actualizada a estado: ".ucfirst($validated['status']).'.');
     }
