@@ -14,7 +14,9 @@ class Reservation extends Model
         'hora',
         'personas',
         'mesa_id',
+        'cafe_table_id',
         'zona',
+        'zone_code',
         'ocasion',
         'comentarios',
         'status',
@@ -26,5 +28,10 @@ class Reservation extends Model
             'fecha' => 'date',
             'personas' => 'integer',
         ];
+    }
+
+    public function table()
+    {
+        return $this->belongsTo(CafeTable::class, 'cafe_table_id');
     }
 }
